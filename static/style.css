@@ -718,3 +718,79 @@ tbody tr.row-selected {
     position: relative;
     z-index: 1;
 }
+
+/* ===== 7 رنگین نیویگیشن آئٹمز ===== */
+.nav-item:nth-child(1) { border-color: #3b82f6; color: #1d4ed8; background: #eff6ff; }
+.nav-item:nth-child(1):hover, .nav-item:nth-child(1).active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+
+.nav-item:nth-child(2) { border-color: #10b981; color: #065f46; background: #ecfdf5; }
+.nav-item:nth-child(2):hover, .nav-item:nth-child(2).active { background: #10b981; color: #fff; border-color: #10b981; }
+
+.nav-item:nth-child(3) { border-color: #f59e0b; color: #92400e; background: #fffbeb; }
+.nav-item:nth-child(3):hover, .nav-item:nth-child(3).active { background: #f59e0b; color: #fff; border-color: #f59e0b; }
+
+.nav-item:nth-child(4) { border-color: #ef4444; color: #991b1b; background: #fef2f2; }
+.nav-item:nth-child(4):hover, .nav-item:nth-child(4).active { background: #ef4444; color: #fff; border-color: #ef4444; }
+
+.nav-item:nth-child(5) { border-color: #8b5cf6; color: #5b21b6; background: #f5f3ff; }
+.nav-item:nth-child(5):hover, .nav-item:nth-child(5).active { background: #8b5cf6; color: #fff; border-color: #8b5cf6; }
+
+.nav-item:nth-child(6) { border-color: #ec4899; color: #9d174d; background: #fdf2f8; }
+.nav-item:nth-child(6):hover, .nav-item:nth-child(6).active { background: #ec4899; color: #fff; border-color: #ec4899; }
+
+.nav-item:nth-child(7) { border-color: #14b8a6; color: #115e59; background: #f0fdfa; }
+.nav-item:nth-child(7):hover, .nav-item:nth-child(7).active { background: #14b8a6; color: #fff; border-color: #14b8a6; }
+
+.nav-item:nth-child(8) { border-color: #f97316; color: #9a3412; background: #fff7ed; }
+.nav-item:nth-child(8):hover, .nav-item:nth-child(8).active { background: #f97316; color: #fff; border-color: #f97316; }
+
+.nav-item:nth-child(9) { border-color: #06b6d4; color: #164e63; background: #ecfeff; }
+.nav-item:nth-child(9):hover, .nav-item:nth-child(9).active { background: #06b6d4; color: #fff; border-color: #06b6d4; }
+
+/* ===== نیویگیشن بار رنگین پس منظر ===== */
+.main-nav {
+    background: linear-gradient(135deg, #f0f4ff 0%, #fdf4ff 50%, #f0fff4 100%) !important;
+    border-bottom: 2px solid transparent !important;
+    border-image: linear-gradient(90deg, #3b82f6, #10b981, #f59e0b, #ef4444, #8b5cf6, #ec4899, #14b8a6) 1 !important;
+    padding: 14px 28px !important;
+}
+
+/* ===== بائیں دائیں جھولتا لوگو ===== */
+.brand-logo-mono {
+    animation: swingLR 2s ease-in-out infinite !important;
+    transform-origin: top center !important;
+}
+
+.brand-logo-mono:hover {
+    animation: swingLRFast 0.6s ease-in-out infinite !important;
+    filter: drop-shadow(0 0 14px rgba(232,184,75,0.7)) brightness(1.15) !important;
+}
+
+@keyframes swingLR {
+    0%   { transform: rotate(-15deg); }
+    50%  { transform: rotate(15deg); }
+    100% { transform: rotate(-15deg); }
+}
+
+@keyframes swingLRFast {
+    0%   { transform: rotate(-25deg); }
+    50%  { transform: rotate(25deg); }
+    100% { transform: rotate(-25deg); }
+}
+
+/* ===== لاگ ان پیج لوگو بھی بائیں دائیں ===== */
+.login-logo {
+    animation: swingLR 2s ease-in-out infinite !important;
+    transform-origin: top center !important;
+}
+
+.login-logo:hover {
+    animation: swingLRFast 0.6s ease-in-out infinite !important;
+    filter: drop-shadow(0 0 14px rgba(232,184,75,0.8)) !important;
+}
+
+/* ===== Loader Logo بھی swing ===== */
+.loader-logo {
+    animation: swingLR 1s ease-in-out infinite !important;
+    transform-origin: top center !important;
+}

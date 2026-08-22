@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ur" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -18,27 +18,29 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
     <style>
-        /* ===== گھومتا لوگو ===== */
+        /* ===== بائیں دائیں جھولتا لوگو ===== */
         .brand-logo-mono {
-            animation: spinLogo 12s linear infinite;
-            transform-origin: center center;
+            animation: swingLogo 2s ease-in-out infinite;
+            transform-origin: top center;
             cursor: pointer;
             transition: filter 0.3s ease;
         }
 
         .brand-logo-mono:hover {
-            animation: spinLogoFast 1.5s linear infinite;
-            filter: drop-shadow(0 0 14px rgba(232,184,75,0.7)) brightness(1.15);
+            animation: swingLogoFast 0.5s ease-in-out infinite;
+            filter: drop-shadow(0 0 18px rgba(232,184,75,0.9)) brightness(1.2);
         }
 
-        @keyframes spinLogo {
-            from { transform: rotate(0deg); }
-            to   { transform: rotate(360deg); }
+        @keyframes swingLogo {
+            0%   { transform: rotate(-18deg); }
+            50%  { transform: rotate(18deg); }
+            100% { transform: rotate(-18deg); }
         }
 
-        @keyframes spinLogoFast {
-            from { transform: rotate(0deg); }
-            to   { transform: rotate(360deg); }
+        @keyframes swingLogoFast {
+            0%   { transform: rotate(-30deg); }
+            50%  { transform: rotate(30deg); }
+            100% { transform: rotate(-30deg); }
         }
 
         /* ===== Page Loader ===== */
@@ -63,8 +65,9 @@
         .loader-logo {
             width: 90px;
             height: 90px;
-            animation: spinLogo 1.2s linear infinite;
+            animation: swingLogo 1s ease-in-out infinite;
             filter: drop-shadow(0 0 20px rgba(232,184,75,0.5));
+            transform-origin: top center;
         }
 
         .loader-text {
