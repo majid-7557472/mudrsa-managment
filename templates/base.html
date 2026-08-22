@@ -427,6 +427,356 @@ document.addEventListener('keydown', function(e) {
 });
 </script>
 
+<!-- ===== 🎨 تھیم سوئچر ===== -->
+
+<!-- فلوٹنگ تھیم بٹن -->
+<button id="theme-toggle-btn" onclick="toggleThemePanel()" title="تھیم بدلیں">🎨</button>
+
+<!-- تھیم پینل -->
+<div id="theme-panel">
+    <div class="theme-panel-header">
+        <span>🎨 رنگ تھیم منتخب کریں</span>
+        <button onclick="toggleThemePanel()" class="theme-close-btn">✕</button>
+    </div>
+    <div class="theme-grid">
+        <button class="theme-btn" data-theme="blue"    onclick="applyTheme('blue')"   title="نیلا سمندر">
+            <span class="theme-preview" style="background:linear-gradient(135deg,#1e3a5f,#2d6a9f)"></span>
+            <span>🌊 نیلا</span>
+        </button>
+        <button class="theme-btn" data-theme="green"   onclick="applyTheme('green')"  title="ہری بہار">
+            <span class="theme-preview" style="background:linear-gradient(135deg,#065f46,#059669)"></span>
+            <span>🌿 سبز</span>
+        </button>
+        <button class="theme-btn" data-theme="purple"  onclick="applyTheme('purple')" title="شاہی بنفشی">
+            <span class="theme-preview" style="background:linear-gradient(135deg,#4c1d95,#7c3aed)"></span>
+            <span>👑 جامنی</span>
+        </button>
+        <button class="theme-btn" data-theme="red"     onclick="applyTheme('red')"    title="سرخ جوش">
+            <span class="theme-preview" style="background:linear-gradient(135deg,#7f1d1d,#dc2626)"></span>
+            <span>🔥 سرخ</span>
+        </button>
+        <button class="theme-btn" data-theme="teal"    onclick="applyTheme('teal')"   title="فیروزی خوشی">
+            <span class="theme-preview" style="background:linear-gradient(135deg,#134e4a,#0d9488)"></span>
+            <span>💎 فیروزی</span>
+        </button>
+        <button class="theme-btn" data-theme="orange"  onclick="applyTheme('orange')" title="نارنجی گرمی">
+            <span class="theme-preview" style="background:linear-gradient(135deg,#7c2d12,#ea580c)"></span>
+            <span>🍊 نارنجی</span>
+        </button>
+        <button class="theme-btn" data-theme="rose"    onclick="applyTheme('rose')"   title="گلابی چاندنی">
+            <span class="theme-preview" style="background:linear-gradient(135deg,#881337,#e11d48)"></span>
+            <span>🌸 گلابی</span>
+        </button>
+    </div>
+    <div style="text-align:center; margin-top:10px; font-size:11px; color:#94a3b8;">تھیم خودکار محفوظ رہے گی</div>
+</div>
+
+<style>
+/* ===== Theme Toggle Button ===== */
+#theme-toggle-btn {
+    position: fixed;
+    bottom: 86px;
+    left: 30px;
+    width: 46px;
+    height: 46px;
+    background: linear-gradient(135deg, #7c3aed, #ec4899);
+    border: 2px solid #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(124,58,237,0.4);
+    z-index: 1001;
+    transition: all 0.3s ease;
+    animation: themeBtnPulse 2s ease-in-out infinite;
+}
+#theme-toggle-btn:hover {
+    transform: scale(1.15) rotate(20deg);
+    box-shadow: 0 6px 25px rgba(124,58,237,0.6);
+}
+@keyframes themeBtnPulse {
+    0%,100% { box-shadow: 0 4px 20px rgba(124,58,237,0.4); }
+    50%      { box-shadow: 0 4px 30px rgba(236,72,153,0.6); }
+}
+
+/* ===== Theme Panel ===== */
+#theme-panel {
+    position: fixed;
+    bottom: 145px;
+    left: 20px;
+    width: 260px;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.06);
+    z-index: 1002;
+    padding: 16px;
+    display: none;
+    animation: panelSlideIn 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+#theme-panel.open {
+    display: block;
+}
+@keyframes panelSlideIn {
+    from { opacity:0; transform: translateY(20px) scale(0.9); }
+    to   { opacity:1; transform: translateY(0) scale(1); }
+}
+.theme-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    font-weight: 700;
+    font-size: 14px;
+    color: #1a2740;
+    border-bottom: 1.5px solid #f1f5f9;
+    padding-bottom: 10px;
+}
+.theme-close-btn {
+    background: #f1f5f9;
+    border: none;
+    border-radius: 50%;
+    width: 26px; height: 26px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #64748b;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+}
+.theme-close-btn:hover { background: #fee2e2; color: #dc2626; }
+
+.theme-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+.theme-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 8px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    background: #f8fafc;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    color: #334155;
+    transition: all 0.2s ease;
+    font-family: 'Noto Sans Arabic', sans-serif;
+}
+.theme-btn:hover {
+    border-color: #94a3b8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.theme-btn.active-theme {
+    border-color: #7c3aed;
+    background: #f5f3ff;
+    box-shadow: 0 0 0 3px rgba(124,58,237,0.2);
+}
+.theme-preview {
+    width: 100%;
+    height: 28px;
+    border-radius: 8px;
+    display: block;
+}
+</style>
+
+<script>
+// ===== تھیم کی تمام CSS Variables =====
+const THEMES = {
+    blue: {
+        '--primary':       '#1e3a5f',
+        '--primary-mid':   '#234e7a',
+        '--primary-light': '#2d6a9f',
+        '--primary-glow':  'rgba(30,58,95,0.18)',
+        '--gold':          '#c9973a',
+        '--gold-bright':   '#e8b84b',
+        '--gold-pale':     '#fff8e7',
+        '--gold-border':   '#dfc27a',
+        '--bg-body':       '#eef2f7',
+        '--header-bg1':    '#0f2340',
+        '--header-bg2':    '#1e3a5f',
+        '--header-bg3':    '#234e7a',
+        '--nav-bg1':       '#f5f8fc',
+        '--nav-bg2':       '#eef2f8',
+    },
+    green: {
+        '--primary':       '#065f46',
+        '--primary-mid':   '#047857',
+        '--primary-light': '#059669',
+        '--primary-glow':  'rgba(6,95,70,0.18)',
+        '--gold':          '#c9973a',
+        '--gold-bright':   '#e8b84b',
+        '--gold-pale':     '#f0fdf4',
+        '--gold-border':   '#6ee7b7',
+        '--bg-body':       '#ecfdf5',
+        '--header-bg1':    '#022c22',
+        '--header-bg2':    '#065f46',
+        '--header-bg3':    '#047857',
+        '--nav-bg1':       '#f0fdf4',
+        '--nav-bg2':       '#dcfce7',
+    },
+    purple: {
+        '--primary':       '#4c1d95',
+        '--primary-mid':   '#6d28d9',
+        '--primary-light': '#7c3aed',
+        '--primary-glow':  'rgba(76,29,149,0.18)',
+        '--gold':          '#c9973a',
+        '--gold-bright':   '#e8b84b',
+        '--gold-pale':     '#faf5ff',
+        '--gold-border':   '#c4b5fd',
+        '--bg-body':       '#f5f3ff',
+        '--header-bg1':    '#2e1065',
+        '--header-bg2':    '#4c1d95',
+        '--header-bg3':    '#6d28d9',
+        '--nav-bg1':       '#faf5ff',
+        '--nav-bg2':       '#ede9fe',
+    },
+    red: {
+        '--primary':       '#7f1d1d',
+        '--primary-mid':   '#991b1b',
+        '--primary-light': '#dc2626',
+        '--primary-glow':  'rgba(127,29,29,0.18)',
+        '--gold':          '#c9973a',
+        '--gold-bright':   '#fbbf24',
+        '--gold-pale':     '#fff1f2',
+        '--gold-border':   '#fca5a5',
+        '--bg-body':       '#fff1f2',
+        '--header-bg1':    '#450a0a',
+        '--header-bg2':    '#7f1d1d',
+        '--header-bg3':    '#991b1b',
+        '--nav-bg1':       '#fff1f2',
+        '--nav-bg2':       '#fee2e2',
+    },
+    teal: {
+        '--primary':       '#134e4a',
+        '--primary-mid':   '#0f766e',
+        '--primary-light': '#0d9488',
+        '--primary-glow':  'rgba(19,78,74,0.18)',
+        '--gold':          '#c9973a',
+        '--gold-bright':   '#e8b84b',
+        '--gold-pale':     '#f0fdfa',
+        '--gold-border':   '#5eead4',
+        '--bg-body':       '#f0fdfa',
+        '--header-bg1':    '#042f2e',
+        '--header-bg2':    '#134e4a',
+        '--header-bg3':    '#0f766e',
+        '--nav-bg1':       '#f0fdfa',
+        '--nav-bg2':       '#ccfbf1',
+    },
+    orange: {
+        '--primary':       '#7c2d12',
+        '--primary-mid':   '#9a3412',
+        '--primary-light': '#ea580c',
+        '--primary-glow':  'rgba(124,45,18,0.18)',
+        '--gold':          '#c9973a',
+        '--gold-bright':   '#fb923c',
+        '--gold-pale':     '#fff7ed',
+        '--gold-border':   '#fdba74',
+        '--bg-body':       '#fff7ed',
+        '--header-bg1':    '#431407',
+        '--header-bg2':    '#7c2d12',
+        '--header-bg3':    '#9a3412',
+        '--nav-bg1':       '#fff7ed',
+        '--nav-bg2':       '#ffedd5',
+    },
+    rose: {
+        '--primary':       '#881337',
+        '--primary-mid':   '#9f1239',
+        '--primary-light': '#e11d48',
+        '--primary-glow':  'rgba(136,19,55,0.18)',
+        '--gold':          '#c9973a',
+        '--gold-bright':   '#fb7185',
+        '--gold-pale':     '#fff1f2',
+        '--gold-border':   '#fda4af',
+        '--bg-body':       '#fff1f2',
+        '--header-bg1':    '#4c0519',
+        '--header-bg2':    '#881337',
+        '--header-bg3':    '#9f1239',
+        '--nav-bg1':       '#fff1f2',
+        '--nav-bg2':       '#ffe4e6',
+    }
+};
+
+function applyTheme(name) {
+    const theme = THEMES[name];
+    if (!theme) return;
+
+    const root = document.documentElement;
+
+    // CSS Variables لگائیں
+    Object.entries(theme).forEach(([key, val]) => {
+        if (!key.startsWith('--header') && !key.startsWith('--nav')) {
+            root.style.setProperty(key, val);
+        }
+    });
+
+    // Header background
+    const header = document.querySelector('.portal-header');
+    if (header) {
+        header.style.background = `linear-gradient(135deg, ${theme['--header-bg1']} 0%, ${theme['--header-bg2']} 50%, ${theme['--header-bg3']} 100%)`;
+        header.style.borderBottomColor = theme['--gold'];
+    }
+
+    // Nav background
+    const nav = document.querySelector('.main-nav');
+    if (nav) {
+        nav.style.background = `linear-gradient(180deg, ${theme['--nav-bg1']} 0%, ${theme['--nav-bg2']} 100%)`;
+    }
+
+    // Active nav items
+    document.querySelectorAll('.nav-item.active').forEach(item => {
+        item.style.background = `linear-gradient(135deg, ${theme['--primary']} 0%, ${theme['--primary-mid']} 100%)`;
+        item.style.borderColor = theme['--gold'];
+    });
+
+    // Top bar gradient
+    const container = document.querySelector('.app-container');
+    if (container) {
+        container.style.setProperty('--top-bar-color', `linear-gradient(90deg, ${theme['--primary']}, ${theme['--primary-light']}, ${theme['--gold-bright']}, ${theme['--gold']})`);
+    }
+
+    // محفوظ کریں
+    localStorage.setItem('madrasa-theme', name);
+
+    // Active class
+    document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active-theme'));
+    const activeBtn = document.querySelector(`[data-theme="${name}"]`);
+    if (activeBtn) activeBtn.classList.add('active-theme');
+
+    // Panel بند کریں
+    setTimeout(() => closeThemePanel(), 400);
+}
+
+function toggleThemePanel() {
+    const panel = document.getElementById('theme-panel');
+    panel.classList.toggle('open');
+}
+
+function closeThemePanel() {
+    document.getElementById('theme-panel').classList.remove('open');
+}
+
+// باہر کلک پر بند کریں
+document.addEventListener('click', function(e) {
+    const panel = document.getElementById('theme-panel');
+    const btn = document.getElementById('theme-toggle-btn');
+    if (panel && btn && !panel.contains(e.target) && !btn.contains(e.target)) {
+        panel.classList.remove('open');
+    }
+});
+
+// صفحہ کھلتے ہی محفوظ شدہ تھیم لگائیں
+document.addEventListener('DOMContentLoaded', function() {
+    const saved = localStorage.getItem('madrasa-theme') || 'blue';
+    applyTheme(saved);
+});
+</script>
+
 {% block extra_scripts %}{% endblock %}
 </body>
 </html>
