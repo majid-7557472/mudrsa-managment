@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}جامعہ{% endblock %} - مرکزی پورٹل</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+<div class="app-container">
+
+    <!-- ہیڈر بینر -->
+    <div class="portal-header">
+        <div class="brand-wrapper">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="جامعہ مونوگرام" class="brand-logo-mono" onerror="this.style.display='none'">
+            <div>
+                <img src="{{ url_for('static', filename='banner_logo.png') }}" alt="الجامعۃ الاشرفیہ لاہور" class="brand-logo-text" onerror="this.style.display='none'; document.getElementById('txt-head').style.display='block';">
+                <h1 id="txt-head" class="brand-title-nastaliq" style="display: none;">الجامعۃ الاشرفیہ لاہور</h1>
+                <div class="brand-tagline">نظامِ داخلہ، امتحانات، حاضری و مرکزی تعلیمی پورٹل</div>
+            </div>
+        </div>
+                    <div class="user-bar">
+            <div class="header-badge">
+                تعلیمی سال: 1447-1448ھ / 2026ء
+            </div>
+                        {% if session.get('user_id') %}
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--gold-bright);">
+                👤 {{ session.get('full_name') or session.get('username') }}
+                <a href="{{ url_for('change_password') }}" class="btn btn-gold" style="padding: 6px 14px; font-size: 12.5px;">🔐 پاسورڈ تبدیل کریں</a>
+                <a href="{{ url_for('logout') }}" class="btn btn-muted" style="padding: 6px 14px; font-size: 12.5px;">لاگ آؤٹ</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+       <!-- نیویگیشن بار (رول کے مطابق) -->
+    {% set user_role = session.get('role', 'admin') %}
+    <nav class="main-nav">
+        <a href="{{ url_for('dashboard') }}" class="nav-item {% if active_page == 'dashboard' %}active{% endif %}">📊 مرکزی ڈیش بورڈ</a>
+
+        {% if user_role in ['admin', 'admission'] %}
+        <a href="{{ url_for('students_list') }}" class="nav-item {% if active_page == 'students' %}active{% endif %}">👥 طلبہ کی فہرست</a>
+        <a href="{{ url_for('admission') }}" class="nav-item {% if active_page == 'admission' %}active{% endif %}">📝 + نیا داخلہ فارم</a>
+        <a href="{{ url_for('class_list') }}" class="nav-item {% if active_page == 'class_list' %}active{% endif %}">📋 درجہ وار لسٹ</a>
+        {% endif %}
+
+        {% if user_role in ['admin', 'attendance'] %}
+        <a href="{{ url_for('attendance') }}" class="nav-item {% if active_page == 'attendance' %}active{% endif %}">🗓️ یومیہ حاضری رجسٹر</a>
+        {% endif %}
+
+        {% if user_role in ['admin', 'exams'] %}
+        <a href="{{ url_for('exams') }}" class="nav-item {% if active_page == 'exams' %}active{% endif %}">📑 امتحانی نظام و نشست بندی</a>
+        {% endif %}
+
+        {% if user_role == 'admin' %}
+        <a href="{{ url_for('settings') }}" class="nav-item {% if active_page == 'settings' %}active{% endif %}">⚙️ سیٹنگز (اضافی خانے)</a>
+        <a href="{{ url_for('manage_users') }}" class="nav-item {% if active_page == 'users' %}active{% endif %}">🔑 یوزرز کا انتظام</a>
+                <a href="{{ url_for('view_backups') }}" class="nav-item {% if active_page == 'backups' %}active{% endif %}">💾 ڈیٹا بیس بیک اپ</a>
+        <a href="{{ url_for('notifications') }}" class="nav-item {% if active_page == 'notifications' %}active{% endif %}">📢 نوٹیفیکیشن بھیجیں</a>
+        {% endif %}
+    </nav>
+        <!-- فلیش میسجز -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div id="flash-container">
+            {% for category, message in messages %}
+                <div class="alert-box alert-{{ category }}">
+                    <span>{{ message }}</span>
+                    <span class="alert-close" onclick="this.parentElement.remove()">✕</span>
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- ہر صفحے کا اپنا مواد یہاں آئے گا -->
+    {% block content %}{% endblock %}
+
+</div>
+
+<!-- تصدیقی Modal (Delete وغیرہ کے لیے) -->
+<div id="confirm-modal-overlay" class="confirm-modal-overlay">
+    <div class="confirm-modal-box">
+        <p id="confirm-modal-text">کیا آپ واقعی یہ عمل مکمل کرنا چاہتے ہیں؟</p>
+        <div class="confirm-modal-actions">
+            <button type="button" class="btn btn-muted" onclick="closeConfirmModal()">منسوخ کریں</button>
+            <a id="confirm-modal-yes-btn" href="#" class="btn" style="background:#dc3545; color:#fff;">تصدیق کریں، حذف کریں</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // فلیش میسجز کو 4 سیکنڈ بعد خودکار غائب کرنا
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+            document.querySelectorAll('.alert-box').forEach(function(box) {
+                box.style.transition = 'opacity 0.5s ease';
+                box.style.opacity = '0';
+                setTimeout(function() { box.remove(); }, 500);
+            });
+        }, 4000);
+    });
+
+    // خوبصورت تصدیقی Modal (delete لنکس کے لیے)
+    function showConfirmModal(url, message) {
+        document.getElementById('confirm-modal-text').innerText = message || 'کیا آپ واقعی یہ عمل مکمل کرنا چاہتے ہیں؟';
+        document.getElementById('confirm-modal-yes-btn').setAttribute('href', url);
+        document.getElementById('confirm-modal-overlay').classList.add('active');
+        return false; // اصل لنک کو رکنے کے لیے
+    }
+    function closeConfirmModal() {
+        document.getElementById('confirm-modal-overlay').classList.remove('active');
+    }
+</script>
+
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

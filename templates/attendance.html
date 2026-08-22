@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+{% block title %}یومیہ حاضری رجسٹر{% endblock %}
+{% set active_page = 'attendance' %}
+
+{% block extra_head %}
+<style>
+    .filter-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(135deg, #f8faf9 0%, #edf5f1 100%);
+        border: 1.5px solid var(--border-subtle);
+        padding: 16px 22px;
+        border-radius: var(--radius-md);
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .filter-form {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .filter-form select, .filter-form input[type="date"] {
+        padding: 9px 14px;
+        border: 1.5px solid var(--border-subtle);
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--primary-teal);
+        background: #ffffff;
+        outline: none;
+    }
+
+    .attendance-options {
+        display: inline-flex;
+        gap: 12px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 13.5px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: var(--transition);
+        border: 1.5px solid transparent;
+    }
+
+    .status-present {
+        background-color: #ecfdf5;
+        color: #065f46;
+        border-color: #a7f3d0;
+    }
+
+    .status-absent {
+        background-color: #fef2f2;
+        color: #991b1b;
+        border-color: #fecaca;
+    }
+
+    .status-leave {
+        background-color: #fffbeb;
+        color: #92400e;
+        border-color: #fde68a;
+    }
+
+    .status-pill input[type="radio"] {
+        cursor: pointer;
+        accent-color: var(--primary-teal);
+        transform: scale(1.15);
+    }
+
+    .quick-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .btn-quick {
+        background: #ffffff;
+        border: 1.5px solid var(--gold-border);
+        color: #854d0e;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 12.5px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .btn-quick:hover {
+        background: var(--gold-soft);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <!-- فلٹر بار (درجہ اور تاریخ) -->
+    <div class="filter-bar no-print">
+        <form method="GET" class="filter-form">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <label><strong>درجہ منتخب کریں:</strong></label>
+                <select name="class_name" onchange="this.form.submit()">
+                    {% for c in ['اولی', 'ثانیہ', 'ثالثہ', 'رابعہ', 'خامسہ', 'سادسہ', 'سابعہ', 'دورہ حدیث'] %}
+                        <option value="{{ c }}" {% if selected_class == c %}selected{% endif %}>درجہ {{ c }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <label><strong>تاریخ:</strong></label>
+                <input type="date" name="date" value="{{ attendance_date }}" onchange="this.form.submit()">
+            </div>
+        </form>
+
+               <div class="quick-actions">
+            <button type="button" class="btn-quick" onclick="markAll('حاضر')">✅ تمام کو حاضر کریں</button>
+            <button type="button" class="btn-quick" onclick="markAll('غیر حاضر')">❌ تمام کو غیر حاضر کریں</button>
+            <a href="{{ url_for('attendance_report', class_name=selected_class, month=attendance_date[:7]) }}" class="btn btn-primary" style="padding: 6px 16px; font-size: 12.5px;">📅 ماہانہ رپورٹ دیکھیں</a>
+        </div>
+    </div>
+
+    <!-- حاضری فارم اور جدول -->
+    <form method="POST">
+        <input type="hidden" name="class_name" value="{{ selected_class }}">
+        <input type="hidden" name="attendance_date" value="{{ attendance_date }}">
+
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+<th style="width: 15%;">کلاس رول نمبر</th>
+<th style="width: 30%;">نام طالب علم</th>
+<th style="width: 25%;">ولدیت</th>
+<th style="width: 30%;">کیفیتِ حاضری</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in students %}
+                    {% set current_status = att_records.get(s['id'], 'حاضر') %}
+                    <tr>
+                        <td>
+                            <strong style="color: var(--primary-teal); font-size: 15px;">{{ s['class_roll_no'] or s['id'] }}</strong>
+                            <input type="hidden" name="student_id[]" value="{{ s['id'] }}">
+                        </td>
+                        <td><strong>{{ s['student_name'] }}</strong></td>
+                        <td>{{ s['father_name'] }}</td>
+                        <td>
+                            <div class="attendance-options">
+                                <label class="status-pill status-present">
+                                    <input type="radio" name="status_{{ s['id'] }}" value="حاضر" {% if current_status == 'حاضر' %}checked{% endif %}>
+                                    حاضر
+                                </label>
+                                <label class="status-pill status-absent">
+                                    <input type="radio" name="status_{{ s['id'] }}" value="غیر حاضر" {% if current_status == 'غیر حاضر' %}checked{% endif %}>
+                                    غیر حاضر
+                                </label>
+                                <label class="status-pill status-leave">
+                                    <input type="radio" name="status_{{ s['id'] }}" value="رخصت" {% if current_status == 'رخصت' %}checked{% endif %}>
+                                    رخصت
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" style="padding: 24px; color: var(--text-muted);">اس درجے میں ابھی تک کوئی طالب علم موجود نہیں ہے۔</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if students %}
+        <div style="margin-top: 25px; text-align: left;">
+            <button type="submit" class="btn btn-primary" style="padding: 12px 35px; font-size: 15px;">💾 یومیہ حاضری محفوظ کریں</button>
+        </div>
+        {% endif %}
+    </form>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function markAll(statusVal) {
+    const radios = document.querySelectorAll(`input[type="radio"][value="${statusVal}"]`);
+    radios.forEach(r => r.checked = true);
+}
+</script>
+{% endblock %}

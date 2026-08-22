@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لاگ ان - الجامعۃ الاشرفیہ لاہور</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Noto+Sans+Arabic:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f2340 0%, #1e3a5f 40%, #234e7a 70%, #1a3a60 100%);
+            background-attachment: fixed;
+            padding: 20px;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: -100px; left: -100px;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(232,184,75,0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            bottom: -80px; right: -80px;
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(45,106,159,0.2) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.98);
+            border: 1.5px solid rgba(201,151,58,0.3);
+            border-radius: 24px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.1);
+            padding: 44px 40px;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #1e3a5f 0%, #2d6a9f 50%, #c9973a 100%);
+        }
+
+        .login-card::after {
+            content: "";
+            position: absolute;
+            bottom: -70px; left: -70px;
+            width: 200px; height: 200px;
+            background: radial-gradient(circle, rgba(201,151,58,0.07), transparent 70%);
+            pointer-events: none;
+        }
+
+        .login-logo {
+            max-height: 80px;
+            margin-bottom: 14px;
+            filter: drop-shadow(0 4px 12px rgba(30,58,95,0.2));
+        }
+
+        .login-title {
+            font-family: 'Noto Nastaliq Urdu', serif !important;
+            color: var(--primary);
+            font-size: 24px;
+            margin-bottom: 4px;
+            line-height: 1.7;
+        }
+
+        .login-subtitle {
+            color: var(--text-sub);
+            font-size: 13.5px;
+            font-weight: 600;
+            margin-bottom: 28px;
+            padding: 6px 16px;
+            background: var(--gold-pale);
+            border-radius: 30px;
+            display: inline-block;
+            border: 1px solid var(--gold-border);
+        }
+
+        .login-form-group {
+            text-align: right;
+            margin-bottom: 18px;
+        }
+
+        .login-form-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 13.5px;
+            color: var(--primary);
+            margin-bottom: 7px;
+        }
+
+        .login-form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            transition: var(--ease);
+            background: var(--bg-surface);
+            color: var(--text);
+        }
+
+        .login-form-group input:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+            background: #fff;
+        }
+
+        .btn-login {
+            width: 100%;
+            margin-top: 10px;
+            padding: 14px;
+            font-size: 16px;
+            letter-spacing: 0.3px;
+        }
+
+        .login-footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: var(--text-sub);
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="لوگو" class="login-logo" onerror="this.style.display='none'">
+        <div class="login-title">الجامعۃ الاشرفیہ لاہور</div>
+        <div class="login-subtitle">مرکزی تعلیمی پورٹل میں داخل ہوں</div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert-box alert-{{ category }}" style="text-align: right;">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <div class="login-form-group">
+                <label>یوزر نیم:</label>
+                <input type="text" name="username" required autofocus placeholder="username درج کریں">
+            </div>
+            <div class="login-form-group">
+                <label>پاسورڈ:</label>
+                <input type="password" name="password" required placeholder="●●●●●●●●">
+            </div>
+            <button type="submit" class="btn btn-primary btn-login">🔐 لاگ ان کریں</button>
+        </form>
+        <div class="login-footer">الجامعۃ الاشرفیہ لاہور &copy; 2026 — مرکزی تعلیمی پورٹل</div>
+    </div>
+</body>
+</html>

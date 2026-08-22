@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block title %}طلبہ کی فہرست{% endblock %}
+{% set active_page = 'students' %}
+
+{% block extra_head %}
+<style>
+    .pagination-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 20px;
+        padding: 14px 20px;
+        background: #f8fafc;
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+    }
+
+    .pagination-info {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-muted);
+    }
+
+    .pagination-buttons {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .page-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 34px;
+        height: 34px;
+        padding: 0 10px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        color: var(--primary-teal);
+        background: #ffffff;
+        border: 1px solid var(--border-subtle);
+        transition: var(--transition);
+    }
+
+    .page-btn:hover {
+        background: var(--gold-soft);
+        border-color: var(--gold-accent);
+    }
+
+    .page-current {
+        background: linear-gradient(135deg, var(--primary-teal) 0%, var(--teal-dark) 100%);
+        color: #ffffff;
+        border-color: var(--gold-accent);
+    }
+
+    .page-dots {
+        padding: 0 4px;
+        color: var(--text-muted);
+        font-weight: 700;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <!-- صفحہ عنوان -->
+    <div style="padding: 20px 30px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 4px;">
+        <div>
+            <h2 style="font-size: 20px; font-weight: 800; color: var(--primary); margin: 0;">👥 طلبہ کی مکمل فہرست</h2>
+            <p style="font-size: 13px; color: var(--text-sub); margin: 4px 0 0;">کل داخل شدہ طلبہ — تعلیمی سال 1447-1448ھ</p>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <a href="{{ url_for('admission') }}" class="btn btn-primary">+ نیا داخلہ</a>
+            <a href="{{ url_for('export_students_csv') }}" class="btn btn-excel">📊 ایکسل ڈاؤنلوڈ</a>
+        </div>
+    </div>
+
+    <!-- سرچ و فلٹر بار -->
+    <div class="search-filter-card">
+        <form method="GET" action="{{ url_for('students_list') }}" class="search-form-row">
+            <input type="text" name="search" value="{{ query }}" placeholder="نام، فارم نمبر، شناختی کارڈ یا رول نمبر سے تلاش کریں..." style="flex: 1; min-width: 220px;">
+            <select name="class_filter">
+                <option value="">تمام درجات</option>
+                {% for cls in ['اولی', 'ثانیہ', 'ثالثہ', 'رابعہ', 'خامسہ', 'سادسہ', 'سابعہ', 'ثامنہ'] %}
+                <option value="{{ cls }}" {% if selected_class == cls %}selected{% endif %}>{{ cls }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-primary">🔍 تلاش کریں</button>
+            <a href="{{ url_for('students_list') }}" class="btn btn-muted">ری سیٹ</a>
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>آئی ڈی</th>
+                    <th>رول نمبر</th>
+                    <th>نام طالب علم</th>
+                    <th>ولدیت</th>
+                    <th>درجہ</th>
+                    <th>رہائشی حیثیت</th>
+                    <th>اختیارات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in students %}
+                <tr>
+                    <td>{{ s['id'] }}</td>
+                    <td>{{ s['class_roll_no'] or '-' }}</td>
+                    <td><strong>{{ s['student_name'] }}</strong></td>
+                    <td>{{ s['father_name'] }}</td>
+                    <td>{{ s['current_class'] }}</td>
+                    <td>{{ s['residence_status'] or '-' }}</td>
+                    <td>
+                        <div class="actions-cell">
+                            <a href="{{ url_for('student_profile', student_id=s['id']) }}" class="action-btn btn-profile">پروفائل</a>
+                            <a href="{{ url_for('edit_student', student_id=s['id']) }}" class="action-btn btn-edit">ترمیم</a>
+                            <a href="{{ url_for('admission_slip', student_id=s['id']) }}" class="action-btn btn-slip">سلپ</a>
+                            <a href="#" class="action-btn btn-del" data-delete-url="{{ url_for('delete_student', student_id=s['id']) }}" data-confirm-message="کیا آپ واقعی اس طالب علم کا مکمل ریکارڈ حذف کرنا چاہتے ہیں؟ یہ عمل واپس نہیں ہو سکتا۔" onclick="return showConfirmModal(this.dataset.deleteUrl, this.dataset.confirmMessage)">حذف</a>
+                        </div>
+                    </td>
+                </tr>
+                                {% else %}
+                <tr>
+                    <td colspan="7" style="padding: 20px;">کوئی طالب علم نہیں ملا۔</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- صفحہ نمبر (Pagination) -->
+    {% if total_pages > 1 %}
+    <div class="pagination-bar">
+        <div class="pagination-info">
+            کل {{ total_records }} طلبہ میں سے، صفحہ {{ page }} از {{ total_pages }}
+        </div>
+        <div class="pagination-buttons">
+            {% if page > 1 %}
+            <a href="{{ url_for('students_list', page=page-1, search=query, class_filter=selected_class) }}" class="page-btn">← پچھلا</a>
+            {% endif %}
+
+            {% for p in range(1, total_pages + 1) %}
+                {% if p == page %}
+                <span class="page-btn page-current">{{ p }}</span>
+                {% elif p <= 2 or p > total_pages - 2 or (p >= page - 1 and p <= page + 1) %}
+                <a href="{{ url_for('students_list', page=p, search=query, class_filter=selected_class) }}" class="page-btn">{{ p }}</a>
+                {% elif p == 3 or p == total_pages - 2 %}
+                <span class="page-dots">...</span>
+                {% endif %}
+            {% endfor %}
+
+            {% if page < total_pages %}
+            <a href="{{ url_for('students_list', page=page+1, search=query, class_filter=selected_class) }}" class="page-btn">اگلا →</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>امتحانی رول نمبر سلپ - {{ student['student_name'] }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Noto+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans Arabic', sans-serif; background-color: #e9ecef; margin: 0; padding: 20px; direction: rtl; }
+        .slip-card { max-width: 700px; margin: auto; background: #fff; padding: 30px; border: 2px solid #1a5f7a; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .title { text-align: center; font-family: 'Noto Nastaliq Urdu', serif; color: #1a5f7a; margin-bottom: 5px; }
+        .subtitle { text-align: center; color: #333; margin-top: 0; font-size: 16px; border-bottom: 2px dashed #1a5f7a; padding-bottom: 12px; font-weight: bold; }
+        .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; background: #fdfdfd; padding: 10px; border: 1px solid #eee; }
+        .item { font-size: 14px; padding: 5px 0; }
+        .item strong { color: #1a5f7a; }
+        .table-datesheet { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .table-datesheet th, .table-datesheet td { border: 1px solid #333; padding: 8px; text-align: center; font-size: 13px; }
+        .table-datesheet th { background-color: #f0f4f8; }
+        .instructions { margin-top: 15px; font-size: 12px; color: #444; border-top: 1px solid #ccc; padding-top: 10px; }
+        .footer { margin-top: 30px; display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; }
+        .no-print { text-align: center; margin-bottom: 15px; }
+        .btn-print { background: #1a5f7a; color: white; border: none; padding: 10px 25px; border-radius: 5px; font-size: 15px; cursor: pointer; }
+        @media print {
+            .no-print { display: none; }
+            body { background: transparent; padding: 0; }
+            .slip-card { box-shadow: none; border: 1px solid #000; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <button class="btn-print" onclick="window.print()">🖨️ امتحانی سلپ پرنٹ کریں</button>
+</div>
+
+<div class="slip-card">
+    <h2 class="title">الجامعۃ الاشرفیہ</h2>
+    <div class="subtitle">امتحانی رول نمبر سلپ و نشست نامہ ({{ exam['exam_name'] }} - {{ exam['academic_year'] }})</div>
+
+    <div class="details-grid">
+        <div class="item"><strong>امتحانی رول نمبر:</strong> <span style="font-size: 18px; color: #d9534f; font-weight: bold;">{{ seating['exam_roll_no'] }}</span></div>
+        <div class="item"><strong>مدرسہ رجسٹریشن نمبر:</strong> {{ student['id'] }}</div>
+        <div class="item"><strong>نام طالب علم:</strong> {{ student['student_name'] }}</div>
+        <div class="item"><strong>ولدیت:</strong> {{ student['father_name'] }}</div>
+        <div class="item"><strong>درجہ:</strong> {{ student['current_class'] }}</div>
+        <div class="item"><strong>امتحانی ہال / کمرہ:</strong> <strong>{{ seating['hall_room_no'] }}</strong></div>
+        <div class="item"><strong>نشست / ڈیسک نمبر:</strong> <strong>{{ seating['seat_no'] }}</strong></div>
+        <div class="item"><strong>داخلہ کیفیت:</strong> {{ student['residence_status'] }}</div>
+    </div>
+
+    <h4 style="margin-bottom: 5px; margin-top: 15px; color: #1a5f7a;">جدول امتحانات (Date Sheet)</h4>
+    <table class="table-datesheet">
+        <thead>
+            <tr>
+                <th>شمار</th>
+                <th>کتاب / پرچہ</th>
+                <th>وقت / شفٹ</th>
+                <th>نگران کے دستخط</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>1</td><td>ہدایۃ النحو / نحو</td><td>صبح 08:00 تا 11:00</td><td></td></tr>
+            <tr><td>2</td><td>علم الصیغہ / صرف</td><td>صبح 08:00 تا 11:00</td><td></td></tr>
+            <tr><td>3</td><td>تيسير المنطق</td><td>صبح 08:00 تا 11:00</td><td></td></tr>
+            <tr><td>4</td><td>قدوری / فقہ</td><td>صبح 08:00 تا 11:00</td><td></td></tr>
+            <tr><td>5</td><td>زاد الطالبین / معلم الانشاء</td><td>صبح 08:00 تا 11:00</td><td></td></tr>
+        </tbody>
+    </table>
+
+    <div class="instructions">
+        <strong>ہدایات برائے طلبہ:</strong> تمام طلبہ امتحانی ہال میں وقت مقررہ سے 15 منٹ قبل پہنچیں۔ رول نمبر سلپ کے بغیر امتحان میں بیٹھنے کی اجازت نہیں ہوگی۔ موبائل فون لانا سخت منع ہے۔
+    </div>
+
+    <div class="footer">
+        <div>دستخط ناظم امتحانات: ________________</div>
+        <div>دستخط و مہر مہتمم: ________________</div>
+    </div>
+</div>
+
+</body>
+</html>

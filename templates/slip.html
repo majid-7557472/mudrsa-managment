@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>داخلہ تصدیق نامہ - {{ student['student_name'] }}</title>
+    <!-- گوگل اردو فونٹ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Noto+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body, button, input, select, textarea {
+            font-family: 'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif !important;
+            letter-spacing: 0;
+        }
+        body { 
+            background-color: #e9ecef; 
+            margin: 0; 
+            padding: 20px; 
+            direction: rtl; 
+        }
+        .slip-card { 
+            max-width: 650px; 
+            margin: auto; 
+            background: #fff; 
+            padding: 30px; 
+            border: 2px solid #1a5f7a; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15); 
+        }
+        .title { 
+            text-align: center; 
+            font-family: 'Noto Nastaliq Urdu', serif !important; 
+            color: #1a5f7a; 
+            margin: 0 0 5px 0; 
+            font-size: 26px;
+        }
+        .subtitle { 
+            text-align: center; 
+            color: #555; 
+            margin-top: 0; 
+            font-size: 16px; 
+            border-bottom: 2px dashed #1a5f7a; 
+            padding-bottom: 15px; 
+        }
+        .details-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 15px; 
+            margin-top: 20px; 
+        }
+        .item { 
+            font-size: 15px; 
+            padding: 6px 0; 
+            border-bottom: 1px dotted #ccc; 
+        }
+        .item strong { 
+            color: #1a5f7a; 
+        }
+        .footer { 
+            margin-top: 40px; 
+            display: flex; 
+            justify-content: space-between; 
+            font-weight: bold; 
+        }
+        .no-print { 
+            text-align: center; 
+            margin-bottom: 20px; 
+        }
+        .btn-print { 
+            background: #1a5f7a; 
+            color: white; 
+            border: none; 
+            padding: 10px 25px; 
+            border-radius: 5px; 
+            font-size: 15px; 
+            cursor: pointer; 
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .btn-print:hover {
+            background: #134559;
+        }
+        @media print {
+            .no-print { display: none; }
+            body { background: transparent; padding: 0; }
+            .slip-card { box-shadow: none; border: 1px solid #000; }
+        }
+    </style>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+<div class="no-print">
+    <button class="btn-print" onclick="window.print()">🖨️ سلپ پرنٹ کریں</button>
+    <button class="btn-print" style="background: #7c3aed;" onclick="downloadSlipImage()">🖼️ تصویر (PNG) بنائیں</button>
+</div>
+        {% set recipient_name = student['guardian_name'] or student['father_name'] or 'محترم' %}
+    {% set roll_display = student['class_roll_no'] or student['id']|string %}
+
+    {% set wa_message_guardian = 'السلام علیکم! ' ~ recipient_name ~ ' صاحب، آپ کے فرزند ' ~ student['student_name'] ~ ' کا ' ~ site_settings['institution_name'] ~ ' میں داخلہ کامیابی سے مکمل ہو گیا ہے۔ درجہ: ' ~ student['current_class'] ~ '، رول نمبر: ' ~ roll_display ~ '۔ مزید معلومات کے لیے رابطہ کریں: ' ~ site_settings['helpline_number'] %}
+
+    {% set wa_message_student = 'السلام علیکم ' ~ student['student_name'] ~ '! آپ کا ' ~ site_settings['institution_name'] ~ ' میں داخلہ کامیابی سے مکمل ہو گیا ہے۔ درجہ: ' ~ student['current_class'] ~ '، رول نمبر: ' ~ roll_display ~ '۔ مبارک ہو! مزید معلومات کے لیے رابطہ کریں: ' ~ site_settings['helpline_number'] %}
+
+    {% if student['guardian_phone'] %}
+    <a href="{{ whatsapp_link(student['guardian_phone'], wa_message_guardian) }}" target="_blank" class="btn" style="background: #25D366; color: #fff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; display: inline-block; margin-right: 10px;">
+        📱 والدین کو واٹس ایپ کریں
+    </a>
+    {% endif %}
+
+    {% if student['student_phone'] %}
+    <a href="{{ whatsapp_link(student['student_phone'], wa_message_student) }}" target="_blank" class="btn" style="background: #128C7E; color: #fff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; display: inline-block; margin-right: 10px;">
+        📱 طالب علم کو واٹس ایپ کریں
+    </a>
+    {% endif %}
+
+    {% if not student['guardian_phone'] and not student['student_phone'] %}
+    <span style="color: var(--text-muted); font-size: 13px;">⚠️ اس طالب علم کا کوئی موبائل نمبر درج نہیں، واٹس ایپ نہیں بھیجا جا سکتا۔</span>
+    {% endif %}
+<div class="slip-card">
+    <h2 class="title">الجامعۃ الاشرفیہ</h2>
+    <div class="subtitle">داخلہ تصدیق نامہ برائے سال 2026ء</div>
+
+    <div class="details-grid">
+        <div class="item"><strong>رول نمبر (مدرسہ آئی ڈی):</strong> {{ student['id'] }}</div>
+        <div class="item"><strong>داخلہ فارم نمبر:</strong> {{ student['admission_form_no'] }}</div>
+        <div class="item"><strong>نام طالب علم:</strong> {{ student['student_name'] }}</div>
+        <div class="item"><strong>ولدیت:</strong> {{ student['father_name'] }}</div>
+        <div class="item"><strong>منظور شدہ درجہ:</strong> {{ student['current_class'] }}</div>
+        <div class="item"><strong>داخلہ کی نوعیت:</strong> {{ student['admission_type'] }}</div>
+        <div class="item"><strong>رہائشی کیفیت:</strong> {{ student['residence_status'] }}</div>
+        <div class="item"><strong>مالی کیفیت:</strong> {{ student['aid_status'] }}</div>
+                <div class="item"><strong>رابطہ نمبر:</strong> <span dir="ltr" style="unicode-bidi: embed;">{{ student['student_phone'] or student['guardian_phone'] or 'درج نہیں' }}</span></div>
+        <div class="item"><strong>تاریخ داخلہ:</strong> {{ student['admission_date'] or 'درج نہیں' }}</div>
+    </div>
+
+    <div class="footer">
+        <div>دستخط ناظم داخلہ: ________________</div>
+        <div>دستخط و مہر مہتمم: ________________</div>
+    </div>
+</div>
+
+<script>
+function downloadSlipImage() {
+    const card = document.querySelector('.slip-card');
+    const btn = event.target;
+    const originalText = btn.innerText;
+    btn.innerText = '⏳ تیار ہو رہی ہے...';
+    btn.disabled = true;
+
+    html2canvas(card, { scale: 2, backgroundColor: '#ffffff' }).then(function(canvas) {
+        const link = document.createElement('a');
+        link.download = 'admission_slip_{{ student["id"] }}.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }).catch(function(err) {
+        alert('تصویر بنانے میں مسئلہ ہوا۔');
+        btn.innerText = originalText;
+        btn.disabled = false;
+    });
+}
+</script>
+</body>
+</html>
+
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>امتحانی رزلٹ شیٹ - {{ exam['exam_name'] }} (درجہ {{ selected_class }})</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .sheet-table th, .sheet-table td { font-size: 13px; padding: 7px 8px; }
+        .fail-mark { background-color: #ffebee !important; color: #c62828 !important; font-weight: bold; }
+        .badge-pass { background-color: #d4edda; color: #155724; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
+        .badge-fail { background-color: #f8d7da; color: #721c24; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class="container" style="max-width: 1250px;">
+    <div class="no-print" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <a href="{{ url_for('exams') }}" class="btn-primary" style="text-decoration: none;">← واپس امتحانات</a>
+            <form method="GET" style="display: inline-block;">
+                <label><strong>درجہ منتخب کریں:</strong></label>
+                <select name="class_name" onchange="this.form.submit()" style="padding: 6px 12px; border-radius: 4px;">
+                    {% for c in ['اولی', 'ثانیہ', 'ثالثہ', 'رابعہ', 'خامسہ', 'سادسہ', 'سابعہ', 'دورہ حدیث'] %}
+                        <option value="{{ c }}" {% if selected_class == c %}selected{% endif %}>درجہ {{ c }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <a href="{{ url_for('export_exam_sheet_csv', exam_id=exam['id'], class_name=selected_class) }}" class="btn-primary btn-success" style="text-decoration: none;">📊 ایکسل فائل ڈاؤنلوڈ کریں</a>
+            <button class="btn-primary" onclick="window.print()">🖨️ رزلٹ شیٹ پرنٹ / PDF</button>
+        </div>
+    </div>
+
+    <div style="text-align: center; border-bottom: 2px solid #1a5f7a; padding-bottom: 10px; margin-bottom: 20px;">
+        <h1 style="margin: 0; font-size: 26px;">الجامعۃ الاشرفیہ لاہور</h1>
+        <h3 style="margin: 5px 0; color: #333;">مجموعی رزلٹ شیٹ ({{ exam['exam_name'] }} - {{ exam['academic_year'] }})</h3>
+        <div style="font-weight: bold; color: #1a5f7a; font-size: 15px;">درجہ: {{ selected_class }}</div>
+    </div>
+
+    <table class="sheet-table">
+        <thead>
+            <tr>
+                <th style="width: 6%;">رول نمبر</th>
+                <th style="width: 16%;">نام طالب علم</th>
+                <th style="width: 14%;">ولدیت</th>
+                {% for b in books %}
+                    <th>{{ b }}</th>
+                {% endfor %}
+                <th style="width: 8%;">حاصل کردہ</th>
+                <th style="width: 7%;">کل نمبر</th>
+                <th style="width: 7%;">فیصد</th>
+                <th style="width: 12%;">نتیجہ / پوزیشن</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in sheet_data %}
+            <tr>
+                <td><strong style="color: var(--primary-teal);">{{ row['student']['class_roll_no'] or row['student']['id'] }}</strong></td>
+                <td><strong>{{ row['student']['student_name'] }}</strong></td>
+                <td>{{ row['student']['father_name'] }}</td>
+                {% for b in books %}
+                    {% set mark = row['marks'].get(b, '-') %}
+                    <td class="{% if mark != '-' and mark < 40 %}fail-mark{% endif %}">
+                        {{ mark }}
+                        {% if mark != '-' and mark < 40 %}<br><small style="color:red;">(فیل)</small>{% endif %}
+                    </td>
+                {% endfor %}
+                <td><strong>{{ row['total_obtained'] }}</strong></td>
+                <td>{{ row['total_max'] }}</td>
+                <td>{{ row['percentage'] }}%</td>
+                <td>
+                    <span class="{% if row['has_failed'] or 'فیل' in row['status'] %}badge-fail{% else %}badge-pass{% endif %}">
+                        {{ row['status'] }}
+                    </span>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="{{ books|length + 7 }}" style="padding: 20px;">اس درجے کا کوئی ریکارڈ موجود نہیں ہے۔</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div style="margin-top: 40px; display: flex; justify-content: space-between; font-weight: bold; font-size: 13px;">
+        <div>دستخط ممتحن: ________________</div>
+        <div>دستخط ناظم امتحانات: ________________</div>
+        <div>مہر و دستخط مہتمم: ________________</div>
+    </div>
+</div>
+</body>
+</html>

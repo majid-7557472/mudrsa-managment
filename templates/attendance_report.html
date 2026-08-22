@@ -1,0 +1,310 @@
+{% extends "base.html" %}
+{% block title %}حاضری رپورٹ - درجہ {{ selected_class }}{% endblock %}
+{% set active_page = 'attendance' %}
+
+{% block extra_head %}
+<style>
+    .report-filter-bar {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        background: linear-gradient(135deg, #f8faf9 0%, #edf5f1 100%);
+        border: 1.5px solid var(--border-subtle);
+        padding: 16px 22px;
+        border-radius: var(--radius-md);
+        margin-bottom: 22px;
+        flex-wrap: wrap;
+    }
+
+    .report-filter-bar select,
+    .report-filter-bar input[type="month"] {
+        padding: 9px 14px;
+        border: 1.5px solid var(--border-subtle);
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--primary-teal);
+        background: #ffffff;
+        outline: none;
+    }
+
+    .view-toggle {
+        display: inline-flex;
+        border: 1.5px solid var(--primary-teal);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .view-toggle a {
+        padding: 8px 18px;
+        font-size: 13.5px;
+        font-weight: 700;
+        text-decoration: none;
+        color: var(--primary-teal);
+        background: #ffffff;
+        transition: var(--transition);
+    }
+
+    .view-toggle a.active {
+        background: var(--primary-teal);
+        color: #ffffff;
+    }
+
+    .report-legend {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        margin-right: auto;
+        font-size: 12.5px;
+        font-weight: 700;
+    }
+
+    .legend-dot {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 3px;
+        margin-left: 5px;
+        vertical-align: middle;
+    }
+
+    .report-table-wrap {
+        overflow-x: auto;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-subtle);
+        box-shadow: var(--shadow-soft);
+        background: #ffffff;
+    }
+
+    .report-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: center;
+    }
+
+    .report-table th, .report-table td {
+        border: 1px solid #edf2f7;
+        padding: 0;
+        font-size: 12px;
+    }
+
+    .report-table th {
+        background: linear-gradient(135deg, var(--primary-teal) 0%, var(--teal-dark) 100%);
+        color: #ffffff;
+        font-weight: 700;
+        padding: 8px 4px;
+        white-space: nowrap;
+    }
+
+    .report-table .student-name-col {
+        text-align: right;
+        padding: 8px 12px;
+        white-space: nowrap;
+        font-weight: 700;
+        position: sticky;
+        right: 0;
+        background: #ffffff;
+        z-index: 1;
+    }
+
+    .report-table thead th.student-name-col {
+        position: sticky;
+        right: 0;
+        z-index: 2;
+        background: var(--teal-dark);
+    }
+
+    .day-cell { width: 30px; height: 34px; }
+
+    .day-cell a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 12px;
+        transition: var(--transition);
+    }
+
+    .day-cell a:hover { filter: brightness(0.9); transform: scale(1.08); }
+
+    .cell-present { background: #ecfdf5; color: #065f46; }
+    .cell-absent  { background: #fef2f2; color: #991b1b; }
+    .cell-leave   { background: #fffbeb; color: #92400e; }
+    .cell-empty   { background: #f8fafc; color: #cbd5e1; }
+
+    .summary-col { font-weight: 800; font-size: 13px; white-space: nowrap; padding: 6px 10px !important; }
+
+    /* سالانہ ویو کی مخصوص سٹائل */
+    .yearly-table th, .yearly-table td { font-size: 13.5px; padding: 10px 12px !important; white-space: nowrap; }
+    .yearly-table .student-name-col { position: static; }
+    .percent-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-weight: 800;
+        font-size: 13px;
+    }
+    .percent-good { background: #ecfdf5; color: #065f46; }
+    .percent-mid  { background: #fffbeb; color: #92400e; }
+    .percent-low  { background: #fef2f2; color: #991b1b; }
+
+    .class-avg-card {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--gold-soft);
+        border: 1.5px solid var(--gold-border);
+        padding: 10px 20px;
+        border-radius: 30px;
+        font-weight: 800;
+        color: #854d0e;
+        margin-bottom: 18px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <!-- فلٹر بار -->
+    <div class="report-filter-bar no-print">
+        <div class="view-toggle">
+            <a href="{{ url_for('attendance_report', class_name=selected_class, view='month') }}" class="{% if view_mode == 'month' %}active{% endif %}">ماہانہ</a>
+            <a href="{{ url_for('attendance_report', class_name=selected_class, view='year') }}" class="{% if view_mode == 'year' %}active{% endif %}">سالانہ</a>
+        </div>
+
+        <form method="GET" style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+            <input type="hidden" name="view" value="{{ view_mode }}">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <label><strong>درجہ:</strong></label>
+                <select name="class_name" onchange="this.form.submit()">
+                    {% for c in ['اولی', 'ثانیہ', 'ثالثہ', 'رابعہ', 'خامسہ', 'سادسہ', 'سابعہ', 'دورہ حدیث'] %}
+                        <option value="{{ c }}" {% if selected_class == c %}selected{% endif %}>درجہ {{ c }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            {% if view_mode == 'month' %}
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <label><strong>مہینہ:</strong></label>
+                <input type="month" name="month" value="{{ month_str }}" onchange="this.form.submit()">
+            </div>
+            {% else %}
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <label><strong>سال:</strong></label>
+                <select name="year" onchange="this.form.submit()">
+                    {% for y in range(2023, 2031) %}
+                        <option value="{{ y }}" {% if selected_year == y|string %}selected{% endif %}>{{ y }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+        </form>
+
+        {% if view_mode == 'month' %}
+        <div class="report-legend">
+            <span><span class="legend-dot" style="background:#a7f3d0;"></span>حاضر</span>
+            <span><span class="legend-dot" style="background:#fecaca;"></span>غیر حاضر</span>
+            <span><span class="legend-dot" style="background:#fde68a;"></span>رخصت</span>
+            <span><span class="legend-dot" style="background:#e2e8f0;"></span>ریکارڈ نہیں</span>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if view_mode == 'year' %}
+        <!-- ==== سالانہ ویو ==== -->
+        <div class="class-avg-card">
+            📊 درجہ {{ selected_class }} کی مجموعی سالانہ حاضری فیصد: {{ class_percentage }}%
+        </div>
+
+        <div class="report-table-wrap">
+            <table class="report-table yearly-table">
+                <thead>
+                    <tr>
+                        <th class="student-name-col">نام طالب علم</th>
+                        <th>حاضر</th>
+                        <th>غیر حاضر</th>
+                        <th>رخصت</th>
+                        <th>سالانہ فیصد</th>
+                        <th>تفصیل</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in yearly_summary %}
+                    <tr>
+                        <td class="student-name-col">{{ row.student['class_roll_no'] or row.student['id'] }} - {{ row.student['student_name'] }}</td>
+                        <td style="color:#065f46; font-weight:700;">{{ row.present }}</td>
+                        <td style="color:#991b1b; font-weight:700;">{{ row.absent }}</td>
+                        <td style="color:#92400e; font-weight:700;">{{ row.leave }}</td>
+                        <td>
+                            <span class="percent-badge {% if row.percentage >= 80 %}percent-good{% elif row.percentage >= 60 %}percent-mid{% else %}percent-low{% endif %}">
+                                {{ row.percentage }}%
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('student_profile', student_id=row.student['id'], year=selected_year) }}" class="action-btn btn-profile">تفصیل دیکھیں</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" style="padding: 20px;">اس درجے میں کوئی طالب علم موجود نہیں ہے۔</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    {% else %}
+        <!-- ==== ماہانہ ویو (کیلنڈر) ==== -->
+        <div class="report-table-wrap">
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th class="student-name-col">نام طالب علم</th>
+                        {% for d in range(1, days_in_month + 1) %}
+                            <th>{{ d }}</th>
+                        {% endfor %}
+                        <th>حاضر</th>
+                        <th>غیر حاضر</th>
+                        <th>رخصت</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in students %}
+                    {% set student_days = att_map.get(s['id'], {}) %}
+                    <tr>
+                                               <td class="student-name-col">
+                            <a href="{{ url_for('student_attendance_yearly', student_id=s['id'], year=month_str[:4]) }}" style="color: var(--primary-teal); text-decoration: none; font-weight: 700;" title="اس طالب علم کی پورے سال کی حاضری دیکھیں">
+                                {{ s['class_roll_no'] or s['id'] }} - {{ s['student_name'] }} 📅
+                            </a>
+                        </td>
+                        {% for d in range(1, days_in_month + 1) %}
+                            {% set day_status = student_days.get(d) %}
+                            {% set day_date = "%s-%02d" % (month_str, d) %}
+                            <td class="day-cell">
+                                <a href="{{ url_for('attendance', class_name=selected_class, date=day_date) }}"
+                                   class="{% if day_status == 'حاضر' %}cell-present{% elif day_status == 'غیر حاضر' %}cell-absent{% elif day_status == 'رخصت' %}cell-leave{% else %}cell-empty{% endif %}"
+                                   title="{{ day_date }} - {{ day_status or 'ریکارڈ نہیں، کلک کر کے لگائیں' }}">
+                                    {% if day_status == 'حاضر' %}✓{% elif day_status == 'غیر حاضر' %}✗{% elif day_status == 'رخصت' %}L{% else %}-{% endif %}
+                                </a>
+                            </td>
+                        {% endfor %}
+                        <td class="summary-col" style="color:#065f46;">{{ student_days.values() | select('equalto', 'حاضر') | list | length }}</td>
+                        <td class="summary-col" style="color:#991b1b;">{{ student_days.values() | select('equalto', 'غیر حاضر') | list | length }}</td>
+                        <td class="summary-col" style="color:#92400e;">{{ student_days.values() | select('equalto', 'رخصت') | list | length }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="{{ days_in_month + 4 }}" style="padding: 20px;">اس درجے میں کوئی طالب علم موجود نہیں ہے۔</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <p style="margin-top: 14px; font-size: 13px; color: var(--text-muted);">
+            💡 کسی بھی دن کے خانے پر کلک کریں — اس دن کی حاضری کو تبدیل/درست کرنے والا صفحہ کھل جائے گا۔
+        </p>
+    {% endif %}
+{% endblock %}

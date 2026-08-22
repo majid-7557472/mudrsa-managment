@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}مرکزی ڈیش بورڈ{% endblock %}
+{% set active_page = 'dashboard' %}
+
+{% block content %}
+    <!-- ویلکم بار -->
+    <div style="padding: 20px 30px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 4px;">
+        <div>
+            <h2 style="font-size: 20px; font-weight: 800; color: var(--primary); margin: 0;">📊 مرکزی ڈیش بورڈ</h2>
+            <p style="font-size: 13px; color: var(--text-sub); margin: 4px 0 0;">الجامعۃ الاشرفیہ لاہور — تعلیمی سال 1447-1448ھ</p>
+        </div>
+        <a href="{{ url_for('admission') }}" class="btn btn-primary">+ نیا داخلہ فارم</a>
+    </div>
+
+    <!-- ۴ میٹرک کارڈز -->
+    <div class="metrics-grid">
+        <div class="metric-card card-teal">
+            <h3>کل داخل شدہ طلبہ</h3>
+            <div class="metric-val">{{ total_students }}</div>
+        </div>
+        <div class="metric-card card-green">
+            <h3>رہائشی طلبہ</h3>
+            <div class="metric-val">{{ residential }}</div>
+        </div>
+        <div class="metric-card card-gold">
+            <h3>غیر رہائشی طلبہ</h3>
+            <div class="metric-val">{{ non_residential }}</div>
+        </div>
+        <div class="metric-card card-purple">
+            <h3>امدادی طلبہ</h3>
+            <div class="metric-val">{{ aided }}</div>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <!-- درجات کی تقسیم کا ٹیبل -->
+        <div class="panel-card">
+            <h3 class="panel-title">
+                📊 درجات کے لحاظ سے طلبہ کی تقسیم
+            </h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>درجہ / کلاس</th>
+                            <th>تعداد طلبہ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in class_stats %}
+                        <tr>
+                            <td><strong>{{ c['current_class'] }}</strong></td>
+                            <td><span class="count-badge">{{ c['count'] }} طلبہ</span></td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="2" style="padding: 16px;">کوئی ریکارڈ موجود نہیں ہے۔</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- کوئیک لنکس پینل -->
+        <div class="panel-card panel-gradient">
+            <h3 class="panel-title">
+                ⚡ فوری اختیارات (Quick Links)
+            </h3>
+            <a href="{{ url_for('admission') }}" class="btn btn-primary btn-block">+ نیا داخلہ فارم فل کریں</a>
+            <a href="{{ url_for('attendance') }}" class="btn btn-gold btn-block">📋 یومیہ حاضری لگائیں</a>
+            <a href="{{ url_for('exams') }}" class="btn btn-primary btn-block btn-sky">📑 امتحانی نشست بندی و رزلٹ</a>
+            <a href="{{ url_for('export_students_csv') }}" class="btn btn-excel btn-block">📊 تمام ڈیٹا ایکسل میں ڈاؤنلوڈ</a>
+        </div>
+    </div>
+{% endblock %}

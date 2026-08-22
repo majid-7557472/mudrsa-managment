@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+{% block title %}یوزرز کا انتظام{% endblock %}
+{% set active_page = 'users' %}
+
+{% block extra_head %}
+<style>
+    .user-add-card {
+        background: linear-gradient(135deg, #f8faf9 0%, #edf5f1 100%);
+        border: 1.5px solid var(--border-subtle);
+        padding: 22px 26px;
+        border-radius: var(--radius-md);
+        margin-bottom: 28px;
+        box-shadow: var(--shadow-soft);
+    }
+
+    .user-add-card h3 {
+        color: var(--primary-teal);
+        font-size: 16px;
+        margin-bottom: 16px;
+        border-bottom: 2px solid var(--gold-soft);
+        padding-bottom: 8px;
+    }
+
+    .user-form-grid {
+        display: grid;
+        grid-template-columns: 1.3fr 1.3fr 1.3fr 1.5fr 1fr;
+        gap: 16px;
+        align-items: flex-end;
+    }
+
+    .form-group-item {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .form-group-item label {
+        font-weight: 700;
+        margin-bottom: 7px;
+        color: #334155;
+        font-size: 13.5px;
+    }
+
+    .form-group-item input,
+    .form-group-item select {
+        padding: 10px 14px;
+        border: 1.5px solid #cbd5e1;
+        border-radius: 8px;
+        font-size: 14px;
+        background: #ffffff;
+        outline: none;
+        width: 100%;
+    }
+
+    .form-group-item input:focus,
+    .form-group-item select:focus {
+        border-color: var(--primary-teal);
+        box-shadow: 0 0 0 3px rgba(26, 95, 122, 0.15);
+    }
+
+    .role-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12.5px;
+        font-weight: 700;
+        display: inline-block;
+    }
+
+    .role-admin { background: #ede9fe; color: #5b21b6; border: 1px solid #ddd6fe; }
+    .role-admission { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+    .role-attendance { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+    .role-exams { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+
+    @media (max-width: 1000px) {
+        .user-form-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 600px) {
+        .user-form-grid { grid-template-columns: 1fr; }
+    }
+        .strength-bar-bg {
+        background: #e2e8f0;
+        border-radius: 20px;
+        height: 6px;
+        width: 100%;
+        overflow: hidden;
+        margin-top: 8px;
+    }
+    .strength-bar-fill {
+        height: 100%;
+        width: 0%;
+        border-radius: 20px;
+        transition: width 0.3s ease, background 0.3s ease;
+    }
+    .strength-label {
+        font-size: 12px;
+        font-weight: 700;
+        display: block;
+        margin-top: 4px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <!-- نیا یوزر شامل کرنے کا کارڈ -->
+    <div class="user-add-card">
+        <h3>➕ نیا یوزر (عملہ) شامل کریں</h3>
+        <form method="POST">
+            <div class="user-form-grid">
+                <div class="form-group-item">
+                    <label>پورا نام:</label>
+                    <input type="text" name="full_name" required placeholder="مثلاً: قاری محمد اسد">
+                </div>
+                <div class="form-group-item">
+                    <label>یوزر نیم:</label>
+                    <input type="text" name="username" required placeholder="مثلاً: asad_attendance">
+                </div>
+                                <div class="form-group-item">
+                    <label>پاسورڈ:</label>
+                    <input type="text" name="password" id="new_user_password" required placeholder="کم از کم 8 حروف، ایک حرف اور ایک ہندسہ" minlength="8" oninput="checkStrength(this.value)">
+                    <div class="strength-bar-bg"><div id="strength-bar-fill" class="strength-bar-fill"></div></div>
+                    <span id="strength-label" class="strength-label"></span>
+                </div>
+                <div class="form-group-item">
+            <label>رول (رسائی کی نوعیت):</label>
+                    <select name="role" required>
+                        <option value="admission">داخلہ کلرک (طلبہ، داخلہ فارم)</option>
+                        <option value="attendance">حاضری والا عملہ (صرف حاضری)</option>
+                        <option value="exams">امتحانی عملہ (نشست بندی و نتائج)</option>
+                        <option value="admin">مہتمم / ایڈمن (مکمل رسائی)</option>
+                    </select>
+                </div>
+                <div class="form-group-item">
+                    <label style="visibility: hidden;">-</label>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 11px;">یوزر بنائیں</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- موجودہ یوزرز کی فہرست -->
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 8%;">شمار</th>
+                    <th style="width: 25%;">پورا نام</th>
+                    <th style="width: 22%;">یوزر نیم</th>
+                    <th style="width: 25%;">رول (رسائی)</th>
+                    <th style="width: 20%;">اختیارات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in all_users %}
+                <tr>
+                    <td><strong>{{ u['id'] }}</strong></td>
+                    <td><strong>{{ u['full_name'] or '-' }}</strong></td>
+                    <td>{{ u['username'] }}</td>
+                    <td>
+                        {% if u['role'] == 'admin' %}
+                            <span class="role-badge role-admin">مہتمم / ایڈمن</span>
+                        {% elif u['role'] == 'admission' %}
+                            <span class="role-badge role-admission">داخلہ کلرک</span>
+                        {% elif u['role'] == 'attendance' %}
+                            <span class="role-badge role-attendance">حاضری والا عملہ</span>
+                        {% elif u['role'] == 'exams' %}
+                            <span class="role-badge role-exams">امتحانی عملہ</span>
+                        {% else %}
+                            {{ u['role'] }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if u['id'] != session.get('user_id') %}
+                        <a href="#" class="action-btn btn-del" onclick="return showConfirmModal('{{ url_for('delete_user', user_id=u['id']) }}', 'کیا آپ واقعی یوزر \'{{ u['full_name'] or u['username'] }}\' کو حذف کرنا چاہتے ہیں؟')">حذف کریں</a>
+                        {% else %}
+                        <span style="color: var(--text-muted); font-size: 12.5px;">(آپ کا اپنا اکاؤنٹ)</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="padding: 24px; color: var(--text-muted);">کوئی یوزر موجود نہیں۔</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+{% block extra_scripts %}
+<script>
+function checkStrength(password) {
+    const bar = document.getElementById('strength-bar-fill');
+    const label = document.getElementById('strength-label');
+    let score = 0;
+
+    if (password.length >= 8) score++;
+    if (password.length >= 12) score++;
+    if (/[A-Za-z]/.test(password)) score++;
+    if (/[0-9]/.test(password)) score++;
+    if (/[^A-Za-z0-9]/.test(password)) score++;
+
+    if (password.length === 0) {
+        bar.style.width = '0%';
+        label.innerText = '';
+        return;
+    }
+
+    if (score <= 2) {
+        bar.style.width = '33%';
+        bar.style.background = '#dc3545';
+        label.style.color = '#dc3545';
+        label.innerText = 'کمزور پاسورڈ';
+    } else if (score <= 4) {
+        bar.style.width = '66%';
+        bar.style.background = '#ffc107';
+        label.style.color = '#92400e';
+        label.innerText = 'درمیانہ پاسورڈ';
+    } else {
+        bar.style.width = '100%';
+        bar.style.background = '#28a745';
+        label.style.color = '#28a745';
+        label.innerText = 'مضبوط پاسورڈ';
+    }
+}
+</script>
+{% endblock %}

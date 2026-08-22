@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block title %}فیلڈ سیٹنگز (اضافی خانے){% endblock %}
+{% set active_page = 'settings' %}
+
+{% block extra_head %}
+<style>
+    .settings-card {
+        background: linear-gradient(135deg, #f8faf9 0%, #edf5f1 100%);
+        border: 1.5px solid var(--border-subtle);
+        padding: 22px 26px;
+        border-radius: var(--radius-md);
+        margin-bottom: 28px;
+        box-shadow: var(--shadow-soft);
+    }
+
+    .settings-card h3 {
+        color: var(--primary-teal);
+        font-size: 16px;
+        margin-bottom: 16px;
+        border-bottom: 2px solid var(--gold-soft);
+        padding-bottom: 8px;
+    }
+
+    .settings-form-grid {
+        display: grid;
+        grid-template-columns: 1.5fr 2fr 1.2fr 1fr;
+        gap: 16px;
+        align-items: flex-end;
+    }
+
+    .form-group-item {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .form-group-item label {
+        font-weight: 700;
+        margin-bottom: 7px;
+        color: #334155;
+        font-size: 13.5px;
+    }
+
+    .form-group-item input, 
+    .form-group-item select {
+        padding: 10px 14px;
+        border: 1.5px solid #cbd5e1;
+        border-radius: 8px;
+        font-size: 14px;
+        background: #ffffff;
+        outline: none;
+        width: 100%;
+    }
+
+    .form-group-item input:focus, 
+    .form-group-item select:focus {
+        border-color: var(--primary-teal);
+        box-shadow: 0 0 0 3px rgba(26, 95, 122, 0.15);
+    }
+
+    .badge-section {
+        background: #eef5f8;
+        color: var(--primary-teal);
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 13px;
+    }
+
+    .badge-type {
+        background: #f1f5f9;
+        color: #475569;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 13px;
+    }
+
+    @media (max-width: 950px) {
+        .settings-form-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+    @media (max-width: 600px) {
+        .settings-form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <!-- ادارے کی بنیادی معلومات -->
+    <div class="settings-card" style="background: linear-gradient(135deg, #fffdf5 0%, #fef9e7 100%); border-color: var(--gold-border);">
+        <h3 style="border-color: var(--primary-teal);">🏫 ادارے کی بنیادی معلومات</h3>
+        <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 16px;">یہ معلومات تمام واٹس ایپ پیغامات (داخلہ، نتائج، حاضری کی اطلاع) میں خودکار استعمال ہوں گی۔</p>
+        <form method="POST" action="{{ url_for('update_institution_settings') }}">
+            <div class="settings-form-grid" style="grid-template-columns: 2fr 1.5fr 1fr;">
+                <div class="form-group-item">
+                    <label>ادارے کا نام:</label>
+                    <input type="text" name="institution_name" value="{{ site_settings['institution_name'] }}" required placeholder="مثلاً: الجامعۃ الاشرفیہ لاہور">
+                </div>
+                <div class="form-group-item">
+                    <label>ہیلپ لائن / رابطہ نمبر:</label>
+                    <input type="text" name="helpline_number" value="{{ site_settings['helpline_number'] }}" required placeholder="مثلاً: 0300-0000000" dir="ltr" style="text-align: right;">
+                </div>
+                <div class="form-group-item">
+                    <label style="visibility: hidden;">-</label>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 11px;">محفوظ کریں</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- نیا خانہ شامل کرنے کا کارڈ -->
+    <div class="settings-card">
+        <h3>➕ نیا خانہ (Custom Field) شامل کریں</h3>
+        <form method="POST">
+            <div class="settings-form-grid">
+                <div class="form-group-item">
+                    <label>کس سیکشن میں شامل کرنا ہے؟</label>
+                    <select name="section" required>
+                        <option value="student">داخلہ فارم / طالب علم کا ریکارڈ</option>
+                    </select>
+                </div>
+
+                <div class="form-group-item">
+                    <label>نئے خانے کا نام (Field Name):</label>
+                    <input type="text" name="field_label" placeholder="مثلاً: وظیفہ کی رقم / سابقہ استاد" required>
+                </div>
+
+                <div class="form-group-item">
+                    <label>خانے کی نوعیت (Type):</label>
+                    <select name="field_type" required>
+                        <option value="text">تحریر (Text)</option>
+                        <option value="number">ہندسہ (Number)</option>
+                        <option value="date">تاریخ (Date)</option>
+                    </select>
+                </div>
+
+                <div class="form-group-item">
+                    <label style="visibility: hidden;">-</label>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 11px;">خانہ شامل کریں</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- موجودہ کسٹم خانوں کا جدول -->
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 10%;">شمار</th>
+                    <th style="width: 25%;">متعلقہ سیکشن</th>
+                    <th style="width: 35%;">خانے کا نام</th>
+                    <th style="width: 15%;">نوعیت (Type)</th>
+                    <th style="width: 15%;">کارروائی / اختیارات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for f in fields %}
+                <tr>
+                    <td><strong>{{ f['id'] }}</strong></td>
+                    <td><span class="badge-section">{% if f['section'] == 'student' %}داخلہ فارم (Student){% else %}{{ f['section'] }}{% endif %}</span></td>
+                    <td><strong style="color: var(--primary-teal); font-size: 15px;">{{ f['field_label'] }}</strong></td>
+                    <td>
+                        <span class="badge-type">
+                            {% if f['field_type'] == 'text' %}تحریر (Text)
+                            {% elif f['field_type'] == 'number' %}ہندسہ (Number)
+                            {% elif f['field_type'] == 'date' %}تاریخ (Date)
+                            {% else %}{{ f['field_type'] }}{% endif %}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="#" class="action-btn btn-del" onclick="return showConfirmModal('{{ url_for('delete_field', field_id=f['id']) }}', 'کیا آپ واقعی یہ اضافی خانہ حذف کرنا چاہتے ہیں؟')">حذف کریں</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="padding: 24px; color: var(--text-muted);">ابھی تک کوئی اضافی خانہ شامل نہیں کیا گیا ہے۔</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>مجموعی رزلٹ شیٹ - {{ exam['exam_name'] }} (درجہ {{ selected_class }})</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .gazette-table th, .gazette-table td { font-size: 13px; padding: 6px 8px; }
+        .fail-cell { background-color: #ffebee !important; color: #c62828 !important; font-weight: bold; }
+        .pass-cell { color: #2e7d32; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class="container" style="max-width: 1250px;">
+    <div class="no-print" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <a href="{{ url_for('exams') }}" class="btn-primary" style="text-decoration: none;">← امتحانات پر واپس</a>
+            <form method="GET" style="display: inline-block;">
+                <label><strong>درجہ تبدیل کریں:</strong></label>
+                <select name="class_name" onchange="this.form.submit()" style="padding: 6px 12px; border-radius: 4px;">
+                    {% for c in ['اولی', 'ثانیہ', 'ثالثہ', 'رابعہ', 'خامسہ', 'سادسہ', 'سابعہ', 'دورہ حدیث'] %}
+                        <option value="{{ c }}" {% if selected_class == c %}selected{% endif %}>درجہ {{ c }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <a href="{{ url_for('export_gazette_csv', exam_id=exam['id'], class_name=selected_class) }}" class="btn-primary btn-success" style="text-decoration: none;">📊 ایکسل میں ڈاؤنلوڈ</a>
+            <button class="btn-primary" onclick="window.print()">🖨️ رزلٹ شیٹ پرنٹ / PDF</button>
+        </div>
+    </div>
+
+    <div style="text-align: center; border-bottom: 2px solid #1a5f7a; padding-bottom: 10px; margin-bottom: 20px;">
+        <h1 style="margin: 0; font-size: 26px;">الجامعۃ الاشرفیہ لاہور</h1>
+        <h3 style="margin: 5px 0; color: #333;">مجموعی رزلٹ شیٹ و کشف الدرجات ({{ exam['exam_name'] }} - {{ exam['academic_year'] }})</h3>
+        <div style="font-weight: bold; color: #1a5f7a;">درجہ: {{ selected_class }}</div>
+    </div>
+
+    <table class="gazette-table">
+        <thead>
+            <tr>
+                <th>رول نمبر</th>
+                <th>نام طالب علم</th>
+                <th>ولدیت</th>
+                {% for b in books %}
+                    <th>{{ b }}</th>
+                {% endfor %}
+                <th>حاصل کردہ</th>
+                <th>کل نمبر</th>
+                <th>فیصد</th>
+                <th>کیفیت / نتیجہ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in gazette_data %}
+            <tr>
+                <td><strong>{{ row['student']['id'] }}</strong></td>
+                <td><strong>{{ row['student']['student_name'] }}</strong></td>
+                <td>{{ row['student']['father_name'] }}</td>
+                {% for b in books %}
+                    {% set mark = row['marks'].get(b, '-') %}
+                    <td class="{% if mark != '-' and mark < 40 %}fail-cell{% endif %}">
+                        {{ mark }}
+                        {% if mark != '-' and mark < 40 %}<br><small>(فیل)</small>{% endif %}
+                    </td>
+                {% endfor %}
+                <td><strong>{{ row['total_obtained'] }}</strong></td>
+                <td>{{ row['total_max'] }}</td>
+                <td>{{ row['percentage'] }}%</td>
+                <td>
+                    <span class="{% if row['has_failed'] or 'فیل' in row['status'] %}badge-fail{% else %}badge-pass{% endif %}">
+                        {{ row['status'] }}
+                    </span>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="{{ books|length + 7 }}" style="padding: 20px;">اس درجے کا کوئی ریکارڈ موجود نہیں ہے۔</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div style="margin-top: 40px; display: flex; justify-content: space-between; font-weight: bold; font-size: 13px;">
+        <div>دستخط ممتحن / نگران: ________________</div>
+        <div>دستخط ناظم امتحانات: ________________</div>
+        <div>مہر و دستخط مہتمم: ________________</div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}نمبرات کا اندراج - {{ student['student_name'] }}{% endblock %}
+{% set active_page = 'exams' %}
+
+{% block extra_head %}
+<style>
+    .info-bar {
+        background: #eef4f8;
+        padding: 13px 18px;
+        border-radius: var(--radius-sm);
+        margin-bottom: 22px;
+        font-weight: 700;
+        border: 1px solid #d0e1fd;
+    }
+
+    .marks-table input {
+        width: 90%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        text-align: center;
+        font-size: 14px;
+        outline: none;
+    }
+    .marks-table input:focus {
+        border-color: var(--primary-teal);
+        box-shadow: 0 0 0 3px rgba(26, 95, 122, 0.15);
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        margin-top: 20px;
+        flex-wrap: wrap;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <a href="{{ url_for('seating_plan', exam_id=exam['id']) }}" style="text-decoration: none; color: var(--primary-teal); font-weight: bold; display: inline-block; margin-bottom: 16px;">← واپس سیٹنگ پلان</a>
+    <h2 style="color: var(--primary-teal); font-family: 'Noto Nastaliq Urdu', serif; margin-bottom: 18px;">اندراجِ نمبرات: {{ exam['exam_name'] }}</h2>
+
+    <div class="info-bar">
+        طالب علم: {{ student['student_name'] }} | ولدیت: {{ student['father_name'] }} | درجہ: {{ student['current_class'] }}
+    </div>
+
+    <form method="POST">
+        <div class="table-responsive">
+            <table class="marks-table">
+                <thead>
+                    <tr>
+                        <th style="width: 10%;">شمار</th>
+                        <th style="width: 45%;">کتاب / مضمون کا نام</th>
+                        <th style="width: 20%;">کل نمبر</th>
+                        <th style="width: 25%;">حاصل کردہ نمبر</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set default_books = ['ہدایۃ النحو', 'علم الصیغہ', 'تيسير المنطق', 'القدوری', 'زاد الطالبین', 'معلم الانشاء'] %}
+                    {% for i in range(6) %}
+                    {% set res = results[i] if i < results|length else None %}
+                    <tr>
+                        <td>{{ i + 1 }}</td>
+                        <td><input type="text" name="book_name[]" value="{{ res['subject_book_name'] if res else default_books[i] }}"></td>
+                        <td><input type="number" name="total_marks[]" value="{{ res['total_marks'] if res else 100 }}"></td>
+                        <td><input type="number" name="obtained_marks[]" value="{{ res['obtained_marks'] if res else '' }}" placeholder="نمبر درج کریں"></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="btn-group">
+            <button type="submit" class="btn btn-primary">نمبرات محفوظ کریں</button>
+            <a href="{{ url_for('result_card', exam_id=exam['id'], student_id=student['id']) }}" target="_blank" class="btn btn-excel">📄 رزلٹ کارڈ دیکھیں / پرنٹ کریں</a>
+        </div>
+    </form>
+{% endblock %}

@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% block title %}تبدیلی ریکارڈ - {{ student['student_name'] }}{% endblock %}
+{% set active_page = 'students' %}
+
+{% block extra_head %}
+<style>
+    .edit-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px 22px;
+        width: 100%;
+    }
+
+    .form-field { display: flex; flex-direction: column; width: 100%; }
+    .form-field.full-row { grid-column: 1 / -1; }
+
+    .form-field label {
+        font-weight: 700;
+        margin-bottom: 6px;
+        color: #334155;
+        font-size: 13.5px;
+        text-align: right;
+    }
+
+    .form-field input,
+    .form-field select,
+    .form-field textarea {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1.5px solid #cbd5e1;
+        border-radius: 6px;
+        font-size: 14px;
+        background-color: #ffffff;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+    .form-field input:focus,
+    .form-field select:focus,
+    .form-field textarea:focus {
+        border-color: var(--primary-teal);
+        box-shadow: 0 0 0 3px rgba(26, 95, 122, 0.15);
+    }
+
+    @media (max-width: 1100px) {
+        .edit-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 700px) {
+        .edit-grid { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <a href="{{ url_for('students_list') }}" style="text-decoration: none; color: var(--primary-teal); font-weight: bold; display: inline-block; margin-bottom: 16px;">← واپس فہرست پر جائیں</a>
+    <h2 style="color: var(--primary-teal); margin-bottom: 20px; font-family: 'Noto Nastaliq Urdu', serif;">طالب علم کے ڈیٹا اور رول نمبر میں ترمیم (مدرسہ آئی ڈی: {{ student['id'] }})</h2>
+
+    <form method="POST">
+        <div class="edit-grid">
+            <div class="form-field">
+                <label>فارم داخلہ نمبر:</label>
+                <input type="text" name="admission_form_no" value="{{ student['admission_form_no'] }}" required>
+            </div>
+            <div class="form-field">
+                <label>کلاس رول نمبر (تبدیل کریں):</label>
+                <input type="text" name="class_roll_no" value="{{ student['class_roll_no'] or student['id'] }}" required>
+            </div>
+            <div class="form-field">
+                <label>داخلہ کی قسم:</label>
+                <select name="admission_type">
+                    <option value="جدید" {% if student['admission_type'] == 'جدید' %}selected{% endif %}>جدید</option>
+                    <option value="قدیم" {% if student['admission_type'] == 'قدیم' %}selected{% endif %}>قدیم</option>
+                </select>
+            </div>
+            <div class="form-field">
+                <label>درجہ / کلاس:</label>
+                <select name="current_class">
+                    {% for c in ['اولی', 'ثانیہ', 'ثالثہ', 'رابعہ', 'خامسہ', 'سادسہ', 'سابعہ', 'دورہ حدیث'] %}
+                        <option value="{{ c }}" {% if student['current_class'] == c %}selected{% endif %}>درجہ {{ c }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-field">
+                <label>تاریخ داخلہ:</label>
+                <input type="date" name="admission_date" value="{{ student['admission_date'] }}">
+            </div>
+            <div class="form-field">
+                <label>نام طالب علم:</label>
+                <input type="text" name="student_name" value="{{ student['student_name'] }}" required>
+            </div>
+            <div class="form-field">
+                <label>طالب علم کا شناختی کارڈ / ب فارم:</label>
+                <input type="text" name="student_cnic" value="{{ student['student_cnic'] }}" pattern="\d{5}-\d{7}-\d{1}" title="فارمیٹ یوں ہونا چاہیے: 12345-1234567-1" dir="ltr" style="text-align: right;">
+            </div>
+            <div class="form-field">
+                <label>نام والد:</label>
+                <input type="text" name="father_name" value="{{ student['father_name'] }}" required>
+            </div>
+            <div class="form-field">
+                <label>والد کا شناختی کارڈ نمبر:</label>
+                <input type="text" name="father_cnic" value="{{ student['father_cnic'] }}" pattern="\d{5}-\d{7}-\d{1}" title="فارمیٹ یوں ہونا چاہیے: 12345-1234567-1" dir="ltr" style="text-align: right;">
+            </div>
+            <div class="form-field">
+                <label>ضلع (District):</label>
+                <input type="text" name="district" value="{{ student['district'] or '' }}">
+            </div>
+            <div class="form-field">
+                <label>قوم:</label>
+                <input type="text" name="caste" value="{{ student['caste'] or '' }}">
+            </div>
+            <div class="form-field">
+                <label>فون نمبر طالب علم:</label>
+                <input type="tel" name="student_phone" value="{{ student['student_phone'] or '' }}" pattern="0\d{3}-\d{7}" title="فارمیٹ یوں ہونا چاہیے: 0300-0000000" dir="ltr" style="text-align: right;">
+            </div>
+            <div class="form-field">
+                <label>فون نمبر سرپرست:</label>
+                <input type="tel" name="guardian_phone" value="{{ student['guardian_phone'] or '' }}" pattern="0\d{3}-\d{7}" title="فارمیٹ یوں ہونا چاہیے: 0300-0000000" dir="ltr" style="text-align: right;">
+            </div>
+            <div class="form-field">
+                <label>کیفیت داخلہ:</label>
+                <select name="residence_status">
+                    <option value="رہائشی" {% if student['residence_status'] == 'رہائشی' %}selected{% endif %}>رہائشی</option>
+                    <option value="غیر رہائشی" {% if student['residence_status'] == 'غیر رہائشی' %}selected{% endif %}>غیر رہائشی</option>
+                </select>
+            </div>
+            <div class="form-field">
+                <label>مالی کیفیت:</label>
+                <select name="aid_status">
+                    <option value="امدادی" {% if student['aid_status'] == 'امدادی' %}selected{% endif %}>امدادی</option>
+                    <option value="غیر امدادی" {% if student['aid_status'] == 'غیر امدادی' %}selected{% endif %}>غیر امدادی</option>
+                </select>
+            </div>
+            <div class="form-field full-row">
+                <label>مستقل پتہ:</label>
+                <textarea name="perm_address" rows="2">{{ student['perm_address'] or '' }}</textarea>
+            </div>
+            <div class="form-field full-row">
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 16px;">تبدیل شدہ ڈیٹا محفوظ کریں</button>
+            </div>
+        </div>
+    </form>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// CNIC میں خودکار ڈیش لگانا (فارمیٹ: 12345-1234567-1)
+function formatCNIC(input) {
+    let value = input.value.replace(/\D/g, '');
+    if (value.length > 13) value = value.substring(0, 13);
+
+    let formatted = value;
+    if (value.length > 5 && value.length <= 12) {
+        formatted = value.substring(0, 5) + '-' + value.substring(5);
+    } else if (value.length > 12) {
+        formatted = value.substring(0, 5) + '-' + value.substring(5, 12) + '-' + value.substring(12);
+    }
+    input.value = formatted;
+}
+
+// فون نمبر میں خودکار ڈیش لگانا (فارمیٹ: 0300-0000000)
+function formatPhone(input) {
+    let value = input.value.replace(/\D/g, '');
+    if (value.length > 11) value = value.substring(0, 11);
+
+    let formatted = value;
+    if (value.length > 4) {
+        formatted = value.substring(0, 4) + '-' + value.substring(4);
+    }
+    input.value = formatted;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('input[name="student_cnic"], input[name="father_cnic"]').forEach(function(el) {
+        el.addEventListener('input', function() { formatCNIC(this); });
+    });
+    document.querySelectorAll('input[name="student_phone"], input[name="guardian_phone"]').forEach(function(el) {
+        el.addEventListener('input', function() { formatPhone(this); });
+    });
+});
+</script>
+{% endblock %}

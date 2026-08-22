@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block title %}امتحانی نظام و سیشنز{% endblock %}
+{% set active_page = 'exams' %}
+
+{% block extra_head %}
+<style>
+    .exam-add-card {
+        background: linear-gradient(135deg, #f8faf9 0%, #edf5f1 100%);
+        border: 1.5px solid var(--border-subtle);
+        padding: 22px 26px;
+        border-radius: var(--radius-md);
+        margin-bottom: 28px;
+        box-shadow: var(--shadow-soft);
+    }
+
+    .exam-add-card h3 {
+        color: var(--primary-teal);
+        font-size: 16px;
+        margin-bottom: 16px;
+        border-bottom: 2px solid var(--gold-soft);
+        padding-bottom: 8px;
+    }
+
+    .exam-form-grid {
+        display: grid;
+        grid-template-columns: 2fr 1.5fr 1fr;
+        gap: 16px;
+        align-items: flex-end;
+    }
+
+    .form-group-item {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .form-group-item label {
+        font-weight: 700;
+        margin-bottom: 7px;
+        color: #334155;
+        font-size: 13.5px;
+    }
+
+    .form-group-item input, 
+    .form-group-item select {
+        padding: 10px 14px;
+        border: 1.5px solid #cbd5e1;
+        border-radius: 8px;
+        font-size: 14px;
+        background: #ffffff;
+        outline: none;
+        width: 100%;
+    }
+
+    .form-group-item input:focus, 
+    .form-group-item select:focus {
+        border-color: var(--primary-teal);
+        box-shadow: 0 0 0 3px rgba(26, 95, 122, 0.15);
+    }
+
+    .exam-actions-cell {
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    @media (max-width: 850px) {
+        .exam-form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <!-- نیا امتحان شامل کرنے کا کارڈ -->
+    <div class="exam-add-card">
+        <h3>➕ نیا امتحانی سیشن شامل کریں</h3>
+        <form method="POST">
+            <div class="exam-form-grid">
+                <div class="form-group-item">
+                    <label>امتحان کا نام منتخب کریں:</label>
+                    <select name="exam_name" required>
+                        <option value="خماسی امتحان (ششماہی)">خماسی امتحان (ششماہی)</option>
+                        <option value="سالانہ امتحان (داخلی)">سالانہ امتحان (داخلی)</option>
+                        <option value="امتحان وفاق المدارس (نتائج کا ریکارڈ)">امتحان وفاق المدارس (نتائج کا ریکارڈ)</option>
+                    </select>
+                </div>
+
+                <div class="form-group-item">
+                    <label>تعلیمی سال / سیشن:</label>
+                    <input type="text" name="academic_year" placeholder="مثلاً: 1447-1448ھ / 2026ء" required>
+                </div>
+
+                <div class="form-group-item">
+                    <label style="visibility: hidden;">-</label>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 11px;">شامل کریں</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- تمام امتحانات کا جدول -->
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 10%;">شمار</th>
+                    <th style="width: 32%;">نام امتحان</th>
+                    <th style="width: 25%;">تعلیمی سال</th>
+                    <th style="width: 33%;">اختیارات، نشست بندی و رزلٹ شیٹس</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ex in exams %}
+                <tr>
+                    <td><strong>{{ ex['id'] }}</strong></td>
+                    <td><strong style="color: var(--primary-teal); font-size: 15px;">{{ ex['exam_name'] }}</strong></td>
+                    <td>{{ ex['academic_year'] }}</td>
+                    <td>
+                        <div class="exam-actions-cell">
+                            <a href="{{ url_for('seating_plan', exam_id=ex['id']) }}" class="action-btn btn-profile">🪑 سیٹنگ پلان و نمبرات</a>
+                            <a href="{{ url_for('exam_result_sheet', exam_id=ex['id']) }}" class="action-btn btn-slip">📄 درجہ وار رزلٹ شیٹ</a>
+                            <a href="#" class="action-btn btn-del" onclick="return showConfirmModal('{{ url_for('delete_exam', exam_id=ex['id']) }}', 'کیا آپ واقعی یہ امتحان اور اس کا سارا ریکارڈ (نشستیں، نمبرات) حذف کرنا چاہتے ہیں؟')">حذف</a>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" style="padding: 24px; color: var(--text-muted);">ابھی تک کوئی امتحانی سیشن شامل نہیں کیا گیا۔</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

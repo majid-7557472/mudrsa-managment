@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block title %}نشست بندی - {{ exam['exam_name'] }}{% endblock %}
+{% set active_page = 'exams' %}
+
+{% block extra_head %}
+<style>
+    .seating-form-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        background: #f8fafc;
+        padding: 20px;
+        border-radius: 6px;
+        border: 1px solid #dce4ec;
+        margin-bottom: 25px;
+    }
+    .seating-form-grid .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+    .seating-form-grid label {
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #333;
+    }
+    .seating-form-grid input, .seating-form-grid select {
+        padding: 9px 12px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+    .seating-form-grid input:focus, .seating-form-grid select:focus {
+        outline: none;
+        border-color: #1a5f7a;
+    }
+    .btn-save {
+        grid-column: span 4;
+        background: #1a5f7a;
+        color: white;
+        padding: 11px;
+        border: none;
+        border-radius: 5px;
+        font-weight: bold;
+        font-size: 15px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    .btn-save:hover { background-color: #134559; }
+
+    .btn-action-seat {
+        padding: 4px 8px;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+        display: inline-block;
+        color: white;
+        margin: 2px;
+    }
+    .btn-slip2 { background: #17a2b8; }
+    .btn-result2 { background: #28a745; }
+    .btn-edit2 { background: #ffc107; color: #000; }
+    .btn-del2 { background: #dc3545; }
+
+    @media (max-width: 900px) {
+        .seating-form-grid { grid-template-columns: repeat(2, 1fr); }
+        .btn-save { grid-column: span 2; }
+    }
+    @media (max-width: 550px) {
+        .seating-form-grid { grid-template-columns: 1fr; }
+        .btn-save { grid-column: span 1; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <a href="{{ url_for('exams') }}" style="text-decoration: none; color: var(--primary-teal); font-weight: bold; display: inline-block; margin-bottom: 16px;">← امتحانات کی لسٹ پر واپس جائیں</a>
+    <h2 style="color: var(--primary-teal); font-family: 'Noto Nastaliq Urdu', serif; margin-bottom: 20px;">نشست بندی برائے: {{ exam['exam_name'] }} ({{ exam['academic_year'] }})</h2>
+
+    <form method="POST">
+        <div class="seating-form-grid">
+            <div class="form-group">
+                <label>طالب علم منتخب کریں:</label>
+                <select name="student_id" required>
+                    <option value="">طالب علم کا انتخاب کریں...</option>
+                    {% for s in students %}
+                        <option value="{{ s['id'] }}">{{ s['student_name'] }} ولد {{ s['father_name'] }} (درجہ: {{ s['current_class'] }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>امتحانی رول نمبر:</label>
+                <input type="text" name="exam_roll_no" required placeholder="مثلاً: 2165">
+            </div>
+            <div class="form-group">
+                <label>ہال / کمرہ نمبر:</label>
+                <input type="text" name="hall_room_no" required placeholder="مثلاً: ہال نمبر 1 / کمرہ 5">
+            </div>
+            <div class="form-group">
+                <label>نشست / ڈیسک نمبر:</label>
+                <input type="text" name="seat_no" required placeholder="مثلاً: نشست 12">
+            </div>
+            <button type="submit" class="btn-save">نشست اور رول نمبر الاٹ کریں</button>
+        </div>
+    </form>
+
+    <h3 style="color: var(--primary-teal); margin-bottom: 12px;">موجودہ الاٹمنٹ فہرست</h3>
+    <div class="table-responsive">
+        <table class="seating-table">
+            <thead>
+                <tr>
+                    <th>امتحانی رول نمبر</th>
+                    <th>نام طالب علم</th>
+                    <th>ولدیت</th>
+                    <th>درجہ</th>
+                    <th>امتحانی ہال / کمرہ</th>
+                    <th>نشست نمبر</th>
+                    <th>اختیارات و سلپس</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in seating_data %}
+                <tr>
+                    <td><strong>{{ row['exam_roll_no'] }}</strong></td>
+                    <td><strong>{{ row['student_name'] }}</strong></td>
+                    <td>{{ row['father_name'] }}</td>
+                    <td>{{ row['current_class'] }}</td>
+                    <td>{{ row['hall_room_no'] }}</td>
+                    <td>{{ row['seat_no'] }}</td>
+                    <td>
+                        <a href="{{ url_for('edit_seating', exam_id=exam['id'], seating_id=row['id']) }}" class="btn-action-seat btn-edit2">تبدیل کریں</a>
+                        <a href="{{ url_for('exam_roll_slip', exam_id=exam['id'], student_id=row['student_id']) }}" target="_blank" class="btn-action-seat btn-slip2">سلپ</a>
+                        <a href="{{ url_for('marks_entry', exam_id=exam['id'], student_id=row['student_id']) }}" class="btn-action-seat btn-result2">رزلٹ</a>
+                        <a href="#" class="btn-action-seat btn-del2" onclick="return showConfirmModal('{{ url_for('delete_seating', exam_id=exam['id'], seating_id=row['id']) }}', 'کیا آپ واقعی یہ نشست/رول نمبر حذف کرنا چاہتے ہیں؟')">حذف</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" style="padding: 15px; color: #777;">ابھی تک کسی طالب علم کی نشست الاٹ نہیں ہوئی۔</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

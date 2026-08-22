@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+{% block title %}پروفائل - {{ student['student_name'] }}{% endblock %}
+{% set active_page = 'students' %}
+
+{% block extra_head %}
+<style>
+    .att-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+    .att-section-header h3 { color: var(--primary-teal); margin: 0; }
+
+    .year-select-form select {
+        padding: 8px 14px;
+        border: 1.5px solid var(--border-subtle);
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--primary-teal);
+        cursor: pointer;
+        background: #ffffff;
+        outline: none;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 26px;
+    }
+    .stat-card {
+        padding: 16px;
+        border-radius: var(--radius-sm);
+        text-align: center;
+        color: white;
+        font-weight: bold;
+    }
+    .bg-green { background: #28a745; }
+    .bg-red { background: #dc3545; }
+    .bg-yellow { background: #ffc107; color: #333; }
+    .bg-teal { background: var(--primary-teal); }
+    .stat-card .stat-big { font-size: 24px; display: block; margin-bottom: 4px; }
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        background: #f8fafc;
+        padding: 16px;
+        border-radius: var(--radius-sm);
+        border: 1px solid #dce4ec;
+        margin-bottom: 26px;
+    }
+    .item { font-size: 14px; }
+    .item strong { color: var(--primary-teal); }
+
+    .percent-bar-bg {
+        background: rgba(255,255,255,0.35);
+        border-radius: 20px;
+        height: 8px;
+        width: 100%;
+        overflow: hidden;
+        margin-top: 6px;
+    }
+    .percent-bar-fill { background: #ffffff; height: 100%; border-radius: 20px; }
+
+    @media (max-width: 800px) {
+        .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        .details-grid { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <a href="{{ url_for('students_list') }}" style="text-decoration: none; color: var(--primary-teal); font-weight: bold; display: inline-block; margin-bottom: 16px;">← طلبہ کی فہرست پر واپس جائیں</a>
+    <h2 style="color: var(--primary-teal); font-family: 'Noto Nastaliq Urdu', serif; margin-bottom: 20px;">طالب علم کا مکمل ریکارڈ و تعلیمی پروفائل</h2>
+
+    <!-- سالانہ حاضری کا سیکشن -->
+    <div class="att-section-header">
+        <h3>📅 حاضری کا سالانہ خلاصہ</h3>
+        <form method="GET" class="year-select-form">
+            <select name="year" onchange="this.form.submit()">
+                {% for y in available_years %}
+                    <option value="{{ y }}" {% if selected_year == y %}selected{% endif %}>سال {{ y }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card bg-green">
+            <span class="stat-big">{{ att_present }}</span> حاضر ایام
+        </div>
+        <div class="stat-card bg-red">
+            <span class="stat-big">{{ att_absent }}</span> غیر حاضر ایام
+        </div>
+        <div class="stat-card bg-yellow">
+            <span class="stat-big">{{ att_leave }}</span> ایام رخصت
+        </div>
+        <div class="stat-card bg-teal">
+            <span class="stat-big">{{ att_percentage }}%</span> حاضری فیصد
+            <div class="percent-bar-bg"><div class="percent-bar-fill" style="width: {{ att_percentage }}%;"></div></div>
+        </div>
+    </div>
+
+    {% if monthly_summary %}
+    <div class="table-responsive" style="margin-bottom: 26px;">
+        <table>
+            <thead>
+                <tr>
+                    <th>مہینہ</th>
+                    <th>حاضر</th>
+                    <th>غیر حاضر</th>
+                    <th>رخصت</th>
+                    <th>فیصد</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in monthly_summary %}
+                <tr>
+                    <td><strong>{{ m.month_name }}</strong></td>
+                    <td style="color:#28a745; font-weight:700;">{{ m.present }}</td>
+                    <td style="color:#dc3545; font-weight:700;">{{ m.absent }}</td>
+                    <td style="color:#b8860b; font-weight:700;">{{ m.leave }}</td>
+                    <td><strong>{{ m.percentage }}%</strong></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p style="color: var(--text-muted); margin-bottom: 26px;">سال {{ selected_year }} کے لیے ابھی تک کوئی حاضری ریکارڈ موجود نہیں ہے۔</p>
+    {% endif %}
+
+    <h3 style="color: var(--primary-teal); margin-bottom: 12px;">بنیادی معلومات</h3>
+    <div class="details-grid">
+        <div class="item"><strong>مدرسہ رجسٹریشن نمبر:</strong> {{ student['id'] }}</div>
+        <div class="item"><strong>داخلہ فارم نمبر:</strong> {{ student['admission_form_no'] }}</div>
+        <div class="item"><strong>نام طالب علم:</strong> {{ student['student_name'] }}</div>
+        <div class="item"><strong>ولدیت:</strong> {{ student['father_name'] }}</div>
+        <div class="item"><strong>موجودہ درجہ:</strong> {{ student['current_class'] }}</div>
+        <div class="item"><strong>داخلہ کیفیت:</strong> {{ student['residence_status'] }} ({{ student['aid_status'] }})</div>
+                <div class="item"><strong>شناختی کارڈ / ب فارم:</strong> <span dir="ltr" style="unicode-bidi: embed;">{{ student['student_cnic'] or 'درج نہیں' }}</span></div>
+        <div class="item"><strong>فون نمبر:</strong> <span dir="ltr" style="unicode-bidi: embed;">{{ student['student_phone'] or student['guardian_phone'] or 'درج نہیں' }}</span></div>
+        <div class="item"><strong>تاریخ داخلہ:</strong> {{ student['admission_date'] or 'درج نہیں' }}</div>
+        <div class="item"><strong>مستقل پتہ:</strong> {{ student['perm_address'] or 'درج نہیں' }}</div>
+    </div>
+
+    <h3 style="color: var(--primary-teal); margin-bottom: 12px;">امتحانی کارکردگی و نتائج کا ریکارڈ</h3>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>امتحان کا نام</th>
+                    <th>تعلیمی سال</th>
+                    <th>کل نمبر</th>
+                    <th>حاصل کردہ نمبر</th>
+                    <th>کارنامہ نتائج</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ex in exam_history %}
+                <tr>
+                    <td><strong>{{ ex['exam_name'] }}</strong></td>
+                    <td>{{ ex['academic_year'] }}</td>
+                    <td>{{ ex['total_marks'] }}</td>
+                    <td>{{ ex['obtained_marks'] }}</td>
+                    <td>
+                        <a href="{{ url_for('result_card', exam_id=ex['exam_id'], student_id=student['id']) }}" target="_blank" class="action-btn btn-slip">📄 رزلٹ کارڈ دیکھیں</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="padding: 15px; color: var(--text-muted);">ابھی تک کسی امتحان کا نتیجہ درج نہیں ہے۔</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}تبدیلی نشست - {{ seating['student_name'] }}{% endblock %}
+{% set active_page = 'exams' %}
+
+{% block extra_head %}
+<style>
+    .narrow-form-wrap {
+        max-width: 550px;
+        margin: 0 auto;
+    }
+
+    .info-card {
+        background: #f0f7f9;
+        border: 1px solid #d0e1fd;
+        padding: 14px 18px;
+        border-radius: var(--radius-sm);
+        margin-bottom: 22px;
+        font-weight: 700;
+        line-height: 1.9;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 16px;
+    }
+
+    .form-group label {
+        font-weight: 700;
+        margin-bottom: 7px;
+        color: #334155;
+        font-size: 13.5px;
+    }
+
+    .form-group input {
+        padding: 10px 14px;
+        border: 1.5px solid #cbd5e1;
+        border-radius: 6px;
+        font-size: 14px;
+        outline: none;
+    }
+
+    .form-group input:focus {
+        border-color: var(--primary-teal);
+        box-shadow: 0 0 0 3px rgba(26, 95, 122, 0.15);
+    }
+
+    .btn-update {
+        background: #28a745;
+        color: white;
+        padding: 12px;
+        border: none;
+        border-radius: 6px;
+        font-size: 15px;
+        font-weight: bold;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 10px;
+        transition: var(--transition);
+    }
+    .btn-update:hover { background-color: #218838; }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="narrow-form-wrap">
+        <a href="{{ url_for('seating_plan', exam_id=exam['id']) }}" style="text-decoration: none; color: var(--primary-teal); font-weight: bold; display: inline-block; margin-bottom: 16px;">← واپس نشست بندی صفحہ</a>
+        <h2 style="color: var(--primary-teal); font-family: 'Noto Nastaliq Urdu', serif; text-align: center; margin-bottom: 20px;">تبدیلی امتحانی نشست و رول نمبر</h2>
+
+        <div class="info-card">
+            امتحان: {{ exam['exam_name'] }}<br>
+            طالب علم: {{ seating['student_name'] }} ولد {{ seating['father_name'] }} (درجہ: {{ seating['current_class'] }})
+        </div>
+
+        <form method="POST">
+            <div class="form-group">
+                <label>امتحانی رول نمبر:</label>
+                <input type="text" name="exam_roll_no" value="{{ seating['exam_roll_no'] }}" required>
+            </div>
+            <div class="form-group">
+                <label>امتحانی ہال / کمرہ نمبر:</label>
+                <input type="text" name="hall_room_no" value="{{ seating['hall_room_no'] }}" required>
+            </div>
+            <div class="form-group">
+                <label>نشست / ڈیسک نمبر:</label>
+                <input type="text" name="seat_no" value="{{ seating['seat_no'] }}" required>
+            </div>
+            <button type="submit" class="btn-update">تبدیلی محفوظ کریں</button>
+        </form>
+    </div>
+{% endblock %}

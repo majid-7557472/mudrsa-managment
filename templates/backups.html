@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}ڈیٹا بیس بیک اپس{% endblock %}
+{% set active_page = 'backups' %}
+
+{% block extra_head %}
+<style>
+    .backup-top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        background: linear-gradient(135deg, #f8faf9 0%, #edf5f1 100%);
+        border: 1.5px solid var(--border-subtle);
+        padding: 18px 22px;
+        border-radius: var(--radius-md);
+        margin-bottom: 24px;
+    }
+
+    .backup-info-text {
+        font-size: 13.5px;
+        color: var(--text-muted);
+        font-weight: 700;
+        line-height: 1.8;
+    }
+
+    .size-badge {
+        background: #eef5f8;
+        color: var(--primary-teal);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 12.5px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="backup-top-bar">
+        <div class="backup-info-text">
+            💾 سرور ہر بار شروع ہونے پر خودکار بیک اپ بناتا ہے (آخری 15 بیک اپس محفوظ رہتے ہیں)۔<br>
+            اہم بیک اپ کو کمپیوٹر یا پین ڈرائیو میں محفوظ کرنے کے لیے "ڈاؤن لوڈ" پر کلک کریں۔
+        </div>
+        <a href="{{ url_for('create_backup_now') }}" class="btn btn-primary">➕ ابھی نیا بیک اپ بنائیں</a>
+    </div>
+
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 10%;">شمار</th>
+                    <th style="width: 50%;">فائل کا نام</th>
+                    <th style="width: 20%;">حجم (Size)</th>
+                    <th style="width: 20%;">اختیارات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for b in backup_list %}
+                <tr>
+                    <td><strong>{{ loop.index }}</strong></td>
+                    <td>{{ b.filename }}</td>
+                    <td><span class="size-badge">{{ b.size_kb }} KB</span></td>
+                    <td>
+                        <a href="{{ url_for('download_backup', filename=b.filename) }}" class="action-btn btn-excel">⬇️ ڈاؤن لوڈ کریں</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" style="padding: 24px; color: var(--text-muted);">ابھی تک کوئی بیک اپ نہیں بنا۔</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

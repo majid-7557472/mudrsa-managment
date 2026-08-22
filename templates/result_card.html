@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>کارنامہ نتائج - {{ student['student_name'] }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        .result-card { max-width: 750px; margin: auto; background: #fff; padding: 30px; border: 3px double #1a5f7a; border-radius: 8px; }
+        .summary-box { display: flex; justify-content: space-between; background: #f9fbfd; border: 1px solid #1a5f7a; padding: 12px 20px; font-weight: bold; margin-bottom: 20px; }
+        .text-fail { color: #dc3545; font-weight: bold; }
+        .text-pass { color: #28a745; font-weight: bold; }
+
+        .action-bar {
+            max-width: 750px;
+            margin: 0 auto 20px auto;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn-action {
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #fff;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+        .btn-print2 { background: #1a5f7a; }
+        .btn-png { background: #7c3aed; }
+        .btn-wa-guardian2 { background: #25D366; }
+        .btn-wa-student2 { background: #128C7E; }
+        .wa-missing-note2 {
+            display: inline-flex; align-items: center; color: #92400e;
+            background: #fffbeb; border: 1px solid #fde68a;
+            padding: 8px 16px; border-radius: 6px; font-size: 12.5px; font-weight: 700;
+        }
+
+        @media print {
+            .action-bar { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+{% set recipient_name = student['guardian_name'] or student['father_name'] or 'محترم' %}
+{% set roll_display = seating['exam_roll_no'] if seating else student['id'] %}
+{% set inst_name = site_settings['institution_name'] %}
+{% set helpline = site_settings['helpline_number'] %}
+{% set result_status = division if not has_failed_subject else ('نتیجہ: ' ~ division) %}
+
+{% set wa_result_guardian = 'السلام علیکم! ' ~ recipient_name ~ ' صاحب، ' ~ student['student_name'] ~ ' کا نتیجہ برائے ' ~ exam['exam_name'] ~ ' آ گیا ہے۔ حاصل کردہ نمبر: ' ~ total_obtained ~ '/' ~ total_max ~ ' (فیصد: ' ~ percentage ~ '%)۔ نتیجہ: ' ~ division ~ '۔ ' ~ inst_name ~ '، رابطہ: ' ~ helpline %}
+
+{% set wa_result_student = 'السلام علیکم ' ~ student['student_name'] ~ '! آپ کا نتیجہ برائے ' ~ exam['exam_name'] ~ ' آ گیا ہے۔ حاصل کردہ نمبر: ' ~ total_obtained ~ '/' ~ total_max ~ ' (فیصد: ' ~ percentage ~ '%)۔ نتیجہ: ' ~ division ~ '۔ مبارک ہو! ' ~ inst_name %}
+
+<div class="action-bar">
+    <button class="btn-action btn-print2" onclick="window.print()">🖨️ رزلٹ کارڈ پرنٹ / PDF</button>
+    <button class="btn-action btn-png" onclick="downloadResultImage()">🖼️ تصویر (PNG) بنائیں</button>
+
+    {% if student['guardian_phone'] %}
+    <a href="{{ whatsapp_link(student['guardian_phone'], wa_result_guardian) }}" target="_blank" class="btn-action btn-wa-guardian2">📱 والدین کو رزلٹ واٹس ایپ کریں</a>
+    {% endif %}
+
+    {% if student['student_phone'] %}
+    <a href="{{ whatsapp_link(student['student_phone'], wa_result_student) }}" target="_blank" class="btn-action btn-wa-student2">📱 طالب علم کو رزلٹ واٹس ایپ کریں</a>
+    {% endif %}
+
+    {% if not student['guardian_phone'] and not student['student_phone'] %}
+    <span class="wa-missing-note2">⚠️ کوئی موبائل نمبر درج نہیں</span>
+    {% endif %}
+</div>
+
+<div class="result-card">
+    <div style="text-align: center; border-bottom: 2px solid #1a5f7a; padding-bottom: 10px; margin-bottom: 20px;">
+        <h1 style="margin: 0; font-size: 26px; color: #1a5f7a;">{{ inst_name }}</h1>
+        <div style="font-size: 16px; font-weight: bold; color: #333; margin-top: 5px;">کارنامہ نتائج (کشف الدرجات) - {{ exam['exam_name'] }} ({{ exam['academic_year'] }})</div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 14px; margin-bottom: 20px; background: #fdfdfd; padding: 10px; border: 1px solid #ddd;">
+        <div><strong>نام طالب علم:</strong> {{ student['student_name'] }}</div>
+        <div><strong>ولدیت:</strong> {{ student['father_name'] }}</div>
+        <div><strong>رول نمبر:</strong> {{ roll_display }}</div>
+        <div><strong>درجہ:</strong> {{ student['current_class'] }}</div>
+        <div><strong>داخلہ فارم نمبر:</strong> {{ student['admission_form_no'] }}</div>
+        <div><strong>کل غیر حاضریاں:</strong> {{ absent_count }} ایام</div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>شمار</th>
+                <th>نام کتاب / مضمون</th>
+                <th>کل نمبر</th>
+                <th>حاصل کردہ نمبر</th>
+                <th>کیفیت</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in results %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td><strong>{{ r['subject_book_name'] }}</strong></td>
+                <td>{{ r['total_marks'] }}</td>
+                <td class="{% if r['obtained_marks'] < 40 %}text-fail{% endif %}">{{ r['obtained_marks'] }}</td>
+                <td>
+                    {% if r['obtained_marks'] >= 40 %}
+                        <span class="text-pass">کامیاب</span>
+                    {% else %}
+                        <span class="text-fail">فیل</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" style="padding: 15px;">نمبرات درج نہیں ہیں۔</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="summary-box">
+        <div>کل نمبر: {{ total_max }}</div>
+        <div>حاصل کردہ نمبر: {{ total_obtained }}</div>
+        <div>فیصد: {{ percentage }}%</div>
+        <div>نتیجہ: <span class="{% if has_failed_subject %}text-fail{% else %}text-pass{% endif %}">{{ division }}</span></div>
+    </div>
+
+    <div style="margin-top: 40px; display: flex; justify-content: space-between; font-weight: bold; font-size: 13px;">
+        <div>دستخط نگرانِ امتحان: ____________</div>
+        <div>دستخط ناظمِ تعلیمات: ____________</div>
+        <div>مہر و دستخط مہتمم: ____________</div>
+    </div>
+</div>
+
+<script>
+function downloadResultImage() {
+    const card = document.querySelector('.result-card');
+    const btn = event.target;
+    const originalText = btn.innerText;
+    btn.innerText = '⏳ تیار ہو رہی ہے...';
+    btn.disabled = true;
+
+    html2canvas(card, { scale: 2, backgroundColor: '#ffffff' }).then(function(canvas) {
+        const link = document.createElement('a');
+        link.download = 'result_card_{{ student["id"] }}.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }).catch(function(err) {
+        alert('تصویر بنانے میں مسئلہ ہوا۔');
+        btn.innerText = originalText;
+        btn.disabled = false;
+    });
+}
+</script>
+
+</body>
+</html>
