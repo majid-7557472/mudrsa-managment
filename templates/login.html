@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لاگ ان - الجامعۃ الاشرفیہ لاہور</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='logo.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Noto+Sans+Arabic:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -137,11 +141,60 @@
             font-size: 12px;
             color: var(--text-sub);
         }
+    /* Login logo spin */
+    .login-logo {
+        animation: loginSpin 10s linear infinite;
+        cursor: pointer;
+        transition: filter 0.3s ease;
+    }
+    .login-logo:hover {
+        animation: loginSpin 1.2s linear infinite;
+        filter: drop-shadow(0 0 14px rgba(232,184,75,0.8));
+    }
+    @keyframes loginSpin {
+        from { transform: rotate(0deg); }
+        to   { transform: rotate(360deg); }
+    }
+    .btn { overflow: hidden; position: relative; }
+    .ripple {
+        position: absolute; border-radius: 50%;
+        background: rgba(255,255,255,0.35);
+        transform: scale(0);
+        animation: rpl 0.55s linear;
+        pointer-events: none;
+    }
+    @keyframes rpl { to { transform: scale(4); opacity: 0; } }
+    .login-card { animation: cardIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+    @keyframes cardIn {
+        from { opacity: 0; transform: translateY(40px) scale(0.92); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .particle {
+        position: fixed; border-radius: 50%;
+        pointer-events: none;
+        animation: floatP linear infinite;
+        opacity: 0.15;
+    }
+    @keyframes floatP {
+        0%   { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+        10%  { opacity: 0.15; }
+        90%  { opacity: 0.15; }
+        100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+    }
     </style>
 </head>
 <body>
+    <div id="particles-container"></div>
     <div class="login-card">
-        <img src="{{ url_for('static', filename='logo.png') }}" alt="لوگو" class="login-logo" onerror="this.style.display='none'">
+        <img
+            src="{{ url_for('static', filename='logo.png') }}"
+            alt="لوگو"
+            class="login-logo"
+            id="login-logo-img"
+            onerror="this.style.display='none'"
+            onclick="toggleLoginSpin()"
+            title="کلک کریں — گھومنا روکیں/شروع کریں"
+        >
         <div class="login-title">الجامعۃ الاشرفیہ لاہور</div>
         <div class="login-subtitle">مرکزی تعلیمی پورٹل میں داخل ہوں</div>
 
@@ -153,7 +206,7 @@
             {% endif %}
         {% endwith %}
 
-        <form method="POST">
+        <form method="POST" id="login-form">
             <div class="login-form-group">
                 <label>یوزر نیم:</label>
                 <input type="text" name="username" required autofocus placeholder="username درج کریں">
@@ -162,9 +215,64 @@
                 <label>پاسورڈ:</label>
                 <input type="password" name="password" required placeholder="●●●●●●●●">
             </div>
-            <button type="submit" class="btn btn-primary btn-login">🔐 لاگ ان کریں</button>
+            <button type="submit" class="btn btn-primary btn-login" id="login-btn">🔐 لاگ ان کریں</button>
         </form>
         <div class="login-footer">الجامعۃ الاشرفیہ لاہور &copy; 2026 — مرکزی تعلیمی پورٹل</div>
     </div>
+
+<script>
+    let loginSpinning = true;
+    function toggleLoginSpin() {
+        const logo = document.getElementById('login-logo-img');
+        loginSpinning = !loginSpinning;
+        logo.style.animationPlayState = loginSpinning ? 'running' : 'paused';
+    }
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('.btn');
+        if (!btn) return;
+        const ripple = document.createElement('span');
+        ripple.className = 'ripple';
+        const rect = btn.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        ripple.style.width = ripple.style.height = size + 'px';
+        ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+        ripple.style.top  = (e.clientY - rect.top  - size / 2) + 'px';
+        btn.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+    });
+    document.getElementById('login-form').addEventListener('submit', function() {
+        const btn = document.getElementById('login-btn');
+        btn.textContent = '⏳ تصدیق ہو رہی ہے...';
+        btn.disabled = true;
+        btn.style.opacity = '0.8';
+    });
+    function createParticles() {
+        const container = document.getElementById('particles-container');
+        const colors = ['#e8b84b', '#c9973a', '#ffffff', '#2d6a9f'];
+        for (let i = 0; i < 18; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            const size = Math.random() * 10 + 4;
+            p.style.width  = size + 'px';
+            p.style.height = size + 'px';
+            p.style.left   = Math.random() * 100 + 'vw';
+            p.style.bottom = '-50px';
+            p.style.background = colors[Math.floor(Math.random() * colors.length)];
+            p.style.animationDuration  = (Math.random() * 10 + 8) + 's';
+            p.style.animationDelay     = (Math.random() * 8) + 's';
+            container.appendChild(p);
+        }
+    }
+    createParticles();
+    document.querySelectorAll('.login-form-group input').forEach(function(inp) {
+        inp.addEventListener('focus', function() {
+            this.parentElement.style.transform = 'scale(1.02)';
+            this.parentElement.style.transition = 'transform 0.2s ease';
+        });
+        inp.addEventListener('blur', function() {
+            this.parentElement.style.transform = 'scale(1)';
+        });
+    });
+</script>
 </body>
-</html>
+</html>

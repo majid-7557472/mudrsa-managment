@@ -703,3 +703,18 @@ tbody tr:hover {
     .pagination-bar { margin: 8px 16px 18px; }
     .metric-card .metric-val { font-size: 30px; }
 }
+/* ===== Row Selected ===== */
+tbody tr.row-selected {
+    background: linear-gradient(90deg, rgba(201,151,58,0.12), rgba(232,184,75,0.08)) !important;
+    outline: 2px solid var(--gold-border);
+}
+
+/* ===== User Bar Flex ===== */
+.user-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+}
