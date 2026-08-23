@@ -28,7 +28,7 @@
         border-bottom: 1.5px solid var(--border);
     }
 
-    /* پرنٹ ایبل کنٹینر - خوبصورت رنگین، کشادہ اور مکمل فٹ */
+    /* پرنٹ ایبل کنٹینر */
     .printable-datesheet {
         background: #ffffff !important;
         width: 100% !important;
@@ -99,7 +99,7 @@
         vertical-align: middle !important;
         color: #0f172a !important;
         box-sizing: border-box !important;
-        white-space: pre-line !important; /* ہر کتاب کی سطریں 2-3 لائنوں میں صاف رہیں گی */
+        white-space: pre-line !important;
     }
 
     /* ہیڈر کالمز (الأيام) */
@@ -172,13 +172,13 @@
     }
 
     /* ہر مرحلے کا مخصوص رنگین شیڈ */
-    .sec-color-0 { background: linear-gradient(180deg, #1e3a5f 0%, #0f2744 100%) !important; } /* العالمية - نیوی بلیو */
-    .sec-color-1 { background: linear-gradient(180deg, #1d4ed8 0%, #1e40af 100%) !important; } /* العالية - رائل بلیو */
-    .sec-color-2 { background: linear-gradient(180deg, #0d7c5f 0%, #064e3b 100%) !important; } /* الثانوية الخاصة - زمردی سبز */
-    .sec-color-3 { background: linear-gradient(180deg, #b45309 0%, #78350f 100%) !important; } /* الثانوية العامة - امبر سنہری */
-    .sec-color-4 { background: linear-gradient(180deg, #6d28d9 0%, #4c1d95 100%) !important; } /* التجويد - ارغوانی جامنی */
-    .sec-color-5 { background: linear-gradient(180deg, #991b1b 0%, #7f1d1d 100%) !important; } /* تخصص في الإفتاء - یاقوتی سرخ */
-    .sec-color-6 { background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%) !important; } /* المعهد - سمندری نیلا */
+    .sec-color-0 { background: linear-gradient(180deg, #1e3a5f 0%, #0f2744 100%) !important; } /* العالمية */
+    .sec-color-1 { background: linear-gradient(180deg, #1d4ed8 0%, #1e40af 100%) !important; } /* العالية */
+    .sec-color-2 { background: linear-gradient(180deg, #0d7c5f 0%, #064e3b 100%) !important; } /* الثانوية الخاصة */
+    .sec-color-3 { background: linear-gradient(180deg, #b45309 0%, #78350f 100%) !important; } /* الثانوية العامة */
+    .sec-color-4 { background: linear-gradient(180deg, #6d28d9 0%, #4c1d95 100%) !important; } /* التجويد */
+    .sec-color-5 { background: linear-gradient(180deg, #991b1b 0%, #7f1d1d 100%) !important; } /* تخصص في الإفتاء */
+    .sec-color-6 { background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%) !important; } /* المعهد */
 
     /* کلاس کالم (الصف / المرحلة) */
     table.ds-main-table td.cls-col {
@@ -193,7 +193,7 @@
         border-right: 1.5px solid #cbd5e1 !important;
     }
 
-    /* کتاب و پرچہ کے خانے (2-3 لائنوں میں واضح) */
+    /* کتاب و پرچہ کے خانے */
     table.ds-main-table td.paper-col {
         background-color: #ffffff !important;
         font-size: 10px !important;
@@ -238,6 +238,32 @@
         border: 1px solid #e2e8f0;
     }
 
+    /* واٹس ایپ ماڈل */
+    .wa-modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(4px);
+        z-index: 99999;
+        justify-content: center;
+        align-items: center;
+        padding: 15px;
+    }
+    .wa-modal-card {
+        background: #ffffff;
+        width: 100%;
+        max-width: 520px;
+        border-radius: 12px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+        padding: 24px;
+        direction: rtl;
+        text-align: right;
+    }
+
     @media print {
         body {
             background: #ffffff !important;
@@ -251,6 +277,7 @@
         .theme-panel,
         #theme-toggle-btn,
         #search-modal-overlay,
+        .wa-modal-overlay,
         .no-print {
             display: none !important;
         }
@@ -300,17 +327,22 @@
 {% block content %}
 <div class="datesheet-outer-box">
 
-    <!-- ٹول بار -->
+    <!-- ٹول بار (واٹس ایپ ڈسپیچر + پرنٹ) -->
     <div class="datesheet-toolbar no-print">
         <div style="display: flex; align-items: center; gap: 10px;">
             <a href="{{ url_for('datesheets_list') }}" class="btn btn-muted" style="padding: 7px 14px; font-size: 13px;">← واپس فہرست</a>
-            <h3 style="font-size: 18px; font-weight: 800; color: var(--primary); margin: 0;">🎨 امتحانی ڈیٹ شیٹ (رنگین و باضابطہ)</h3>
+            <h3 style="font-size: 18px; font-weight: 800; color: var(--primary); margin: 0;">🎨 باضابطہ امتحانی ڈیٹ شیٹ</h3>
         </div>
 
-        <div style="display: flex; gap: 10px;">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <!-- واٹس ایپ 1-کلک بٹن -->
+            <button type="button" class="btn btn-success" onclick="openWhatsAppModal()" style="background: #25D366; color: #fff; font-weight: 800; padding: 8px 18px; font-size: 13.5px; border: none; border-radius: 6px; box-shadow: 0 4px 14px rgba(37,211,102,0.4); display: flex; align-items: center; gap: 6px;">
+                <span>📲</span> <span>تمام طلبہ کو واٹس ایپ پر بھیجیں</span>
+            </button>
+
             <a href="{{ url_for('edit_datesheet', datesheet_id=datesheet['id']) }}" class="btn btn-gold" style="padding: 7px 16px; font-size: 13px; font-weight: bold;">✏️ ترمیم</a>
             <button type="button" class="btn btn-primary" onclick="window.print()" style="padding: 8px 24px; font-size: 13.5px; font-weight: 800; box-shadow: 0 4px 15px rgba(30,58,95,0.3);">
-                🖨️ پرنٹ / PDF ڈاؤنلوڈ کریں
+                🖨️ پرنٹ / PDF
             </button>
         </div>
     </div>
@@ -402,4 +434,114 @@
     </div>
 
 </div>
+
+<!-- واٹس ایپ پر 1-کلک بھیجنے کا ماڈل -->
+<div id="waModal" class="wa-modal-overlay">
+    <div class="wa-modal-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 10px;">
+            <h3 style="margin: 0; color: #1e3a5f; font-size: 19px; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                <span>📲</span> <span>واٹس ایپ پر ڈیٹ شیٹ روانہ کریں</span>
+            </h3>
+            <button type="button" onclick="closeWhatsAppModal()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: #94a3b8;">✕</button>
+        </div>
+
+        <form id="waSendForm" onsubmit="dispatchDatesheetWhatsApp(event)">
+            <!-- وصول کنندگان کا انتخاب -->
+            <div style="margin-bottom: 14px;">
+                <label style="display: block; font-weight: 800; font-size: 13px; color: #334155; margin-bottom: 6px;">
+                    🎯 کن طلبہ کو بھیجنا ہے؟
+                </label>
+                <select id="targetClass" name="target_class" style="width: 100%; padding: 9px 12px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-size: 13.5px; font-family: inherit;">
+                    <option value="all">🌐 تمام درجات کے تمام طلبہ و سرپرست (All 6,000+ Students)</option>
+                    {% for c in classes_list %}
+                        <option value="{{ c }}">{{ c }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- اضافی نوٹ -->
+            <div style="margin-bottom: 14px;">
+                <label style="display: block; font-weight: 800; font-size: 13px; color: #334155; margin-bottom: 6px;">
+                    📝 خصوصی ہدایت یا پیغام (اختیاری):
+                </label>
+                <textarea id="customMessage" name="custom_message" rows="2" placeholder="مثلاً: تمام طلبہ صبح 07:45 پر رول نمبر سلپ کے ساتھ کمرہ امتحان میں تشریف لائیں۔" style="width: 100%; padding: 8px 12px; border: 1.5px solid #cbd5e1; border-radius: 6px; font-size: 12.5px; font-family: inherit; resize: vertical; box-sizing: border-box;"></textarea>
+            </div>
+
+            <!-- پیغام کا پیش نظارہ -->
+            <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 10px 12px; margin-bottom: 16px; font-size: 12px; color: #166534; line-height: 1.4;">
+                <div style="font-weight: 800; margin-bottom: 4px;">💬 واٹس ایپ میسج کا خودکار نمونہ:</div>
+                <div style="font-size: 11px; opacity: 0.9;">
+                    "السلام علیکم! {{ datesheet['institution_name'] }} کی جانب سے {{ datesheet['title'] }} جاری کر دی گئی ہے۔ وقت: {{ datesheet['exam_timing'] }}..."
+                </div>
+            </div>
+
+            <div id="waStatusMsg" style="display: none; padding: 10px; border-radius: 6px; margin-bottom: 12px; font-size: 13px; font-weight: 700; text-align: center;"></div>
+
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button type="button" onclick="closeWhatsAppModal()" class="btn btn-muted" style="padding: 8px 16px; font-size: 13px;">منسوخ</button>
+                <button type="submit" id="btnSubmitWhatsApp" class="btn btn-success" style="background: #25D366; color: #fff; font-weight: 800; padding: 9px 24px; font-size: 14px; border: none; border-radius: 6px; box-shadow: 0 4px 12px rgba(37,211,102,0.4); cursor: pointer;">
+                    🚀 1-کلک پر تمام کو روانہ کریں
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openWhatsAppModal() {
+    document.getElementById('waModal').style.display = 'flex';
+    document.getElementById('waStatusMsg').style.display = 'none';
+}
+function closeWhatsAppModal() {
+    document.getElementById('waModal').style.display = 'none';
+}
+
+function dispatchDatesheetWhatsApp(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btnSubmitWhatsApp');
+    const statusDiv = document.getElementById('waStatusMsg');
+    const targetClass = document.getElementById('targetClass').value;
+    const customMessage = document.getElementById('customMessage').value;
+
+    btn.disabled = true;
+    btn.innerHTML = '⏳ روانہ کیا جا رہا ہے...';
+
+    const formData = new FormData();
+    formData.append('target_class', targetClass);
+    formData.append('custom_message', customMessage);
+
+    fetch("{{ url_for('send_datesheet_whatsapp', datesheet_id=datesheet['id']) }}", {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        btn.disabled = false;
+        btn.innerHTML = '🚀 1-کلک پر تمام کو روانہ کریں';
+        statusDiv.style.display = 'block';
+        if (data.success) {
+            statusDiv.style.background = '#dcfce7';
+            statusDiv.style.color = '#15803d';
+            statusDiv.style.border = '1px solid #86efac';
+            statusDiv.innerHTML = '✅ ' + data.message;
+            setTimeout(() => {
+                closeWhatsAppModal();
+            }, 2500);
+        } else {
+            statusDiv.style.background = '#fee2e2';
+            statusDiv.style.color = '#b91c1c';
+            statusDiv.style.border = '1px solid #fca5a5';
+            statusDiv.innerHTML = '❌ ' + data.message;
+        }
+    })
+    .catch(err => {
+        btn.disabled = false;
+        btn.innerHTML = '🚀 1-کلک پر تمام کو روانہ کریں';
+        statusDiv.style.display = 'block';
+        statusDiv.style.background = '#fee2e2';
+        statusDiv.style.color = '#b91c1c';
+        statusDiv.innerHTML = '❌ رابطہ منقطع ہو گیا۔ دوبارہ کوشش کریں۔';
+    });
+}
+</script>
 {% endblock %}

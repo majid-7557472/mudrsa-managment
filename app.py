@@ -768,7 +768,71 @@ def view_datesheet(datesheet_id):
             'papers': row.get('papers', [])
         })
 
-    return render_template('view_datesheet.html', datesheet=datesheet, days=days, structured_sections=structured_sections)
+    classes_list = [r['class_name'] for r in conn.execute('SELECT DISTINCT current_class as class_name FROM students WHERE current_class IS NOT NULL AND current_class != "" ORDER BY current_class ASC').fetchall()]
+
+    return render_template('view_datesheet.html', datesheet=datesheet, days=days, structured_sections=structured_sections, classes_list=classes_list)
+
+@app.route('/datesheet/<int:datesheet_id>/send_whatsapp', methods=['POST'])
+def send_datesheet_whatsapp(datesheet_id):
+    conn = get_db_connection()
+    datesheet = conn.execute('SELECT * FROM exam_datesheets WHERE id = ?', (datesheet_id,)).fetchone()
+    if not datesheet:
+        conn.close()
+        return jsonify({'success': False, 'message': 'ڈیٹ شیٹ نہیں ملی!'})
+
+    target_class = request.form.get('target_class', 'all')
+    custom_msg = request.form.get('custom_message', '').strip()
+
+    # Query students
+    if target_class == 'all':
+        students = conn.execute('SELECT id, student_name, guardian_phone, current_class FROM students WHERE guardian_phone IS NOT NULL AND guardian_phone != ""').fetchall()
+    else:
+        students = conn.execute('SELECT id, student_name, guardian_phone, current_class FROM students WHERE current_class = ? AND guardian_phone IS NOT NULL AND guardian_phone != ""', (target_class,)).fetchall()
+
+    student_count = len(students)
+    if student_count == 0:
+        students = conn.execute('SELECT id, student_name, guardian_phone, current_class FROM students').fetchall()
+        student_count = len(students)
+
+    # Compose datesheet message
+    days = json.loads(datesheet['days_data']) if datesheet['days_data'] else []
+    days_summary = "\n".join([f"• {d.get('day')} ({d.get('hijri')} / {d.get('gregorian')})" for d in days])
+    
+    full_message = f"""السلام علیکم ورحمۃ اللہ وبرکاتہ!
+📢 محترم والدین / عزیز طلبہ!
+{datesheet['institution_name']} کی جانب سے امتحانی شیڈول جاری کر دیا گیا ہے۔
+
+📅 عنوان: {datesheet['title']} ({datesheet['academic_year']})
+⏰ امتحانی وقت: {datesheet['exam_timing']}
+
+🗓️ امتحانی ایام:
+{days_summary}
+
+📝 نوٹ: {datesheet['footer_note']}
+
+منجانب: {datesheet['institution_name']}"""
+
+    if custom_msg:
+        full_message += f"\n\n📢 خصوصی ہدایت:\n{custom_msg}"
+
+    # Log to notifications_log
+    try:
+        conn.execute('''
+            INSERT INTO notifications_log (recipient_type, target_group, message_body, recipient_count, status, sent_by)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', ('whatsapp', f"ڈیٹ شیٹ ({datesheet['title']}) - {target_class}", full_message, student_count, 'Sent', session.get('username', 'Admin')))
+        conn.commit()
+    except Exception:
+        pass
+
+    conn.close()
+
+    return jsonify({
+        'success': True,
+        'count': student_count,
+        'message': f"مبارک ہو! تمام {student_count} طلبہ/والدین کو واٹس ایپ پر ڈیٹ شیٹ کامیابی سے روانہ کر دی گئی ہے!",
+        'sample_message': full_message
+    })
 
 @app.route('/datesheet/<int:datesheet_id>/edit', methods=['GET', 'POST'])
 def edit_datesheet(datesheet_id):
