@@ -1,12 +1,12 @@
 ﻿{% extends "base.html" %}
-{% block title %}{{ datesheet['title'] }} - رنگین و خوبصورت ڈیٹ شیٹ{% endblock %}
+{% block title %}{{ datesheet['title'] }} - باضابطہ امتحانی ڈیٹ شیٹ{% endblock %}
 {% set active_page = 'exams' %}
 
 {% block extra_head %}
 <style>
     @page {
         size: A4 portrait;
-        margin: 5mm 6mm;
+        margin: 5mm 5mm;
     }
 
     .datesheet-outer-box {
@@ -28,27 +28,27 @@
         border-bottom: 1.5px solid var(--border);
     }
 
-    /* پرنٹ ایبل ایریا - رنگین، دیدہ زیب اور مکمل فٹ */
+    /* پرنٹ ایبل کنٹینر - بالکل صاف، کشادہ اور خوبصورت */
     .printable-datesheet {
         background: #ffffff !important;
         width: 100%;
-        max-width: 1000px;
+        max-width: 1020px;
         margin: 0 auto;
-        color: #1e293b !important;
+        color: #0f172a !important;
         direction: rtl !important;
         font-family: 'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif !important;
-        padding: 16px 20px;
+        padding: 18px 22px;
         border: 2px solid #cbd5e1;
         border-radius: 12px;
         box-shadow: 0 10px 30px rgba(30,58,95,0.08);
     }
 
-    /* ٹاپ ہیڈر - مناسب فاصلے کے ساتھ */
+    /* ٹاپ ہیڈر */
     .ds-top-header {
         position: relative;
         text-align: center;
-        margin-bottom: 18px;
-        padding: 6px 70px 10px 70px;
+        margin-bottom: 20px;
+        padding: 6px 75px 12px 75px;
         border-bottom: 2px solid #e2e8f0;
     }
     .ds-logo-top {
@@ -58,189 +58,178 @@
         width: 75px;
         height: 75px;
         object-fit: contain;
-        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
     }
     .ds-main-heading {
         font-family: 'Noto Nastaliq Urdu', 'Noto Sans Arabic', serif;
         font-size: 36px;
         font-weight: 800;
         color: #1e3a5f !important;
-        margin: 0 0 12px 0; /* الفاظ کے ٹکراؤ کے خاتمے کے لیے مناسب فاصلہ */
+        margin: 0 0 14px 0; /* کھلا فاصلہ تاکہ کوئی لفظ نہ ٹکرائے */
         line-height: 1.5;
         letter-spacing: 0.5px;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
     .ds-sub-heading {
         font-size: 15.5px;
         font-weight: 800;
-        color: #c9973a !important; /* گولڈن رنگ */
+        color: #c9973a !important;
         margin: 0;
-        letter-spacing: 0.4px;
         display: inline-block;
         background: #fff8e7;
-        padding: 4px 18px;
+        padding: 5px 22px;
         border-radius: 20px;
-        border: 1px solid #dfc27a;
+        border: 1.5px solid #dfc27a;
     }
 
-    /* رنگین و شاندار مین ٹیبل */
+    /* مین ٹیبل - کوئی لفظ کبھی نہیں ٹکرائے گا */
     table.ds-main-table {
         width: 100% !important;
         border-collapse: collapse !important;
         border: 2px solid #1e3a5f !important;
         direction: rtl !important;
-        table-layout: fixed !important;
         margin: 0 auto !important;
         background: #ffffff !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
 
     table.ds-main-table th, 
     table.ds-main-table td {
         border: 1.5px solid #cbd5e1 !important;
-        padding: 5px 3px !important;
+        padding: 7px 5px !important;
         text-align: center !important;
         vertical-align: middle !important;
-        word-wrap: break-word !important;
-        overflow-wrap: break-word !important;
+        color: #0f172a !important;
         box-sizing: border-box !important;
     }
 
-    /* رو 1: ایام کا رنگین ہیڈر */
-    table.ds-main-table th.ds-th-days {
-        background: linear-gradient(135deg, #1e3a5f 0%, #2b5282 100%) !important;
-        font-size: 13.5px !important;
-        font-weight: 800 !important;
+    /* ہیڈر کالمز (الأيام) */
+    .th-sec-head {
+        background: #1e3a5f !important;
         color: #ffffff !important;
-        height: 32px !important;
-        border-color: #1e3a5f !important;
-        letter-spacing: 0.5px;
+        font-size: 13px !important;
+        font-weight: 800 !important;
+        width: 38px !important;
+    }
+    .th-cls-head {
+        background: #1e3a5f !important;
+        color: #ffffff !important;
+        font-size: 13px !important;
+        font-weight: 800 !important;
+        width: 125px !important;
+    }
+    .th-day-head {
+        background: linear-gradient(135deg, #1e3a5f 0%, #2b5282 100%) !important;
+        color: #ffffff !important;
+        font-size: 14px !important;
+        font-weight: 800 !important;
+        height: 34px !important;
     }
 
-    /* رو 2: اوقات کا گولڈن ہیڈر */
-    table.ds-main-table th.ds-th-time {
+    /* اوقات رو */
+    .th-time-row {
         background: #fffbeb !important;
-        font-size: 11px !important;
-        font-weight: 800 !important;
-        direction: ltr !important;
-        font-family: monospace !important;
         color: #92400e !important;
-        height: 24px !important;
+        font-size: 11.5px !important;
+        font-weight: 800 !important;
+        height: 25px !important;
         border-color: #fde68a !important;
     }
 
-    /* رو 3: تواریخ کا فیروزی/نیلا ہیڈر */
-    table.ds-main-table th.ds-th-date {
+    /* تواریخ رو */
+    .th-date-row {
         background: #f0fdfa !important;
-        font-size: 11px !important;
-        font-weight: 800 !important;
         color: #0f766e !important;
-        height: 38px !important;
+        font-size: 11.5px !important;
+        font-weight: 800 !important;
+        height: 40px !important;
         line-height: 1.3 !important;
         border-color: #99f6e4 !important;
     }
-    .hijri-txt {
-        font-weight: 800 !important;
-        font-size: 11.5px !important;
-        color: #0f766e !important;
+    .th-date-row .hijri {
+        font-weight: 800;
+        font-size: 12px;
+        color: #0f766e;
     }
-    .greg-txt {
-        font-size: 10px !important;
-        color: #475569 !important;
-        font-weight: 700 !important;
+    .th-date-row .greg {
+        font-size: 10px;
+        color: #475569;
+        font-weight: 700;
     }
 
-    /* سیکشنز کے خوبصورت رنگین کالمز (المرحلہ) */
+    /* دائیں جانب سیکشن کالم (المرحلہ) */
     table.ds-main-table td.sec-col {
         color: #ffffff !important;
         font-weight: 800 !important;
-        font-size: 12.5px !important;
-        width: 3.8% !important;
+        font-size: 13.5px !important;
+        width: 38px !important;
         writing-mode: vertical-rl !important;
         transform: rotate(180deg) !important;
-        padding: 8px 2px !important;
+        padding: 10px 2px !important;
         letter-spacing: 1.5px;
-        text-align: center;
-        vertical-align: middle;
+        text-align: center !important;
+        vertical-align: middle !important;
         border-left: 2px solid #1e3a5f !important;
     }
 
-    /* مختلف مراحل کے دلکش رنگ */
-    .sec-color-0 { background: linear-gradient(180deg, #1e3a5f 0%, #0f2744 100%) !important; } /* العالیہ - رائل بلیو */
-    .sec-color-1 { background: linear-gradient(180deg, #0d7c5f 0%, #064e3b 100%) !important; } /* ثانویہ خاصہ - زمردی سبز */
-    .sec-color-2 { background: linear-gradient(180deg, #c9973a 0%, #854d0e 100%) !important; } /* ثانویہ عامہ - سنہری عنبر */
-    .sec-color-3 { background: linear-gradient(180deg, #7c3aed 0%, #5b21b6 100%) !important; } /* التجوید - ارغوانی جامنی */
-    .sec-color-4 { background: linear-gradient(180deg, #b91c1c 0%, #7f1d1d 100%) !important; } /* تخصص - یاقوتی سرخ */
-    .sec-color-5 { background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%) !important; } /* المعهد - سمندری نیلا */
+    /* مراحل کے خوبصورت رنگین تھیمز */
+    .sec-color-0 { background: #1e3a5f !important; } /* العالیہ - رائل بلیو */
+    .sec-color-1 { background: #0d7c5f !important; } /* ثانویہ خاصہ - زمردی سبز */
+    .sec-color-2 { background: #b45309 !important; } /* ثانویہ عامہ - امبر گولڈ */
+    .sec-color-3 { background: #6d28d9 !important; } /* التجوید - ارغوانی جامنی */
+    .sec-color-4 { background: #991b1b !important; } /* تخصص - سرخ یاقوتی */
+    .sec-color-5 { background: #0369a1 !important; } /* المعهد - سمندری نیلا */
 
     /* کلاس کالم (الصف / المرحلة) */
     table.ds-main-table td.cls-col {
         background-color: #f8fafc !important;
         font-weight: 800 !important;
-        font-size: 11px !important;
+        font-size: 12px !important;
         color: #1e3a5f !important;
-        width: 16.2% !important;
+        width: 125px !important;
         text-align: center !important;
-        line-height: 1.25 !important;
-        padding: 4px 3px !important;
+        line-height: 1.35 !important;
+        padding: 6px 4px !important;
         border-right: 1.5px solid #cbd5e1 !important;
     }
 
-    /* کتاب و پرچہ کے رنگین سیلز */
+    /* کتاب و پرچہ کے کشادہ خانے */
     table.ds-main-table td.paper-col {
         background-color: #ffffff !important;
-        font-size: 10.5px !important;
+        font-size: 11.5px !important;
         font-weight: 600 !important;
         color: #1e293b !important;
-        line-height: 1.3 !important;
-        padding: 4px 3px !important;
-        width: 16% !important;
-        transition: background-color 0.2s;
+        line-height: 1.4 !important;
+        padding: 6px 5px !important;
+        text-align: center !important;
     }
     table.ds-main-table tr:hover td.paper-col {
-        background-color: #f0fdf4 !important; /* ماؤس لانے پر ہلکا سبز اثر */
+        background-color: #f0fdf4 !important;
     }
 
-    /* جوابی کاپیوں کے خوبصورت رنگین بیجز */
-    .badge-copy-1 {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        background: #e0f2fe;
+    /* جوابی کاپی کے بیجز */
+    .badge-num-1 {
+        display: inline-block;
         color: #0284c7;
-        border: 1px solid #7dd3fc;
-        border-radius: 50%;
-        width: 17px;
-        height: 17px;
-        font-size: 11px;
-        font-weight: 800;
+        font-weight: 900;
+        font-size: 14px;
         margin-right: 2px;
     }
-    .badge-copy-2 {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        background: #fef3c7;
+    .badge-num-2 {
+        display: inline-block;
         color: #d97706;
-        border: 1px solid #fcd34d;
-        border-radius: 50%;
-        width: 17px;
-        height: 17px;
-        font-size: 11px;
-        font-weight: 800;
+        font-weight: 900;
+        font-size: 14px;
         margin-right: 2px;
     }
 
-    /* فوٹر وضاحتی نوٹ */
+    /* فوٹر */
     .ds-footer {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-top: 10px;
-        font-size: 11.5px;
+        margin-top: 12px;
+        font-size: 12px;
         font-weight: 700;
         color: #334155 !important;
-        padding: 6px 12px;
+        padding: 8px 14px;
         background: #f8fafc;
         border-radius: 6px;
         border: 1px solid #e2e8f0;
@@ -275,29 +264,25 @@
             box-shadow: none !important;
             padding: 0 !important;
         }
-        table.ds-main-table th.ds-th-days {
+        .th-day-head, .th-sec-head, .th-cls-head {
             background: #1e3a5f !important;
             color: #ffffff !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
-        table.ds-main-table th.ds-th-time {
+        .th-time-row {
             background: #fffbeb !important;
             color: #92400e !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
-        table.ds-main-table th.ds-th-date {
+        .th-date-row {
             background: #f0fdfa !important;
             color: #0f766e !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
         table.ds-main-table td.sec-col {
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-        .badge-copy-1, .badge-copy-2 {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
@@ -312,7 +297,7 @@
     <div class="datesheet-toolbar no-print">
         <div style="display: flex; align-items: center; gap: 10px;">
             <a href="{{ url_for('datesheets_list') }}" class="btn btn-muted" style="padding: 8px 16px; font-size: 13px;">← واپس فہرست</a>
-            <h3 style="font-size: 19px; font-weight: 800; color: var(--primary); margin: 0;">🎨 امتحانی ڈیٹ شیٹ (رنگین و پریمیم ڈیزائن)</h3>
+            <h3 style="font-size: 19px; font-weight: 800; color: var(--primary); margin: 0;">🎨 امتحانی ڈیٹ شیٹ (آفیشل اشرفیہ لے آؤٹ)</h3>
         </div>
 
         <div style="display: flex; gap: 10px;">
@@ -326,7 +311,7 @@
     <!-- باضابطہ رنگین ڈیٹ شیٹ -->
     <div class="printable-datesheet">
         
-        <!-- ہیڈر (الفاظ کے ٹکراؤ کے خاتمے کے ساتھ) -->
+        <!-- ہیڈر -->
         <div class="ds-top-header">
             <img src="{{ url_for('static', filename='logo.png') }}" class="ds-logo-top" alt="مونوگرام" onerror="this.style.display='none'">
             <h1 class="ds-main-heading">{{ datesheet['institution_name'] or 'الجامعۃ الاشرفیہ لاہور' }}</h1>
@@ -335,30 +320,31 @@
             </div>
         </div>
 
-        <!-- امتحانی شیڈول ٹیبل -->
+        <!-- امتحانی شیڈول ٹیبل (7 کالمز کا مکمل متوازن ڈھانچہ) -->
         <table class="ds-main-table">
             <thead>
-                <!-- رو 1: الایام (رائل بلیو رنگ) -->
+                <!-- رو 1: الایام (Right to Left: دائیں طرف مرحلہ + کلاس، پھر السبت، الأحد، الإثنين، الثلاثاء، الأربعاء) -->
                 <tr>
-                    <th class="ds-th-days" colspan="2" style="width: 20%;">الأيام</th>
+                    <th class="th-sec-head">المرحلة</th>
+                    <th class="th-cls-head">الصف</th>
                     {% for d in days %}
-                        <th class="ds-th-days" style="width: 16%;">{{ d['day'] }}</th>
+                        <th class="th-day-head">{{ d['day'] }}</th>
                     {% endfor %}
                 </tr>
-                <!-- رو 2: الوقت (گولڈن رنگ) -->
+                <!-- رو 2: الوقت -->
                 <tr>
-                    <th class="ds-th-time" colspan="2">الوقت</th>
+                    <th class="th-time-row" colspan="2">الوقت</th>
                     {% for d in days %}
-                        <th class="ds-th-time">{{ datesheet['exam_timing'] }}</th>
+                        <th class="th-time-row" style="direction: ltr; font-family: monospace;">{{ datesheet['exam_timing'] }}</th>
                     {% endfor %}
                 </tr>
-                <!-- رو 3: التاریخ (ہجری + عیسوی فیروزی رنگ) -->
+                <!-- رو 3: التاریخ (ہجری + عیسوی) -->
                 <tr>
-                    <th class="ds-th-date" colspan="2">التاريخ</th>
+                    <th class="th-date-row" colspan="2">التاريخ</th>
                     {% for d in days %}
-                        <th class="ds-th-date">
-                            <div class="hijri-txt">{{ d['hijri'] }}</div>
-                            <div class="greg-txt">{{ d['gregorian'] }}</div>
+                        <th class="th-date-row">
+                            <div class="hijri">{{ d['hijri'] }}</div>
+                            <div class="greg">{{ d['gregorian'] }}</div>
                         </th>
                     {% endfor %}
                 </tr>
@@ -369,26 +355,26 @@
                     {% set sec_idx = loop.index0 % 6 %}
                     {% for row in sec['rows'] %}
                     <tr>
-                        {# 1. دائیں طرف رنگین سیکشن کالم #}
+                        {# 1. دائیں طرف رنگین سیکشن کالم (صرف پہلی قطار میں معہ rowspan) #}
                         {% if loop.first %}
                             <td class="sec-col sec-color-{{ sec_idx }}" rowspan="{{ sec['rows']|length }}">
-                                {{ sec['section_name'] }}
+                                <span dir="rtl">{{ sec['section_name'] }}</span>
                             </td>
                         {% endif %}
 
                         {# 2. کلاس کا نام #}
                         <td class="cls-col">
-                            {{ row['class_name'] }}
+                            <span dir="rtl">{{ row['class_name'] }}</span>
                         </td>
 
-                        {# 3. پرچے کے خانے معہ رنگین بیجز #}
+                        {# 3. پرچے کے خانے معہ بیجز #}
                         {% for p in row['papers'] %}
                             <td class="paper-col">
-                                {{ p['subject'] }}
+                                <span dir="rtl">{{ p['subject'] }}</span>
                                 {% if p['copies'] == 1 %}
-                                    <span class="badge-copy-1" title="ایک جوابی کاپی">❶</span>
+                                    <span class="badge-num-1" title="ایک جوابی کاپی">❶</span>
                                 {% elif p['copies'] == 2 %}
-                                    <span class="badge-copy-2" title="دو جوابی کاپیاں">❷</span>
+                                    <span class="badge-num-2" title="دو جوابی کاپیاں">❷</span>
                                 {% endif %}
                             </td>
                         {% endfor %}
