@@ -747,8 +747,8 @@ def create_datesheet():
 def view_datesheet(datesheet_id):
     conn = get_db_connection()
     datesheet = conn.execute('SELECT * FROM exam_datesheets WHERE id = ?', (datesheet_id,)).fetchone()
-    conn.close()
     if not datesheet:
+        conn.close()
         flash('ڈیٹ شیٹ نہیں ملی!', 'danger')
         return redirect(url_for('datesheets_list'))
 
@@ -769,6 +769,7 @@ def view_datesheet(datesheet_id):
         })
 
     classes_list = [r['class_name'] for r in conn.execute('SELECT DISTINCT current_class as class_name FROM students WHERE current_class IS NOT NULL AND current_class != "" ORDER BY current_class ASC').fetchall()]
+    conn.close()
 
     return render_template('view_datesheet.html', datesheet=datesheet, days=days, structured_sections=structured_sections, classes_list=classes_list)
 
