@@ -4,10 +4,9 @@ import json
 conn = sqlite3.connect('madrasa.db')
 cursor = conn.cursor()
 
-# Clean multi-line formatted data matching the exact physical sheet
 classes_perfect = [
     {
-        "section": "العالية",
+        "section": "العالمية",
         "class_name": "السنة الثانية",
         "papers": [
             {"subject": "شرح معاني الآثار\nالمؤطا للامام مالک", "copies": 2},
@@ -18,7 +17,7 @@ classes_perfect = [
         ]
     },
     {
-        "section": "العالية",
+        "section": "العالمية",
         "class_name": "السنة الأولى",
         "papers": [
             {"subject": "التبيان في علوم القرآن\nمع تفسير البيضاوي", "copies": 1},
@@ -148,7 +147,6 @@ days_sample = [
     {"day": "الأربعاء", "hijri": "19 ربيع الاول", "gregorian": "02 ستمبر"}
 ]
 
-# Update datesheet id 1
 cursor.execute('''
     UPDATE exam_datesheets 
     SET title = 'جدول الاختبارات الخماسية لجميع المراحل الدراسية للعام',
@@ -162,4 +160,4 @@ cursor.execute('''
 
 conn.commit()
 conn.close()
-print("Updated Date Sheet 1 with authentic multi-line formatted data!")
+print("Date sheet updated: Top section is now 'العالمية' and second is 'العالية'!")
