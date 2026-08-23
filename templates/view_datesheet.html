@@ -3,14 +3,16 @@
 {% set active_page = 'exams' %}
 
 {% block extra_head %}
-<!-- HTML2PDF لائبریری برائے ڈائریکٹ پی ڈی ایف ڈاؤنلوڈ -->
+<!-- خوبصورت عربی خطوط برائے پرنٹ و ڈسپلے -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700;800&family=Noto+Sans+Arabic:wght@600;700;800;900&family=Scheherazade+New:wght@700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
-    /* A4 پورٹریٹ پرنٹ پیج */
     @page {
         size: A4 portrait;
-        margin: 3mm 4mm 3mm 4mm;
+        margin: 4mm 5mm 4mm 5mm;
     }
 
     .datesheet-outer-box {
@@ -56,7 +58,7 @@
         background: #e2e8f0;
     }
 
-    /* پرنٹ ایبل کنٹینر - سکرین ڈسپلے */
+    /* پرنٹ ایبل کنٹینر - سکرین پر مکمل اور کشادہ */
     .printable-datesheet {
         background: #ffffff !important;
         width: 100% !important;
@@ -90,12 +92,12 @@
         object-fit: contain;
     }
     .ds-main-heading {
-        font-family: 'Noto Nastaliq Urdu', 'Noto Sans Arabic', serif;
-        font-size: 34px;
+        font-family: 'Scheherazade New', 'Amiri', 'Noto Sans Arabic', serif;
+        font-size: 38px;
         font-weight: 800;
         color: #1e3a5f !important;
-        margin: 0 0 8px 0;
-        line-height: 1.4;
+        margin: 0 0 6px 0;
+        line-height: 1.35;
         letter-spacing: 0.5px;
     }
     .ds-sub-heading {
@@ -124,7 +126,7 @@
     table.ds-main-table th, 
     table.ds-main-table td {
         border: 1.2px solid #cbd5e1 !important;
-        padding: 5px 3px !important;
+        padding: 5.5px 3px !important;
         text-align: center !important;
         vertical-align: middle !important;
         color: #0f172a !important;
@@ -268,69 +270,69 @@
         border: 1px solid #e2e8f0;
     }
 
-    /* پی ڈی ایف ایکسپورٹ کے دوران 1-صفحہ سیٹنگز */
+    /* پی ڈی ایف ایکسپورٹ کے دوران 100% متوازن فل پیج سیٹنگز */
     .pdf-export-mode {
-        width: 780px !important;
-        max-width: 780px !important;
-        padding: 6px 8px !important;
+        width: 790px !important;
+        max-width: 790px !important;
+        padding: 10px 12px !important;
         box-shadow: none !important;
         border: none !important;
         transform: none !important;
         margin: 0 auto !important;
     }
     .pdf-export-mode .ds-top-header {
-        margin-bottom: 2px !important;
-        padding: 0 35px 2px 35px !important;
+        margin-bottom: 6px !important;
+        padding: 0 45px 4px 45px !important;
         border-bottom: 1.5px solid #1e3a5f !important;
     }
     .pdf-export-mode .ds-logo-top {
-        width: 44px !important;
-        height: 44px !important;
+        width: 52px !important;
+        height: 52px !important;
     }
     .pdf-export-mode .ds-main-heading {
-        font-size: 21px !important;
-        margin-bottom: 1px !important;
-        line-height: 1.15 !important;
+        font-size: 26px !important;
+        margin-bottom: 3px !important;
+        line-height: 1.25 !important;
     }
     .pdf-export-mode .ds-sub-heading {
-        font-size: 10px !important;
-        padding: 1px 10px !important;
+        font-size: 12px !important;
+        padding: 2px 14px !important;
     }
     .pdf-export-mode table.ds-main-table th, 
     .pdf-export-mode table.ds-main-table td {
-        padding: 1.6px 1px !important;
-        font-size: 7.8px !important;
-        line-height: 1.12 !important;
+        padding: 3.5px 2px !important;
+        font-size: 9.5px !important;
+        line-height: 1.25 !important;
     }
     .pdf-export-mode .th-sec-head, 
     .pdf-export-mode table.ds-main-table td.sec-col {
-        font-size: 8.5px !important;
-        width: 22px !important;
-        padding: 2px 1px !important;
+        font-size: 10.5px !important;
+        width: 25px !important;
+        padding: 4px 1px !important;
     }
     .pdf-export-mode .th-cls-head, 
     .pdf-export-mode table.ds-main-table td.cls-col {
-        font-size: 7.8px !important;
-        width: 68px !important;
+        font-size: 9.5px !important;
+        width: 78px !important;
     }
     .pdf-export-mode .th-day-head {
+        height: 22px !important;
+        font-size: 10.5px !important;
+    }
+    .pdf-export-mode .th-time-row {
         height: 18px !important;
         font-size: 9px !important;
     }
-    .pdf-export-mode .th-time-row {
-        height: 14px !important;
-        font-size: 7.5px !important;
-    }
     .pdf-export-mode .th-date-row {
-        height: 20px !important;
-        font-size: 7.5px !important;
+        height: 26px !important;
+        font-size: 9px !important;
     }
     .pdf-export-mode .ds-footer {
-        margin-top: 2px !important;
-        font-size: 7.5px !important;
-        padding: 2px 4px !important;
-        background: none !important;
-        border: none !important;
+        margin-top: 5px !important;
+        font-size: 9.5px !important;
+        padding: 4px 8px !important;
+        background: #f8fafc !important;
+        border: 1px solid #e2e8f0 !important;
     }
 
     /* واٹس ایپ ماڈل */
@@ -359,7 +361,7 @@
         text-align: right;
     }
 
-    /* مکمل اور بغیر کسی کٹنگ کے 1 ہی صفحے پر پرنٹ سیٹنگز */
+    /* براؤزر پرنٹ سیٹنگز - 1 صفحے پر فل ہائٹ فٹ */
     @media print {
         html, body {
             margin: 0 !important;
@@ -398,56 +400,56 @@
             page-break-inside: avoid !important;
         }
         .ds-top-header {
-            margin-bottom: 2px !important;
-            padding: 0 40px 2px 40px !important;
+            margin-bottom: 4px !important;
+            padding: 0 45px 3px 45px !important;
             border-bottom: 1.5px solid #1e3a5f !important;
         }
         .ds-logo-top {
-            width: 44px !important;
-            height: 44px !important;
+            width: 52px !important;
+            height: 52px !important;
         }
         .ds-main-heading {
-            font-size: 21px !important;
-            margin-bottom: 1px !important;
-            line-height: 1.15 !important;
+            font-size: 26px !important;
+            margin-bottom: 2px !important;
+            line-height: 1.25 !important;
         }
         .ds-sub-heading {
-            font-size: 10px !important;
-            padding: 1px 10px !important;
+            font-size: 11.5px !important;
+            padding: 2px 12px !important;
         }
         table.ds-main-table th, table.ds-main-table td {
-            padding: 1.6px 1px !important;
-            font-size: 7.8px !important;
-            line-height: 1.12 !important;
+            padding: 3.2px 1.5px !important;
+            font-size: 9.5px !important;
+            line-height: 1.25 !important;
         }
         .th-sec-head, table.ds-main-table td.sec-col {
-            font-size: 8.5px !important;
-            width: 22px !important;
-            padding: 2px 1px !important;
+            font-size: 10.5px !important;
+            width: 25px !important;
+            padding: 4px 1px !important;
         }
         .th-cls-head, table.ds-main-table td.cls-col {
-            font-size: 7.8px !important;
-            width: 68px !important;
+            font-size: 9.5px !important;
+            width: 78px !important;
         }
         .th-day-head {
-            height: 18px !important;
-            font-size: 9px !important;
+            height: 22px !important;
+            font-size: 10.5px !important;
             background: #1e3a5f !important;
             color: #ffffff !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
         .th-time-row {
-            height: 14px !important;
-            font-size: 7.5px !important;
+            height: 18px !important;
+            font-size: 9px !important;
             background: #fffbeb !important;
             color: #92400e !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
         .th-date-row {
-            height: 20px !important;
-            font-size: 7.5px !important;
+            height: 26px !important;
+            font-size: 9px !important;
             background: #f0fdfa !important;
             color: #0f766e !important;
             -webkit-print-color-adjust: exact !important;
@@ -462,11 +464,13 @@
             print-color-adjust: exact !important;
         }
         .ds-footer {
-            margin-top: 2px !important;
-            font-size: 7.5px !important;
-            padding: 2px 4px !important;
-            background: none !important;
-            border: none !important;
+            margin-top: 5px !important;
+            font-size: 9.5px !important;
+            padding: 4px 8px !important;
+            background: #f8fafc !important;
+            border: 1px solid #e2e8f0 !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
     }
 </style>
@@ -502,7 +506,7 @@
 
             <a href="{{ url_for('edit_datesheet', datesheet_id=datesheet['id']) }}" class="btn btn-gold" style="padding: 7px 16px; font-size: 13px; font-weight: bold;">✏️ ترمیم</a>
 
-            <!-- پرنٹ بٹن (1 صفحہ مکمل) -->
+            <!-- پرنٹ بٹن -->
             <button type="button" class="btn btn-primary" onclick="window.print()" style="padding: 8px 20px; font-size: 13px; font-weight: 800; box-shadow: 0 4px 15px rgba(30,58,95,0.3);">
                 🖨️ پرنٹ (مکمل 1 صفحہ)
             </button>
