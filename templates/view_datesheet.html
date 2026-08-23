@@ -294,15 +294,14 @@
         text-align: right;
     }
 
-    /* سخت پرنٹ سیٹنگز - لازماً 1 ہی صفحے پر فٹ (Strict 1-Page A4) */
+    /* مکمل اور بغیر کسی کٹنگ کے 1 ہی صفحے پر پرنٹ سیٹنگز */
     @media print {
         html, body {
-            height: 100% !important;
-            max-height: 290mm !important;
-            overflow: hidden !important;
             margin: 0 !important;
             padding: 0 !important;
             background: #ffffff !important;
+            height: auto !important;
+            overflow: visible !important;
         }
         .portal-header, 
         .main-nav, 
@@ -334,56 +333,56 @@
             page-break-inside: avoid !important;
         }
         .ds-top-header {
-            margin-bottom: 4px !important;
-            padding: 0 45px 3px 45px !important;
+            margin-bottom: 2px !important;
+            padding: 0 40px 2px 40px !important;
             border-bottom: 1.5px solid #1e3a5f !important;
         }
         .ds-logo-top {
-            width: 50px !important;
-            height: 50px !important;
+            width: 44px !important;
+            height: 44px !important;
         }
         .ds-main-heading {
-            font-size: 24px !important;
-            margin-bottom: 2px !important;
-            line-height: 1.2 !important;
-        }
-        .ds-sub-heading {
-            font-size: 11px !important;
-            padding: 1px 12px !important;
-        }
-        table.ds-main-table th, table.ds-main-table td {
-            padding: 2.2px 1.5px !important;
-            font-size: 8.8px !important;
+            font-size: 21px !important;
+            margin-bottom: 1px !important;
             line-height: 1.15 !important;
         }
+        .ds-sub-heading {
+            font-size: 10px !important;
+            padding: 1px 10px !important;
+        }
+        table.ds-main-table th, table.ds-main-table td {
+            padding: 1.6px 1px !important;
+            font-size: 7.8px !important;
+            line-height: 1.12 !important;
+        }
         .th-sec-head, table.ds-main-table td.sec-col {
-            font-size: 9.5px !important;
-            width: 24px !important;
-            padding: 3px 1px !important;
+            font-size: 8.5px !important;
+            width: 22px !important;
+            padding: 2px 1px !important;
         }
         .th-cls-head, table.ds-main-table td.cls-col {
-            font-size: 9px !important;
-            width: 76px !important;
+            font-size: 7.8px !important;
+            width: 68px !important;
         }
         .th-day-head {
-            height: 20px !important;
-            font-size: 10px !important;
+            height: 18px !important;
+            font-size: 9px !important;
             background: #1e3a5f !important;
             color: #ffffff !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
         .th-time-row {
-            height: 16px !important;
-            font-size: 8.5px !important;
+            height: 14px !important;
+            font-size: 7.5px !important;
             background: #fffbeb !important;
             color: #92400e !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
         .th-date-row {
-            height: 24px !important;
-            font-size: 8.5px !important;
+            height: 20px !important;
+            font-size: 7.5px !important;
             background: #f0fdfa !important;
             color: #0f766e !important;
             -webkit-print-color-adjust: exact !important;
@@ -398,9 +397,9 @@
             print-color-adjust: exact !important;
         }
         .ds-footer {
-            margin-top: 3px !important;
-            font-size: 8.5px !important;
-            padding: 2px 6px !important;
+            margin-top: 2px !important;
+            font-size: 7.5px !important;
+            padding: 2px 4px !important;
             background: none !important;
             border: none !important;
         }
@@ -411,7 +410,7 @@
 {% block content %}
 <div class="datesheet-outer-box">
 
-    <!-- ٹول بار (پی ڈی ایف ڈاؤنلوڈ بٹن + پرنٹ + زوم + واٹس ایپ) -->
+    <!-- ٹول بار -->
     <div class="datesheet-toolbar no-print">
         <div style="display: flex; align-items: center; gap: 10px;">
             <a href="{{ url_for('datesheets_list') }}" class="btn btn-muted" style="padding: 7px 14px; font-size: 13px;">← واپس فہرست</a>
@@ -438,9 +437,9 @@
 
             <a href="{{ url_for('edit_datesheet', datesheet_id=datesheet['id']) }}" class="btn btn-gold" style="padding: 7px 16px; font-size: 13px; font-weight: bold;">✏️ ترمیم</a>
 
-            <!-- پرنٹ بٹن (1 صفحہ) -->
+            <!-- پرنٹ بٹن (1 صفحہ مکمل) -->
             <button type="button" class="btn btn-primary" onclick="window.print()" style="padding: 8px 20px; font-size: 13px; font-weight: 800; box-shadow: 0 4px 15px rgba(30,58,95,0.3);">
-                🖨️ پرنٹ (1 Page)
+                🖨️ پرنٹ (مکمل 1 صفحہ)
             </button>
         </div>
     </div>
@@ -620,11 +619,12 @@ function downloadAsPDF() {
     element.style.marginBottom = '0px';
 
     const opt = {
-        margin: [4, 4, 4, 4],
+        margin: [3, 4, 3, 4],
         filename: 'Jamia_Ashrafia_DateSheet_1448H.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2.2, useCORS: true, letterRendering: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        html2canvas: { scale: 2.0, useCORS: true, letterRendering: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: 'avoid-all' }
     };
 
     html2pdf().set(opt).from(element).save().then(() => {
