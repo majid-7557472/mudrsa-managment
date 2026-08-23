@@ -6,17 +6,15 @@
 <style>
     @page {
         size: A4 portrait;
-        margin: 4mm 4mm 4mm 4mm;
+        margin: 5mm 6mm 5mm 6mm;
     }
 
     .datesheet-outer-box {
         background: var(--bg-surface, #f8fafc);
-        padding: 12px 14px;
+        padding: 15px;
         border-radius: var(--r-md);
         box-shadow: var(--shadow-sm);
-        margin-bottom: 25px;
-        width: 100%;
-        box-sizing: border-box;
+        margin-bottom: 30px;
     }
 
     .datesheet-toolbar {
@@ -25,229 +23,187 @@
         align-items: center;
         flex-wrap: wrap;
         gap: 10px;
-        margin-bottom: 14px;
-        padding-bottom: 10px;
+        margin-bottom: 15px;
+        padding-bottom: 12px;
         border-bottom: 1.5px solid var(--border);
     }
 
-    /* پرنٹ ایبل کنٹینر - 100% اسکرین پر مکمل فٹ بغیر کسی کٹنگ کے */
+    /* پرنٹ ایبل کنٹینر - بالکل اصل کاغذ کا ہو بہو ماسٹر لے آؤٹ */
     .printable-datesheet {
         background: #ffffff !important;
         width: 100% !important;
-        max-width: 100% !important;
+        max-width: 860px;
         margin: 0 auto;
-        color: #0f172a !important;
+        color: #000000 !important;
         direction: rtl !important;
         font-family: 'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif !important;
-        padding: 12px 12px;
-        border: 1.5px solid #cbd5e1;
-        border-radius: 10px;
-        box-shadow: 0 4px 20px rgba(30,58,95,0.06);
-        box-sizing: border-box !important;
-        overflow-x: auto;
+        padding: 10px 14px;
+        border: 1px solid #94a3b8;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.06);
     }
 
     /* ٹاپ ہیڈر */
     .ds-top-header {
         position: relative;
         text-align: center;
-        margin-bottom: 12px;
-        padding: 2px 50px 8px 50px;
-        border-bottom: 2px solid #e2e8f0;
+        margin-bottom: 10px;
+        padding: 4px 60px 4px 60px;
     }
     .ds-logo-top {
         position: absolute;
         top: 0;
         left: 0;
-        width: 60px;
-        height: 60px;
+        width: 65px;
+        height: 65px;
         object-fit: contain;
     }
     .ds-main-heading {
         font-family: 'Noto Nastaliq Urdu', 'Noto Sans Arabic', serif;
-        font-size: 28px;
+        font-size: 32px;
         font-weight: 800;
-        color: #1e3a5f !important;
-        margin: 0 0 8px 0;
+        color: #000000 !important;
+        margin: 0 0 6px 0;
         line-height: 1.35;
         letter-spacing: 0.5px;
     }
     .ds-sub-heading {
-        font-size: 13.5px;
+        font-size: 14.5px;
         font-weight: 800;
-        color: #c9973a !important;
+        color: #000000 !important;
         margin: 0;
-        display: inline-block;
-        background: #fff8e7;
-        padding: 3px 16px;
-        border-radius: 20px;
-        border: 1px solid #dfc27a;
+        letter-spacing: 0.2px;
     }
 
-    /* مین ٹیبل - 100% اسکرین کی چوڑائی میں فٹ */
+    /* باقاعدہ مین ٹیبل - ہو بہو اصل کاغذ */
     table.ds-main-table {
         width: 100% !important;
         border-collapse: collapse !important;
-        border: 1.5px solid #1e3a5f !important;
+        border: 2px solid #000000 !important;
         direction: rtl !important;
+        table-layout: fixed !important;
         margin: 0 auto !important;
         background: #ffffff !important;
-        table-layout: auto !important;
     }
 
     table.ds-main-table th, 
     table.ds-main-table td {
-        border: 1px solid #cbd5e1 !important;
-        padding: 4px 2px !important;
+        border: 1.2px solid #000000 !important;
+        padding: 3px 2px !important;
         text-align: center !important;
         vertical-align: middle !important;
-        color: #0f172a !important;
+        color: #000000 !important;
         box-sizing: border-box !important;
-        line-height: 1.25 !important;
+        white-space: pre-line !important; /* ہر کتاب کی سطریں قدرتی اور صاف رہیں گی */
     }
 
-    /* ہیڈر کالمز (الأيام) */
+    /* رو 1: الایام */
     .th-sec-head {
-        background: #1e3a5f !important;
-        color: #ffffff !important;
-        font-size: 11.5px !important;
-        font-weight: 800 !important;
-        width: 26px !important;
-        max-width: 28px !important;
-        padding: 2px 1px !important;
-    }
-    .th-cls-head {
-        background: #1e3a5f !important;
-        color: #ffffff !important;
-        font-size: 11.5px !important;
-        font-weight: 800 !important;
-        width: 88px !important;
-        max-width: 95px !important;
-        padding: 3px 2px !important;
-    }
-    .th-day-head {
-        background: linear-gradient(135deg, #1e3a5f 0%, #2b5282 100%) !important;
-        color: #ffffff !important;
+        background: #ffffff !important;
+        color: #000000 !important;
         font-size: 12px !important;
         font-weight: 800 !important;
-        height: 28px !important;
-        padding: 2px 2px !important;
+        width: 28px !important;
     }
-
-    /* اوقات رو */
-    .th-time-row {
-        background: #fffbeb !important;
-        color: #92400e !important;
-        font-size: 10px !important;
+    .th-cls-head {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 11.5px !important;
         font-weight: 800 !important;
-        height: 20px !important;
-        border-color: #fde68a !important;
-        padding: 1px !important;
+        width: 82px !important;
+    }
+    .th-day-head {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 13px !important;
+        font-weight: 800 !important;
+        height: 24px !important;
     }
 
-    /* تواریخ رو */
+    /* رو 2: الوقت */
+    .th-time-row {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 11px !important;
+        font-weight: 800 !important;
+        direction: ltr !important;
+        font-family: monospace !important;
+        height: 20px !important;
+    }
+
+    /* رو 3: التاریخ */
     .th-date-row {
-        background: #f0fdfa !important;
-        color: #0f766e !important;
-        font-size: 10px !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 11px !important;
         font-weight: 800 !important;
         height: 32px !important;
-        line-height: 1.2 !important;
-        border-color: #99f6e4 !important;
-        padding: 2px 1px !important;
+        line-height: 1.25 !important;
     }
-    .th-date-row .hijri {
+    .hijri-txt {
         font-weight: 800;
-        font-size: 10.5px;
-        color: #0f766e;
+        font-size: 11.5px;
+        color: #000000;
     }
-    .th-date-row .greg {
-        font-size: 9px;
-        color: #475569;
+    .greg-txt {
+        font-size: 10px;
+        color: #111827;
         font-weight: 700;
     }
 
-    /* دائیں جانب سیکشن کالم (المرحلہ) */
+    /* دائیں جانب سیکشن کالم (المرحلہ - بلیک بیک گراؤنڈ) */
     table.ds-main-table td.sec-col {
+        background-color: #000000 !important;
         color: #ffffff !important;
         font-weight: 800 !important;
-        font-size: 11px !important;
-        width: 26px !important;
-        max-width: 28px !important;
+        font-size: 12px !important;
+        width: 28px !important;
         writing-mode: vertical-rl !important;
         transform: rotate(180deg) !important;
         padding: 6px 1px !important;
         letter-spacing: 1px;
         text-align: center !important;
         vertical-align: middle !important;
-        border-left: 1.5px solid #1e3a5f !important;
     }
-
-    /* مراحل کے خوبصورت رنگین تھیمز */
-    .sec-color-0 { background: #1e3a5f !important; }
-    .sec-color-1 { background: #0d7c5f !important; }
-    .sec-color-2 { background: #b45309 !important; }
-    .sec-color-3 { background: #6d28d9 !important; }
-    .sec-color-4 { background: #991b1b !important; }
-    .sec-color-5 { background: #0369a1 !important; }
 
     /* کلاس کالم (الصف / المرحلة) */
     table.ds-main-table td.cls-col {
-        background-color: #f8fafc !important;
+        background-color: #ffffff !important;
         font-weight: 800 !important;
-        font-size: 10px !important;
-        color: #1e3a5f !important;
-        width: 88px !important;
-        max-width: 95px !important;
+        font-size: 11px !important;
+        color: #000000 !important;
+        width: 82px !important;
         text-align: center !important;
-        line-height: 1.2 !important;
+        line-height: 1.25 !important;
         padding: 3px 2px !important;
-        border-right: 1px solid #cbd5e1 !important;
     }
 
-    /* کتاب و پرچہ کے خانے */
+    /* کتاب و پرچہ کے خانے (صاف ستھری 2-3 سطریں) */
     table.ds-main-table td.paper-col {
         background-color: #ffffff !important;
-        font-size: 9.5px !important;
+        font-size: 10px !important;
         font-weight: 600 !important;
-        color: #1e293b !important;
-        line-height: 1.22 !important;
-        padding: 3px 2px !important;
+        color: #000000 !important;
+        line-height: 1.28 !important;
+        padding: 4px 2px !important;
         text-align: center !important;
-    }
-    table.ds-main-table tr:hover td.paper-col {
-        background-color: #f0fdf4 !important;
     }
 
     /* جوابی کاپی کے بیجز */
-    .badge-num-1 {
+    .badge-num {
         display: inline-block;
-        color: #0284c7;
+        color: #000000;
         font-weight: 900;
-        font-size: 11px;
-        margin-right: 1px;
-    }
-    .badge-num-2 {
-        display: inline-block;
-        color: #d97706;
-        font-weight: 900;
-        font-size: 11px;
-        margin-right: 1px;
+        font-size: 12px;
+        margin-right: 2px;
     }
 
-    /* فوٹر */
+    /* فوٹر وضاحتی نوٹ */
     .ds-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 8px;
-        font-size: 10.5px;
+        margin-top: 6px;
+        font-size: 11px;
         font-weight: 700;
-        color: #334155 !important;
-        padding: 4px 10px;
-        background: #f8fafc;
-        border-radius: 6px;
-        border: 1px solid #e2e8f0;
+        color: #000000 !important;
+        text-align: right;
     }
 
     @media print {
@@ -279,25 +235,14 @@
             box-shadow: none !important;
             padding: 0 !important;
         }
-        .th-day-head, .th-sec-head, .th-cls-head {
-            background: #1e3a5f !important;
+        table.ds-main-table td.sec-col {
+            background-color: #000000 !important;
             color: #ffffff !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
-        .th-time-row {
-            background: #fffbeb !important;
-            color: #92400e !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-        .th-date-row {
-            background: #f0fdfa !important;
-            color: #0f766e !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-        table.ds-main-table td.sec-col {
+        table.ds-main-table th, table.ds-main-table td {
+            border-color: #000000 !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
@@ -312,7 +257,7 @@
     <div class="datesheet-toolbar no-print">
         <div style="display: flex; align-items: center; gap: 10px;">
             <a href="{{ url_for('datesheets_list') }}" class="btn btn-muted" style="padding: 7px 14px; font-size: 13px;">← واپس فہرست</a>
-            <h3 style="font-size: 18px; font-weight: 800; color: var(--primary); margin: 0;">🎨 امتحانی ڈیٹ شیٹ (مکمل فٹ 7 کالمز)</h3>
+            <h3 style="font-size: 18px; font-weight: 800; color: var(--primary); margin: 0;">📄 امتحانی ڈیٹ شیٹ (اصل کاغذ کے عین مطابق)</h3>
         </div>
 
         <div style="display: flex; gap: 10px;">
@@ -323,56 +268,55 @@
         </div>
     </div>
 
-    <!-- باضابطہ رنگین ڈیٹ شیٹ -->
+    <!-- باضابطہ ڈیٹ شیٹ -->
     <div class="printable-datesheet">
         
         <!-- ہیڈر -->
         <div class="ds-top-header">
             <img src="{{ url_for('static', filename='logo.png') }}" class="ds-logo-top" alt="مونوگرام" onerror="this.style.display='none'">
             <h1 class="ds-main-heading">{{ datesheet['institution_name'] or 'الجامعۃ الاشرفیہ لاہور' }}</h1>
-            <div>
-                <span class="ds-sub-heading">{{ datesheet['title'] }} للعام - {{ datesheet['academic_year'] }}</span>
-            </div>
+            <div class="ds-sub-heading">{{ datesheet['title'] }} - {{ datesheet['academic_year'] }}</div>
         </div>
 
         <!-- امتحانی شیڈول ٹیبل (7 کالمز: مرحلہ، الصف، السبت، الأحد، الإثنين، الثلاثاء، الأربعاء) -->
         <table class="ds-main-table">
             <thead>
-                <!-- رو 1: الایام (السبت تا الأربعاء) -->
+                <!-- رو 1: الایام (Right to Left: دائیں طرف مرحلہ + کلاس، پھر السبت، الأحد، الإثنين، الثلاثاء، الأربعاء) -->
                 <tr>
-                    <th class="th-sec-head">المرحلة</th>
-                    <th class="th-cls-head">الصف</th>
+                    <th class="th-sec-head" style="width: 4%;">المرحلة</th>
+                    <th class="th-cls-head" style="width: 14%;">الصف</th>
                     {% for d in days %}
-                        <th class="th-day-head">{{ d['day'] }}</th>
+                        <th class="th-day-head" style="width: 16.4%;">{{ d['day'] }}</th>
                     {% endfor %}
                 </tr>
                 <!-- رو 2: الوقت -->
                 <tr>
-                    <th class="th-time-row" colspan="2">الوقت</th>
+                    <th class="th-time-row" style="font-size: 11px;">الوقت</th>
+                    <th class="th-time-row" style="font-size: 11px;">{{ datesheet['exam_timing'] }}</th>
                     {% for d in days %}
-                        <th class="th-time-row" style="direction: ltr; font-family: monospace;">{{ datesheet['exam_timing'] }}</th>
+                        <th class="th-time-row">{{ datesheet['exam_timing'] }}</th>
                     {% endfor %}
                 </tr>
                 <!-- رو 3: التاریخ (ہجری + عیسوی) -->
                 <tr>
-                    <th class="th-date-row" colspan="2">التاريخ</th>
+                    <th class="th-date-row" style="font-size: 11px;">التاريخ</th>
+                    <th class="th-date-row" style="font-size: 10px;">{{ days[0]['gregorian'] }}</th>
                     {% for d in days %}
                         <th class="th-date-row">
-                            <div class="hijri">{{ d['hijri'] }}</div>
-                            <div class="greg">{{ d['gregorian'] }}</div>
+                            <div class="hijri-txt">{{ d['hijri'] }}</div>
+                            <div class="greg-txt">{{ d['gregorian'] }}</div>
                         </th>
                     {% endfor %}
                 </tr>
             </thead>
             <tbody>
-                {# درجات کی قطاریں رنگین سیکشنز کے ساتھ #}
+                {# درجات کی قطاریں #}
                 {% for sec in structured_sections %}
-                    {% set sec_idx = loop.index0 % 6 %}
                     {% for row in sec['rows'] %}
                     <tr>
-                        {# 1. دائیں طرف رنگین سیکشن کالم (صرف پہلی قطار میں معہ rowspan) #}
+                        {# 1. دائیں طرف سیکشن کالم (صرف پہلی قطار میں معہ rowspan) #}
                         {% if loop.first %}
-                            <td class="sec-col sec-color-{{ sec_idx }}" rowspan="{{ sec['rows']|length }}">
+                            <td class="sec-col" rowspan="{{ sec['rows']|length }}">
                                 <span dir="rtl">{{ sec['section_name'] }}</span>
                             </td>
                         {% endif %}
@@ -387,9 +331,9 @@
                             <td class="paper-col">
                                 <span dir="rtl">{{ p['subject'] }}</span>
                                 {% if p['copies'] == 1 %}
-                                    <span class="badge-num-1" title="ایک جوابی کاپی">❶</span>
+                                    <span class="badge-num" title="ایک جوابی کاپی"> ❶</span>
                                 {% elif p['copies'] == 2 %}
-                                    <span class="badge-num-2" title="دو جوابی کاپیاں">❷</span>
+                                    <span class="badge-num" title="دو جوابی کاپیاں"> ❷</span>
                                 {% endif %}
                             </td>
                         {% endfor %}
@@ -401,8 +345,7 @@
 
         <!-- فوٹر وضاحتی نوٹ -->
         <div class="ds-footer">
-            <div>• {{ datesheet['footer_note'] }}</div>
-            <div>⏰ الوقت: <strong>{{ datesheet['exam_timing'] }}</strong></div>
+            • {{ datesheet['footer_note'] }}
         </div>
 
     </div>
