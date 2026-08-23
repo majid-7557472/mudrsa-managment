@@ -1,16 +1,73 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response, session, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response, session, send_from_directory, send_file
 import sqlite3
 import csv
 import io
 from datetime import date, datetime
 import calendar
 from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.utils import secure_filename
 import os
 import shutil
 import urllib.parse
+import uuid
+import base64
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "madrasa_secure_key_123_change_in_production")
+
+# ==== فوٹو اپلوڈ سیٹنگز ====
+UPLOAD_PHOTO_FOLDER = os.path.join('static', 'uploads', 'photos')
+ALLOWED_PHOTO_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
+
+if not os.path.exists(UPLOAD_PHOTO_FOLDER):
+    os.makedirs(UPLOAD_PHOTO_FOLDER, exist_ok=True)
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_PHOTO_EXTENSIONS
+
+def process_and_save_photo(file_obj, base64_data, existing_photo=None):
+    # 1. لائیو کیمرہ اسکین بیس64 ڈیٹا
+    if base64_data and base64_data.startswith('data:image'):
+        try:
+            format_part, imgstr = base64_data.split(';base64,')
+            ext = 'jpg'
+            if 'png' in format_part:
+                ext = 'png'
+            elif 'webp' in format_part:
+                ext = 'webp'
+            filename = f"student_{uuid.uuid4().hex[:10]}_{int(datetime.now().timestamp())}.{ext}"
+            filepath = os.path.join(UPLOAD_PHOTO_FOLDER, filename)
+            with open(filepath, "wb") as fh:
+                fh.write(base64.b64decode(imgstr))
+            
+            if existing_photo:
+                old_path = os.path.join(UPLOAD_PHOTO_FOLDER, existing_photo)
+                if os.path.exists(old_path):
+                    try:
+                        os.remove(old_path)
+                    except:
+                        pass
+            return filename
+        except Exception as e:
+            print(f"Camera photo error: {e}")
+
+    # 2. کمپیوٹر / اسکینر سے فائل اپلوڈ
+    if file_obj and file_obj.filename and allowed_file(file_obj.filename):
+        ext = file_obj.filename.rsplit('.', 1)[1].lower()
+        filename = f"student_{uuid.uuid4().hex[:10]}_{int(datetime.now().timestamp())}.{ext}"
+        filepath = os.path.join(UPLOAD_PHOTO_FOLDER, filename)
+        file_obj.save(filepath)
+
+        if existing_photo:
+            old_path = os.path.join(UPLOAD_PHOTO_FOLDER, existing_photo)
+            if os.path.exists(old_path):
+                try:
+                    os.remove(old_path)
+                except:
+                    pass
+        return filename
+
+    return existing_photo
 
 # ==== ہر رول کو کن صفحات کی اجازت ہے ====
 ROLE_PERMISSIONS = {
@@ -18,7 +75,7 @@ ROLE_PERMISSIONS = {
         'students_list', 'admission', 'get_student_by_cnic', 'edit_student',
         'delete_student', 'class_list', 'export_class_list_csv',
         'admission_slip', 'student_profile', 'export_students_csv',
-        'student_attendance_yearly'
+        'student_attendance_yearly', 'import_students', 'download_sample_csv'
     ],
     'attendance': [
         'attendance', 'attendance_report', 'student_attendance_yearly'
@@ -30,7 +87,7 @@ ROLE_PERMISSIONS = {
     ],
 }
 # یہ صفحات ہر لاگ ان یوزر کے لیے کھلے رہیں گے، رول سے قطع نظر
-ALWAYS_ALLOWED = ['login', 'logout', 'change_password', 'dashboard', 'static']
+ALWAYS_ALLOWED = ['login', 'logout', 'change_password', 'dashboard', 'static', 'quick_search', 'download_sample_csv']
 
 # ==== سیکیورٹی گارڈ: بغیر لاگ ان کوئی صفحہ نہیں کھلے گا، اور رول کے مطابق رسائی ====
 @app.before_request
@@ -192,12 +249,16 @@ def students_list():
         total_pages=total_pages,
         total_records=total_records
     )
-# 3. داخلہ فارم (خودکار رول نمبر اسائنمنٹ کے ساتھ)
-# داخلہ فارم (صرف دستی درج شدہ رول نمبر لے گا)
+# 3. داخلہ فارم (خودکار رول نمبر اسائنمنٹ و تصویر اسکین/اپلوڈ کے ساتھ)
 @app.route('/admission', methods=['GET', 'POST'])
 def admission():
     conn = get_db_connection()
     if request.method == 'POST':
+        # تصویر پراسیس کرنا (فائل یا لائیو کیمرہ اسکین)
+        photo_file = request.files.get('photo_file')
+        photo_base64 = request.form.get('photo_base64')
+        saved_photo = process_and_save_photo(photo_file, photo_base64)
+
         form_data = {
             'admission_form_no': request.form.get('admission_form_no'),
             'class_roll_no': request.form.get('class_roll_no', '').strip(),
@@ -221,7 +282,8 @@ def admission():
             'aid_status': request.form.get('aid_status'),
             'admission_type': request.form.get('admission_type'),
             'current_class': request.form.get('current_class'),
-            'admission_date': request.form.get('admission_date')
+            'admission_date': request.form.get('admission_date'),
+            'photo': saved_photo
         }
 
         cursor = conn.cursor()
@@ -232,13 +294,13 @@ def admission():
                     father_cnic, guardian_name, guardian_relation, father_profession, 
                     dob, caste, district, blood_group, marital_status, temp_address, 
                     perm_address, student_phone, guardian_phone, residence_status, 
-                    aid_status, admission_type, current_class, admission_date
+                    aid_status, admission_type, current_class, admission_date, photo
                 ) VALUES (
                     :admission_form_no, :class_roll_no, :student_name, :father_name, :student_cnic, 
                     :father_cnic, :guardian_name, :guardian_relation, :father_profession, 
                     :dob, :caste, :district, :blood_group, :marital_status, :temp_address, 
                     :perm_address, :student_phone, :guardian_phone, :residence_status, 
-                    :aid_status, :admission_type, :current_class, :admission_date
+                    :aid_status, :admission_type, :current_class, :admission_date, :photo
                 )
             ''', form_data)
             student_id = cursor.lastrowid
@@ -259,6 +321,7 @@ def admission():
     custom_fields = conn.execute("SELECT * FROM custom_fields WHERE section = 'student'").fetchall()
     conn.close()
     return render_template('admission.html', custom_fields=custom_fields)
+
 # 4. سابقہ ڈیٹا API
 @app.route('/api/get_student_by_cnic')
 def get_student_by_cnic():
@@ -280,6 +343,23 @@ def edit_student(student_id):
         return "طالب علم کا ریکارڈ نہیں ملا!", 404
 
     if request.method == 'POST':
+        existing_photo = student['photo']
+        photo_file = request.files.get('photo_file')
+        photo_base64 = request.form.get('photo_base64')
+        remove_photo = request.form.get('remove_photo')
+
+        if remove_photo == '1':
+            if existing_photo:
+                old_path = os.path.join(UPLOAD_PHOTO_FOLDER, existing_photo)
+                if os.path.exists(old_path):
+                    try:
+                        os.remove(old_path)
+                    except:
+                        pass
+            saved_photo = None
+        else:
+            saved_photo = process_and_save_photo(photo_file, photo_base64, existing_photo)
+
         form_data = {
             'admission_form_no': request.form.get('admission_form_no'),
             'class_roll_no': request.form.get('class_roll_no'),
@@ -304,6 +384,7 @@ def edit_student(student_id):
             'admission_type': request.form.get('admission_type'),
             'current_class': request.form.get('current_class'),
             'admission_date': request.form.get('admission_date'),
+            'photo': saved_photo,
             'student_id': student_id
         }
         conn.execute('''
@@ -318,7 +399,7 @@ def edit_student(student_id):
                 student_phone = :student_phone, guardian_phone = :guardian_phone,
                 residence_status = :residence_status, aid_status = :aid_status,
                 admission_type = :admission_type, current_class = :current_class,
-                admission_date = :admission_date
+                admission_date = :admission_date, photo = :photo
             WHERE id = :student_id
         ''', form_data)
         conn.commit()
@@ -329,10 +410,235 @@ def edit_student(student_id):
     conn.close()
     return render_template('edit_student.html', student=student)
 
+# 5b. ایکسل و CSV سے بلک طلبہ امپورٹ
+@app.route('/import_students', methods=['GET', 'POST'])
+def import_students():
+    if request.method == 'POST':
+        file = request.files.get('file')
+        if not file or not file.filename:
+            flash('براہ کرم کوئی CSV یا Excel فائل منتخب کریں!', 'danger')
+            return redirect(url_for('import_students'))
+
+        filename = file.filename.lower()
+        if not (filename.endswith('.csv') or filename.endswith('.xlsx') or filename.endswith('.xls')):
+            flash('صرف CSV یا Excel (.xlsx, .xls) فارمیٹ کی اجازت ہے۔', 'danger')
+            return redirect(url_for('import_students'))
+
+        rows_data = []
+        try:
+            if filename.endswith('.csv'):
+                content = file.stream.read().decode('utf-8-sig', errors='replace')
+                reader = csv.DictReader(io.StringIO(content))
+                for row in reader:
+                    rows_data.append(row)
+            else:
+                import openpyxl
+                wb = openpyxl.load_workbook(file)
+                sheet = wb.active
+                headers = [cell.value for cell in sheet[1]]
+                for r in sheet.iter_rows(min_row=2, values_only=True):
+                    if any(r):
+                        row_dict = {str(headers[i]).strip(): (str(r[i]).strip() if r[i] is not None else '') for i in range(len(headers)) if i < len(r) and headers[i]}
+                        rows_data.append(row_dict)
+        except Exception as e:
+            flash(f'فائل پڑھنے میں خرابی پیش آئی: {str(e)}', 'danger')
+            return redirect(url_for('import_students'))
+
+        if not rows_data:
+            flash('فائل خالی ہے یا اس میں کوئی درست ڈیٹا نہیں ملا۔', 'danger')
+            return redirect(url_for('import_students'))
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        success_count = 0
+        skip_count = 0
+        errors = []
+
+        field_map = {
+            'admission_form_no': ['admission_form_no', 'form_no', 'فارم نمبر', 'فارم داخلہ نمبر'],
+            'class_roll_no': ['class_roll_no', 'roll_no', 'رول نمبر', 'کلاس رول نمبر'],
+            'student_name': ['student_name', 'name', 'نام', 'نام طالب علم', 'طالب علم کا نام'],
+            'father_name': ['father_name', 'father', 'والد کا نام', 'ولدیت'],
+            'student_cnic': ['student_cnic', 'cnic', 'b_form', 'شناختی کارڈ', 'ب فارم'],
+            'father_cnic': ['father_cnic', 'father_nic', 'والد کا شناختی کارڈ'],
+            'guardian_name': ['guardian_name', 'guardian', 'سرپرست کا نام'],
+            'guardian_relation': ['guardian_relation', 'relation', 'سرپرست سے رشتہ'],
+            'father_profession': ['father_profession', 'profession', 'والد کا پیشہ'],
+            'dob': ['dob', 'تاریخ پیدائش'],
+            'caste': ['caste', 'قوم', 'برادری'],
+            'district': ['district', 'ضلع'],
+            'blood_group': ['blood_group', 'بلڈ گروپ', 'خون کا گروپ'],
+            'marital_status': ['marital_status', 'ازدواجی حیثیت'],
+            'temp_address': ['temp_address', 'address', 'عارضی پتہ', 'پتہ'],
+            'perm_address': ['perm_address', 'مستقل پتہ'],
+            'student_phone': ['student_phone', 'phone', 'موبائل نمبر', 'فون نمبر'],
+            'guardian_phone': ['guardian_phone', 'سرپرست کا فون'],
+            'residence_status': ['residence_status', 'رہائش', 'رہائشی حیثیت'],
+            'aid_status': ['aid_status', 'امداد', 'مالی کیفیت'],
+            'admission_type': ['admission_type', 'داخلہ نوعیت'],
+            'current_class': ['current_class', 'class', 'درجہ', 'کلاس'],
+            'admission_date': ['admission_date', 'تاریخ داخلہ']
+        }
+
+        def get_val(row, target_key, default=''):
+            aliases = field_map.get(target_key, [target_key])
+            for k in row.keys():
+                clean_k = str(k).strip()
+                if clean_k in aliases or clean_k.lower() in aliases:
+                    val = str(row[k]).strip()
+                    if val and val != 'None':
+                        return val
+            return default
+
+        for idx, row in enumerate(rows_data, start=2):
+            s_name = get_val(row, 'student_name')
+            f_name = get_val(row, 'father_name')
+            c_class = get_val(row, 'current_class')
+            form_no = get_val(row, 'admission_form_no')
+
+            if not s_name or not f_name or not c_class:
+                skip_count += 1
+                errors.append(f"قطار {idx}: نام طالب علم، والد کا نام یا درجہ خالی ہے۔")
+                continue
+
+            if not form_no:
+                max_id = cursor.execute('SELECT MAX(id) FROM students').fetchone()[0] or 0
+                form_no = f"AUTO-{max_id + idx + 100}"
+
+            exist = cursor.execute('SELECT id FROM students WHERE admission_form_no = ?', (form_no,)).fetchone()
+            if exist:
+                skip_count += 1
+                errors.append(f"قطار {idx}: فارم نمبر '{form_no}' پہلے سے موجود ہے۔")
+                continue
+
+            try:
+                cursor.execute('''
+                    INSERT INTO students (
+                        admission_form_no, class_roll_no, student_name, father_name, student_cnic,
+                        father_cnic, guardian_name, guardian_relation, father_profession,
+                        dob, caste, district, blood_group, marital_status, temp_address,
+                        perm_address, student_phone, guardian_phone, residence_status,
+                        aid_status, admission_type, current_class, admission_date
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (
+                    form_no,
+                    get_val(row, 'class_roll_no'),
+                    s_name,
+                    f_name,
+                    get_val(row, 'student_cnic'),
+                    get_val(row, 'father_cnic'),
+                    get_val(row, 'guardian_name'),
+                    get_val(row, 'guardian_relation'),
+                    get_val(row, 'father_profession'),
+                    get_val(row, 'dob'),
+                    get_val(row, 'caste'),
+                    get_val(row, 'district'),
+                    get_val(row, 'blood_group'),
+                    get_val(row, 'marital_status', 'کنوارا'),
+                    get_val(row, 'temp_address'),
+                    get_val(row, 'perm_address'),
+                    get_val(row, 'student_phone'),
+                    get_val(row, 'guardian_phone'),
+                    get_val(row, 'residence_status', 'رہائشی'),
+                    get_val(row, 'aid_status', 'امدادی'),
+                    get_val(row, 'admission_type', 'جدید'),
+                    c_class,
+                    get_val(row, 'admission_date', date.today().isoformat())
+                ))
+                success_count += 1
+            except Exception as e:
+                skip_count += 1
+                errors.append(f"قطار {idx}: خرابی ({str(e)})")
+
+        conn.commit()
+        conn.close()
+
+        if success_count > 0:
+            flash(f'مبارک ہو! {success_count} طلبہ کا ڈیٹا کامیابی سے امپورٹ ہو گیا۔', 'success')
+        if skip_count > 0:
+            err_msg = "، ".join(errors[:4])
+            if len(errors) > 4:
+                err_msg += f" اور مزید {len(errors)-4}..."
+            flash(f'{skip_count} ریکارڈز چھوڑ دیے گئے: {err_msg}', 'danger')
+
+        return redirect(url_for('students_list'))
+
+    return render_template('import_students.html')
+
+# 5c. سیمپل CSV فائل ڈاؤنلوڈ
+@app.route('/download_sample_csv')
+def download_sample_csv():
+    output = io.StringIO()
+    writer = csv.writer(output)
+    headers = [
+        'admission_form_no', 'class_roll_no', 'student_name', 'father_name',
+        'student_cnic', 'father_cnic', 'guardian_name', 'guardian_relation',
+        'father_profession', 'dob', 'caste', 'district', 'blood_group',
+        'marital_status', 'temp_address', 'perm_address', 'student_phone',
+        'guardian_phone', 'residence_status', 'aid_status', 'admission_type',
+        'current_class', 'admission_date'
+    ]
+    writer.writerow(headers)
+    sample_row = [
+        '1001', '1', 'محمد احمد', 'عبد الرحمٰن',
+        '35201-1234567-1', '35201-7654321-1', 'عبد الرحمٰن', 'والد',
+        'تجارت', '2008-05-15', 'صدیقی', 'لاہور', 'B+',
+        'کنوارا', 'مسلم ٹاؤن لاہور', 'مسلم ٹاؤن لاہور', '0300-1234567',
+        '0300-7654321', 'رہائشی', 'امدادی', 'جدید',
+        'اولی', '2026-08-01'
+    ]
+    writer.writerow(sample_row)
+    output.seek(0)
+
+    return Response(
+        output.getvalue().encode('utf-8-sig'),
+        mimetype='text/csv; charset=utf-8',
+        headers={"Content-Disposition": "attachment;filename=madrasa_students_sample.csv"}
+    )
+
+# 5d. گلوبل کوئیک سرچ API (Ctrl+K)
+@app.route('/api/quick_search')
+def quick_search():
+    q = request.args.get('q', '').strip()
+    if not q or len(q) < 1:
+        return jsonify({'results': []})
+
+    conn = get_db_connection()
+    wildcard = f"%{q}%"
+    students = conn.execute('''
+        SELECT id, student_name, father_name, current_class, class_roll_no, admission_form_no, photo 
+        FROM students 
+        WHERE student_name LIKE ? OR father_name LIKE ? OR admission_form_no LIKE ? OR class_roll_no LIKE ? OR student_cnic LIKE ?
+        ORDER BY id DESC LIMIT 8
+    ''', (wildcard, wildcard, wildcard, wildcard, wildcard)).fetchall()
+    conn.close()
+
+    results = []
+    for s in students:
+        results.append({
+            'id': s['id'],
+            'title': s['student_name'],
+            'subtitle': f"ولدیت: {s['father_name']} | درجہ: {s['current_class']} | رول: {s['class_roll_no'] or '-'}",
+            'form_no': s['admission_form_no'],
+            'url': url_for('student_profile', student_id=s['id']),
+            'photo': s['photo']
+        })
+
+    return jsonify({'results': results})
+
 # 6. طالب علم ڈیلیٹ
 @app.route('/student/<int:student_id>/delete')
 def delete_student(student_id):
     conn = get_db_connection()
+    student = conn.execute('SELECT photo FROM students WHERE id = ?', (student_id,)).fetchone()
+    if student and student['photo']:
+        photo_path = os.path.join(UPLOAD_PHOTO_FOLDER, student['photo'])
+        if os.path.exists(photo_path):
+            try:
+                os.remove(photo_path)
+            except:
+                pass
+
     conn.execute('DELETE FROM students WHERE id = ?', (student_id,))
     conn.execute('DELETE FROM attendance WHERE student_id = ?', (student_id,))
     conn.execute('DELETE FROM exam_results WHERE student_id = ?', (student_id,))

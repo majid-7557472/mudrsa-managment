@@ -77,9 +77,18 @@
 </div>
 
 <div class="result-card">
-    <div style="text-align: center; border-bottom: 2px solid #1a5f7a; padding-bottom: 10px; margin-bottom: 20px;">
-        <h1 style="margin: 0; font-size: 26px; color: #1a5f7a;">{{ inst_name }}</h1>
-        <div style="font-size: 16px; font-weight: bold; color: #333; margin-top: 5px;">کارنامہ نتائج (کشف الدرجات) - {{ exam['exam_name'] }} ({{ exam['academic_year'] }})</div>
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1a5f7a; padding-bottom: 12px; margin-bottom: 20px;">
+        <div style="flex: 1; text-align: center;">
+            <h1 style="margin: 0; font-size: 26px; color: #1a5f7a;">{{ inst_name }}</h1>
+            <div style="font-size: 16px; font-weight: bold; color: #333; margin-top: 5px;">کارنامہ نتائج (کشف الدرجات) - {{ exam['exam_name'] }} ({{ exam['academic_year'] }})</div>
+        </div>
+        <div style="width: 75px; height: 90px; border: 1.5px solid #1a5f7a; border-radius: 6px; overflow: hidden; background: #fafafa; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-right: 10px;">
+            {% if student['photo'] %}
+                <img src="{{ url_for('static', filename='uploads/photos/' + student['photo']) }}" alt="تصویر" style="width: 100%; height: 100%; object-fit: cover;">
+            {% else %}
+                <span style="font-size: 28px; color: #aaa;">👤</span>
+            {% endif %}
+        </div>
     </div>
 
     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 14px; margin-bottom: 20px; background: #fdfdfd; padding: 10px; border: 1px solid #ddd;">

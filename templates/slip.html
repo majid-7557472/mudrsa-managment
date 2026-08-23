@@ -122,8 +122,19 @@
     <span style="color: var(--text-muted); font-size: 13px;">⚠️ اس طالب علم کا کوئی موبائل نمبر درج نہیں، واٹس ایپ نہیں بھیجا جا سکتا۔</span>
     {% endif %}
 <div class="slip-card">
-    <h2 class="title">الجامعۃ الاشرفیہ</h2>
-    <div class="subtitle">داخلہ تصدیق نامہ برائے سال 2026ء</div>
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+        <div style="flex: 1; text-align: center;">
+            <h2 class="title">الجامعۃ الاشرفیہ</h2>
+            <div class="subtitle">داخلہ تصدیق نامہ برائے تعلیمی سال 1447-1448ھ / 2026ء</div>
+        </div>
+        <div style="width: 80px; height: 95px; border: 1.5px solid #1a5f7a; border-radius: 6px; overflow: hidden; background: #fafafa; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">
+            {% if student['photo'] %}
+                <img src="{{ url_for('static', filename='uploads/photos/' + student['photo']) }}" alt="طالب علم تصویر" style="width: 100%; height: 100%; object-fit: cover;">
+            {% else %}
+                <span style="font-size: 11px; color: #888; text-align: center;">تصویر چسپاں کریں</span>
+            {% endif %}
+        </div>
+    </div>
 
     <div class="details-grid">
         <div class="item"><strong>رول نمبر (مدرسہ آئی ڈی):</strong> {{ student['id'] }}</div>

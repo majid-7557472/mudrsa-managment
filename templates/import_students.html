@@ -1,0 +1,170 @@
+﻿{% extends "base.html" %}
+{% block title %}بلک طلبہ امپورٹ (Excel / CSV){% endblock %}
+{% set active_page = 'students' %}
+
+{% block extra_head %}
+<style>
+    .import-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 10px 0 30px;
+    }
+
+    .import-card {
+        background: var(--bg-white, #ffffff);
+        border: 1.5px solid var(--border, #dde3ec);
+        border-radius: var(--r-md, 14px);
+        padding: 30px;
+        box-shadow: var(--shadow-sm, 0 2px 8px rgba(0,0,0,0.06));
+    }
+
+    .drop-zone {
+        border: 2.5px dashed var(--primary-light, #2d6a9f);
+        border-radius: 12px;
+        padding: 40px 20px;
+        text-align: center;
+        background: linear-gradient(135deg, rgba(45,106,159,0.03) 0%, rgba(201,151,58,0.04) 100%);
+        cursor: pointer;
+        transition: all 0.25s ease;
+        margin: 20px 0;
+    }
+
+    .drop-zone:hover, .drop-zone.dragover {
+        border-color: var(--gold, #c9973a);
+        background: rgba(201,151,58,0.08);
+        transform: scale(1.01);
+    }
+
+    .drop-zone-icon {
+        font-size: 52px;
+        margin-bottom: 12px;
+        display: inline-block;
+        animation: floatIcon 2s ease-in-out infinite;
+    }
+
+    @keyframes floatIcon {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-8px); }
+    }
+
+    .instructions-box {
+        background: var(--bg-surface, #f8fafc);
+        border: 1px solid var(--border-light, #edf2f7);
+        border-radius: 10px;
+        padding: 18px 22px;
+        margin-bottom: 24px;
+        font-size: 13.5px;
+        line-height: 1.8;
+    }
+
+    .instructions-box ol {
+        margin-right: 20px;
+        margin-top: 8px;
+    }
+
+    .instructions-box li {
+        margin-bottom: 6px;
+    }
+
+    .badge-sample {
+        background: #ecfdf5;
+        color: #065f46;
+        border: 1px solid #6ee7b7;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-weight: 700;
+        font-size: 12px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="import-container">
+    <!-- صفحہ عنوان -->
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 20px;">
+        <div>
+            <h2 style="font-size: 22px; font-weight: 800; color: var(--primary); margin: 0;">📥 ایکسل و CSV سے بلک طلبہ امپورٹ</h2>
+            <p style="font-size: 13px; color: var(--text-sub); margin: 4px 0 0;">سینکڑوں طلبہ کا ریکارڈ ایکسل شیٹ سے ایک ہی کلک میں سسٹم میں داخل کریں</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <a href="{{ url_for('students_list') }}" class="btn btn-muted">← واپس فہرست</a>
+            <a href="{{ url_for('download_sample_csv') }}" class="btn btn-excel">📑 سیمپل ایکسل ڈاؤنلوڈ کریں</a>
+        </div>
+    </div>
+
+    <div class="import-card">
+        <!-- ہدایات کا باکس -->
+        <div class="instructions-box">
+            <strong style="color: var(--primary); font-size: 15px;">📌 امپورٹ کرنے کا طریقہ اور ضروری ہدایات:</strong>
+            <ol>
+                <li>پہلے اوپر دیا گیا <span class="badge-sample">سیمپل ایکسل ڈاؤنلوڈ</span> بٹن دبا کر نمونہ فائل حاصل کریں۔</li>
+                <li>فائل میں <strong>نام طالب علم</strong>، <strong>والد کا نام</strong> اور <strong>درجہ</strong> کا ہونا لازمی ہے۔</li>
+                <li>اگر فارم نمبر خالی چھوڑیں گے تو سسٹم خودکار فارم نمبر تفویض کر دے گا۔</li>
+                <li>درجہ کے خانے میں درست درجہ لکھیں (مثلاً: اولی، ثانیہ، ثالثہ، رابعہ، خامسہ، سادسہ، سابعہ، دورہ حدیث)۔</li>
+                <li>فائل مکمل بھرنے کے بعد نیچے باکس میں ڈریگ کر کے یا کلک کر کے منتخب کریں اور اپلوڈ بٹن دبائیں۔</li>
+            </ol>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" id="import-form">
+            <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+                <div class="drop-zone-icon">📊</div>
+                <h3 style="font-size: 16px; color: var(--primary); margin-bottom: 6px;" id="drop-title">ایکسل یا CSV فائل یہاں ڈریگ کریں یا کلک کریں</h3>
+                <p style="font-size: 13px; color: var(--text-sub);" id="file-chosen-text">فائل فارمیٹ: .xlsx, .xls یا .csv (زیادہ سے زیادہ 20MB)</p>
+                <input type="file" name="file" id="file-input" accept=".csv, .xlsx, .xls" style="display: none;" onchange="handleFileSelect(this)">
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 13px; font-size: 16px;" id="submit-import-btn">
+                🚀 طلبہ کا ڈیٹا سسٹم میں داخل کریں
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+const dropTitle = document.getElementById('drop-title');
+const fileChosenText = document.getElementById('file-chosen-text');
+
+['dragenter', 'dragover'].forEach(eventName => {
+    dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    }, false);
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+    }, false);
+});
+
+dropZone.addEventListener('drop', (e) => {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    if (files.length > 0) {
+        fileInput.files = files;
+        handleFileSelect(fileInput);
+    }
+});
+
+function handleFileSelect(input) {
+    if (input.files && input.files[0]) {
+        const f = input.files[0];
+        dropTitle.textContent = '✅ منتخب فائل: ' + f.name;
+        dropTitle.style.color = '#065f46';
+        fileChosenText.textContent = `سائز: ${(f.size / 1024).toFixed(1)} KB — اب نیچے دیا گیا بٹن دبائیں`;
+    }
+}
+
+document.getElementById('import-form').addEventListener('submit', function() {
+    const btn = document.getElementById('submit-import-btn');
+    btn.innerHTML = '⏳ فائل پڑھی جا رہی ہے اور ڈیٹا داخل ہو رہا ہے...';
+    btn.disabled = true;
+    btn.style.opacity = '0.8';
+});
+</script>
+{% endblock %}

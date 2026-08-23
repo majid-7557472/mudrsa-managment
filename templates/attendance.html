@@ -138,21 +138,31 @@
             <table>
                 <thead>
                     <tr>
-<th style="width: 15%;">کلاس رول نمبر</th>
-<th style="width: 30%;">نام طالب علم</th>
-<th style="width: 25%;">ولدیت</th>
-<th style="width: 30%;">کیفیتِ حاضری</th>
+                        <th style="width: 10%;">کلاس رول نمبر</th>
+                        <th style="width: 25%;">نام طالب علم</th>
+                        <th style="width: 20%;">ولدیت</th>
+                        <th style="width: 30%;">کیفیتِ حاضری</th>
+                        <th style="width: 15%;">واٹس ایپ الرٹ</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for s in students %}
                     {% set current_status = att_records.get(s['id'], 'حاضر') %}
+                    {% set phone = (s['guardian_phone'] or s['student_phone'] or '').replace('-', '').replace(' ', '').strip() %}
+                    {% if phone.startswith('0') %}{% set phone = '92' + phone[1:] %}{% endif %}
                     <tr>
                         <td>
-                            <strong style="color: var(--primary-teal); font-size: 15px;">{{ s['class_roll_no'] or s['id'] }}</strong>
+                            <strong style="color: var(--primary, #1e3a5f); font-size: 15px;">{{ s['class_roll_no'] or s['id'] }}</strong>
                             <input type="hidden" name="student_id[]" value="{{ s['id'] }}">
                         </td>
-                        <td><strong>{{ s['student_name'] }}</strong></td>
+                        <td style="text-align: right; padding-right: 16px;">
+                            <div style="display: inline-flex; align-items: center; gap: 8px;">
+                                {% if s['photo'] %}
+                                    <img src="{{ url_for('static', filename='uploads/photos/' + s['photo']) }}" alt="تصویر" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid var(--gold, #c9973a);">
+                                {% endif %}
+                                <strong>{{ s['student_name'] }}</strong>
+                            </div>
+                        </td>
                         <td>{{ s['father_name'] }}</td>
                         <td>
                             <div class="attendance-options">
@@ -169,6 +179,16 @@
                                     رخصت
                                 </label>
                             </div>
+                        </td>
+                        <td>
+                            {% if phone %}
+                                {% set wa_msg = ('السلام علیکم ورحمۃ اللہ! محترم سرپرست، آپ کا بچہ ' + s['student_name'] + ' ولد ' + s['father_name'] + ' (درجہ ' + selected_class + ') آج بتاریخ ' + attendance_date + ' مدرسہ سے غیر حاضر رہا ہے۔ برائے مہربانی غیر حاضری کی وجہ سے مطلع فرمائیں۔ الجامعۃ الاشرفیہ لاہور') | urlencode %}
+                                <a href="https://wa.me/{{ phone }}?text={{ wa_msg }}" target="_blank" class="action-btn" style="background: #25d366; color: #fff; text-decoration: none; border-radius: 6px; padding: 4px 10px; font-size: 11.5px; display: inline-flex; align-items: center; gap: 4px;" title="والدین کو واٹس ایپ بھیجیں">
+                                    🟢 واٹس ایپ
+                                </a>
+                            {% else %}
+                                <span style="font-size: 11px; color: var(--text-sub, #94a3b8);">-</span>
+                            {% endif %}
                         </td>
                     </tr>
                     {% else %}

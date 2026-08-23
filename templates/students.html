@@ -75,6 +75,7 @@
         </div>
         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
             <a href="{{ url_for('admission') }}" class="btn btn-primary">+ نیا داخلہ</a>
+            <a href="{{ url_for('import_students') }}" class="btn btn-gold">📥 ایکسل سے امپورٹ</a>
             <a href="{{ url_for('export_students_csv') }}" class="btn btn-excel">📊 ایکسل ڈاؤنلوڈ</a>
         </div>
     </div>
@@ -112,7 +113,16 @@
                 <tr>
                     <td>{{ s['id'] }}</td>
                     <td>{{ s['class_roll_no'] or '-' }}</td>
-                    <td><strong>{{ s['student_name'] }}</strong></td>
+                    <td style="text-align: right; padding-right: 20px;">
+                        <div style="display: inline-flex; align-items: center; gap: 10px;">
+                            {% if s['photo'] %}
+                                <img src="{{ url_for('static', filename='uploads/photos/' + s['photo']) }}" alt="تصویر" style="width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--gold, #c9973a); box-shadow: 0 1px 4px rgba(0,0,0,0.1);">
+                            {% else %}
+                                <div style="width: 34px; height: 34px; border-radius: 50%; background: var(--bg-surface, #e2e8f0); display: flex; align-items: center; justify-content: center; font-size: 15px; border: 1px solid var(--border);">👤</div>
+                            {% endif %}
+                            <strong>{{ s['student_name'] }}</strong>
+                        </div>
+                    </td>
                     <td>{{ s['father_name'] }}</td>
                     <td>{{ s['current_class'] }}</td>
                     <td>{{ s['residence_status'] or '-' }}</td>

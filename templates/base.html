@@ -243,6 +243,15 @@
             <div>
                 <div class="header-badge">تعلیمی سال: 1447-1448ھ / 2026ء</div>
             </div>
+
+            <!-- فوری سرچ اور ڈارک موڈ بٹنز -->
+            <button type="button" class="btn btn-muted" onclick="openSearchModal()" style="padding: 6px 12px; font-size: 12.5px; display: inline-flex; align-items: center; gap: 6px;" title="فوری تلاش (Ctrl+K)">
+                🔍 <span>تلاش</span> <kbd style="background: rgba(255,255,255,0.2); padding: 1px 5px; border-radius: 4px; font-size: 10px; font-family: monospace;">Ctrl+K</kbd>
+            </button>
+            <button type="button" id="dark-mode-toggle" class="btn btn-muted" onclick="toggleDarkMode()" style="padding: 6px 12px; font-size: 14px;" title="ڈارک / لائٹ موڈ">
+                🌙
+            </button>
+
             {% if session.get('user_id') %}
             <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--gold-bright);">
                 👤 {{ session.get('full_name') or session.get('username') }}
@@ -770,12 +779,179 @@ document.addEventListener('click', function(e) {
     }
 });
 
-// صفحہ کھلتے ہی محفوظ شدہ تھیم لگائیں
+// ===== ڈارک موڈ ہینڈلر =====
+let isDarkMode = localStorage.getItem('madrasa-dark-mode') === 'true';
+
+function applyDarkMode(dark) {
+    isDarkMode = dark;
+    const root = document.documentElement;
+    const btn = document.getElementById('dark-mode-toggle');
+    if (dark) {
+        root.setAttribute('data-theme-mode', 'dark');
+        if (btn) btn.innerHTML = '☀️';
+    } else {
+        root.removeAttribute('data-theme-mode');
+        if (btn) btn.innerHTML = '🌙';
+    }
+    localStorage.setItem('madrasa-dark-mode', dark);
+}
+
+function toggleDarkMode() {
+    applyDarkMode(!isDarkMode);
+}
+
+// ===== گلوبل کوئیک سرچ ماڈل (Ctrl + K) =====
+function openSearchModal() {
+    const overlay = document.getElementById('search-modal-overlay');
+    overlay.style.display = 'flex';
+    const inp = document.getElementById('global-search-input');
+    inp.value = '';
+    inp.focus();
+    handleGlobalSearch('');
+}
+
+function closeSearchModal() {
+    const overlay = document.getElementById('search-modal-overlay');
+    overlay.style.display = 'none';
+}
+
+function handleSearchOverlayClick(e) {
+    if (e.target.id === 'search-modal-overlay') {
+        closeSearchModal();
+    }
+}
+
+document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+        e.preventDefault();
+        const overlay = document.getElementById('search-modal-overlay');
+        if (overlay && overlay.style.display === 'flex') {
+            closeSearchModal();
+        } else {
+            openSearchModal();
+        }
+    }
+    if (e.key === 'Escape') {
+        closeSearchModal();
+    }
+});
+
+let searchDebounceTimer = null;
+let selectedSearchIdx = -1;
+
+function handleGlobalSearch(query) {
+    clearTimeout(searchDebounceTimer);
+    const list = document.getElementById('search-results-list');
+    
+    if (!query.trim()) {
+        list.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-sub); font-size: 13px;">طالب علم کا نام، رول نمبر، فارم نمبر یا شناختی کارڈ لکھیں...</div>';
+        selectedSearchIdx = -1;
+        return;
+    }
+
+    list.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-sub); font-size: 13px;">🔍 تلاش جاری ہے...</div>';
+
+    searchDebounceTimer = setTimeout(() => {
+        fetch(`/api/quick_search?q=${encodeURIComponent(query)}`)
+        .then(res => res.json())
+        .then(data => {
+            if (!data.results || data.results.length === 0) {
+                list.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--text-sub); font-size: 13px;">'${query}' سے ملتا جلتا کوئی طالب علم نہیں ملا۔</div>`;
+                return;
+            }
+
+            let html = '';
+            data.results.forEach((item, idx) => {
+                const photoSrc = item.photo ? `/static/uploads/photos/${item.photo}` : '';
+                const avatarHtml = photoSrc 
+                    ? `<img src="${photoSrc}" class="search-result-avatar" alt="تصویر">`
+                    : `<div class="search-result-avatar">👤</div>`;
+
+                html += `
+                    <a href="${item.url}" class="search-result-item" data-idx="${idx}">
+                        ${avatarHtml}
+                        <div style="flex: 1;">
+                            <div style="font-weight: 800; font-size: 14.5px; color: var(--primary);">${item.title} <span style="font-size: 11px; font-weight: normal; color: var(--text-sub);">[فارم: ${item.form_no}]</span></div>
+                            <div style="font-size: 12px; color: var(--text-sub); margin-top: 2px;">${item.subtitle}</div>
+                        </div>
+                        <span style="font-size: 12px; color: var(--gold); font-weight: bold;">پروفائل دیکھیں ←</span>
+                    </a>
+                `;
+            });
+            list.innerHTML = html;
+            selectedSearchIdx = -1;
+        })
+        .catch(err => {
+            list.innerHTML = '<div style="padding: 20px; text-align: center; color: #dc3545; font-size: 13px;">تلاش میں خرابی پیش آئی۔</div>';
+        });
+    }, 200);
+}
+
+function handleSearchKeyDown(e) {
+    const items = document.querySelectorAll('.search-result-item');
+    if (items.length === 0) return;
+
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        selectedSearchIdx = (selectedSearchIdx + 1) % items.length;
+        updateSearchSelection(items);
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        selectedSearchIdx = (selectedSearchIdx - 1 + items.length) % items.length;
+        updateSearchSelection(items);
+    } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (selectedSearchIdx >= 0 && items[selectedSearchIdx]) {
+            items[selectedSearchIdx].click();
+        }
+    }
+}
+
+function updateSearchSelection(items) {
+    items.forEach((it, idx) => {
+        if (idx === selectedSearchIdx) {
+            it.classList.add('selected');
+            it.scrollIntoView({ block: 'nearest' });
+        } else {
+            it.classList.remove('selected');
+        }
+    });
+}
+
+// صفحہ کھلتے ہی محفوظ شدہ تھیم اور ڈارک موڈ لگائیں
 document.addEventListener('DOMContentLoaded', function() {
-    const saved = localStorage.getItem('madrasa-theme') || 'blue';
-    applyTheme(saved);
+    const savedTheme = localStorage.getItem('madrasa-theme') || 'blue';
+    applyTheme(savedTheme);
+
+    if (isDarkMode) {
+        applyDarkMode(true);
+    }
 });
 </script>
+
+<!-- گلوبل کوئیک سرچ ماڈل (Ctrl + K) -->
+<div id="search-modal-overlay" onclick="handleSearchOverlayClick(event)">
+    <div class="search-modal-box">
+        <div class="search-input-header">
+            <span style="font-size: 20px;">🔍</span>
+            <input type="text" id="global-search-input" placeholder="طالب علم کا نام، رول نمبر، شناختی کارڈ یا فارم نمبر تلاش کریں..." autocomplete="off" oninput="handleGlobalSearch(this.value)" onkeydown="handleSearchKeyDown(event)">
+            <kbd style="font-size: 11px; background: var(--bg-surface); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border); color: var(--text-sub); cursor: pointer;" onclick="closeSearchModal()">ESC</kbd>
+        </div>
+
+        <div class="search-quick-links">
+            <span style="font-size: 11.5px; color: var(--text-sub); display: flex; align-items: center;">فوری لنکس:</span>
+            <a href="{{ url_for('admission') }}" class="search-quick-badge">📝 نیا داخلہ</a>
+            <a href="{{ url_for('students_list') }}" class="search-quick-badge">👥 طلبہ لسٹ</a>
+            <a href="{{ url_for('attendance') }}" class="search-quick-badge">🗓️ یومیہ حاضری</a>
+            <a href="{{ url_for('exams') }}" class="search-quick-badge">📑 امتحانات</a>
+            <a href="{{ url_for('import_students') }}" class="search-quick-badge">📥 ایکسل امپورٹ</a>
+        </div>
+
+        <div class="search-results-list" id="search-results-list">
+            <div style="padding: 20px; text-align: center; color: var(--text-sub); font-size: 13px;">طالب علم کا نام، رول نمبر، فارم نمبر یا شناختی کارڈ لکھیں...</div>
+        </div>
+    </div>
+</div>
 
 {% block extra_scripts %}{% endblock %}
 </body>

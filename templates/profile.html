@@ -76,8 +76,61 @@
 {% endblock %}
 
 {% block content %}
-    <a href="{{ url_for('students_list') }}" style="text-decoration: none; color: var(--primary-teal); font-weight: bold; display: inline-block; margin-bottom: 16px;">← طلبہ کی فہرست پر واپس جائیں</a>
-    <h2 style="color: var(--primary-teal); font-family: 'Noto Nastaliq Urdu', serif; margin-bottom: 20px;">طالب علم کا مکمل ریکارڈ و تعلیمی پروفائل</h2>
+    <a href="{{ url_for('students_list') }}" style="text-decoration: none; color: var(--primary); font-weight: bold; display: inline-block; margin-bottom: 16px;">← طلبہ کی فہرست پر واپس جائیں</a>
+
+    <!-- اسٹوڈنٹ فوٹو و فوری پروفائل کارڈ -->
+    <div style="background: linear-gradient(135deg, rgba(30,58,95,0.06) 0%, rgba(201,151,58,0.08) 100%); border: 1.5px solid var(--border); border-radius: var(--r-md, 14px); padding: 22px 26px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
+        <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+            <!-- تصویر -->
+            <div style="width: 105px; height: 125px; border-radius: 10px; overflow: hidden; border: 2.5px solid var(--gold, #c9973a); box-shadow: 0 4px 12px rgba(0,0,0,0.12); background: #ffffff; display: flex; align-items: center; justify-content: center;">
+                {% if student['photo'] %}
+                    <img src="{{ url_for('static', filename='uploads/photos/' + student['photo']) }}" alt="{{ student['student_name'] }}" style="width: 100%; height: 100%; object-fit: cover;">
+                {% else %}
+                    <div style="text-align: center; color: var(--text-sub);">
+                        <span style="font-size: 42px;">👤</span>
+                        <div style="font-size: 11px; font-weight: bold;">تصویر موجود نہیں</div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div>
+                <h1 style="font-size: 24px; font-weight: 800; color: var(--primary); margin: 0 0 6px;">{{ student['student_name'] }}</h1>
+                <p style="font-size: 14px; color: var(--text-sub); margin: 0 0 8px;">
+                    ولدیت: <strong>{{ student['father_name'] }}</strong> &nbsp;|&nbsp; 
+                    درجہ: <strong>{{ student['current_class'] }}</strong> &nbsp;|&nbsp; 
+                    رول نمبر: <strong>{{ student['class_roll_no'] or '-' }}</strong> &nbsp;|&nbsp; 
+                    فارم نمبر: <strong>{{ student['admission_form_no'] }}</strong>
+                </p>
+                <span class="count-badge" style="font-size: 13px;">{{ student['residence_status'] or 'رہائشی' }} ({{ student['aid_status'] or 'امدادی' }})</span>
+            </div>
+        </div>
+
+        <!-- واٹس ایپ اور فوری بٹنز -->
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            {% set g_phone = (student['guardian_phone'] or '').replace('-', '').replace(' ', '').strip() %}
+            {% if g_phone.startswith('0') %}{% set g_phone = '92' + g_phone[1:] %}{% endif %}
+
+            {% set s_phone = (student['student_phone'] or '').replace('-', '').replace(' ', '').strip() %}
+            {% if s_phone.startswith('0') %}{% set s_phone = '92' + s_phone[1:] %}{% endif %}
+
+            {% if g_phone %}
+            <a href="https://wa.me/{{ g_phone }}?text={{ ('السلام علیکم ورحمۃ اللہ! محترم سرپرست طالب علم ' + student['student_name'] + ' (درجہ ' + student['current_class'] + ')، یہ میسج الجامعۃ الاشرفیہ لاہور کے تعلیمی پورٹل کی طرف سے بھیجا جا رہا ہے۔') | urlencode }}" target="_blank" class="btn btn-excel" style="padding: 8px 16px; font-size: 13px;">
+                🟢 سرپرست کو واٹس ایپ کریں
+            </a>
+            {% endif %}
+
+            {% if s_phone and s_phone != g_phone %}
+            <a href="https://wa.me/{{ s_phone }}?text={{ ('السلام علیکم ورحمۃ اللہ! محترم طالب علم ' + student['student_name'] + '، یہ پیغام الجامعۃ الاشرفیہ لاہور کی طرف سے ہے۔') | urlencode }}" target="_blank" class="btn" style="background: #25d366; color: #fff; padding: 8px 16px; font-size: 13px;">
+                💬 طالب علم کو واٹس ایپ کریں
+            </a>
+            {% endif %}
+
+            <div style="display: flex; gap: 6px;">
+                <a href="{{ url_for('edit_student', student_id=student['id']) }}" class="btn btn-gold" style="flex: 1; padding: 7px 12px; font-size: 12.5px;">✏️ ترمیم کریں</a>
+                <a href="{{ url_for('admission_slip', student_id=student['id']) }}" class="btn btn-primary" style="flex: 1; padding: 7px 12px; font-size: 12.5px;">📄 ایڈمیشن سلپ</a>
+            </div>
+        </div>
+    </div>
 
     <!-- سالانہ حاضری کا سیکشن -->
     <div class="att-section-header">
