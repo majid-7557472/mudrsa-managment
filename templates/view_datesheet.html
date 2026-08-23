@@ -3,17 +3,16 @@
 {% set active_page = 'exams' %}
 
 {% block extra_head %}
-<!-- خوبصورت عربی خطوط برائے پرنٹ و ڈسپلے -->
+<!-- خوبصورت عربی خطوط -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700;800&family=Noto+Sans+Arabic:wght@600;700;800;900&family=Scheherazade+New:wght@700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
-    /* A4 پورٹریٹ پرنٹ پیج */
     @page {
         size: A4 portrait;
-        margin: 2mm 3mm 2mm 3mm;
+        margin: 5mm 5mm 5mm 5mm;
     }
 
     .datesheet-outer-box {
@@ -75,16 +74,16 @@
         text-align: center;
     }
 
-    /* پرنٹ ایبل کنٹینر - لامحدود قدرتی زوم ایبل */
+    /* پرنٹ ایبل کنٹینر - قدرتی خوبصورت سائز */
     .printable-datesheet {
         background: #ffffff !important;
         width: 100% !important;
-        max-width: 1060px;
+        max-width: 1000px;
         margin: 0 auto;
         color: #0f172a !important;
         direction: rtl !important;
         font-family: 'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif !important;
-        padding: 18px 22px;
+        padding: 16px 20px;
         border: 2px solid #cbd5e1;
         border-radius: 12px;
         box-shadow: 0 8px 30px rgba(30,58,95,0.09);
@@ -104,13 +103,13 @@
         position: absolute;
         top: 0;
         left: 0;
-        width: 74px;
-        height: 74px;
+        width: 72px;
+        height: 72px;
         object-fit: contain;
     }
     .ds-main-heading {
         font-family: 'Scheherazade New', 'Amiri', 'Noto Sans Arabic', serif;
-        font-size: 38px;
+        font-size: 36px;
         font-weight: 800;
         color: #1e3a5f !important;
         margin: 0 0 6px 0;
@@ -118,7 +117,7 @@
         letter-spacing: 0.5px;
     }
     .ds-sub-heading {
-        font-size: 15.5px;
+        font-size: 15px;
         font-weight: 800;
         color: #c9973a !important;
         margin: 0;
@@ -143,7 +142,7 @@
     table.ds-main-table th, 
     table.ds-main-table td {
         border: 1.2px solid #cbd5e1 !important;
-        padding: 5.5px 3px !important;
+        padding: 5px 3px !important;
         text-align: center !important;
         vertical-align: middle !important;
         color: #0f172a !important;
@@ -155,23 +154,23 @@
     .th-sec-head {
         background: #1e3a5f !important;
         color: #ffffff !important;
-        font-size: 13px !important;
+        font-size: 12.5px !important;
         font-weight: 800 !important;
         width: 34px !important;
     }
     .th-cls-head {
         background: #1e3a5f !important;
         color: #ffffff !important;
-        font-size: 13px !important;
+        font-size: 12.5px !important;
         font-weight: 800 !important;
         width: 95px !important;
     }
     .th-day-head {
         background: linear-gradient(135deg, #1e3a5f 0%, #2b5282 100%) !important;
         color: #ffffff !important;
-        font-size: 14px !important;
+        font-size: 13.5px !important;
         font-weight: 800 !important;
-        height: 32px !important;
+        height: 30px !important;
     }
 
     /* اوقات رو */
@@ -180,7 +179,7 @@
         color: #92400e !important;
         font-size: 11px !important;
         font-weight: 800 !important;
-        height: 24px !important;
+        height: 23px !important;
         border-color: #fde68a !important;
     }
 
@@ -190,7 +189,7 @@
         color: #0f766e !important;
         font-size: 11px !important;
         font-weight: 800 !important;
-        height: 36px !important;
+        height: 34px !important;
         line-height: 1.25 !important;
         border-color: #99f6e4 !important;
     }
@@ -209,7 +208,7 @@
     table.ds-main-table td.sec-col {
         color: #ffffff !important;
         font-weight: 800 !important;
-        font-size: 12.5px !important;
+        font-size: 12px !important;
         width: 34px !important;
         writing-mode: vertical-rl !important;
         transform: rotate(180deg) !important;
@@ -287,72 +286,6 @@
         border: 1px solid #e2e8f0;
     }
 
-    /* پی ڈی ایف ایکسپورٹ کے دوران 100% چھوٹا و متوازن سنگل پیج موڈ */
-    .pdf-export-mode {
-        zoom: 1 !important;
-        transform: none !important;
-        width: 760px !important;
-        max-width: 760px !important;
-        padding: 6px 8px !important;
-        box-shadow: none !important;
-        border: none !important;
-        margin: 0 auto !important;
-    }
-    .pdf-export-mode .ds-top-header {
-        margin-bottom: 3px !important;
-        padding: 0 35px 2px 35px !important;
-        border-bottom: 1.5px solid #1e3a5f !important;
-    }
-    .pdf-export-mode .ds-logo-top {
-        width: 40px !important;
-        height: 40px !important;
-    }
-    .pdf-export-mode .ds-main-heading {
-        font-size: 20px !important;
-        margin-bottom: 2px !important;
-        line-height: 1.15 !important;
-    }
-    .pdf-export-mode .ds-sub-heading {
-        font-size: 9.5px !important;
-        padding: 1px 10px !important;
-    }
-    .pdf-export-mode table.ds-main-table th, 
-    .pdf-export-mode table.ds-main-table td {
-        padding: 1.6px 1px !important;
-        font-size: 7.8px !important;
-        line-height: 1.12 !important;
-    }
-    .pdf-export-mode .th-sec-head, 
-    .pdf-export-mode table.ds-main-table td.sec-col {
-        font-size: 8.5px !important;
-        width: 22px !important;
-        padding: 2px 1px !important;
-    }
-    .pdf-export-mode .th-cls-head, 
-    .pdf-export-mode table.ds-main-table td.cls-col {
-        font-size: 7.8px !important;
-        width: 68px !important;
-    }
-    .pdf-export-mode .th-day-head {
-        height: 18px !important;
-        font-size: 9px !important;
-    }
-    .pdf-export-mode .th-time-row {
-        height: 14px !important;
-        font-size: 7.5px !important;
-    }
-    .pdf-export-mode .th-date-row {
-        height: 19px !important;
-        font-size: 7.5px !important;
-    }
-    .pdf-export-mode .ds-footer {
-        margin-top: 2px !important;
-        font-size: 7.5px !important;
-        padding: 2px 4px !important;
-        background: none !important;
-        border: none !important;
-    }
-
     /* واٹس ایپ ماڈل */
     .wa-modal-overlay {
         display: none;
@@ -379,14 +312,12 @@
         text-align: right;
     }
 
-    /* پرنٹر پرنٹ سیٹنگز - مکمل چھوٹا و کمپیکٹ تاکہ 1 ہی صفحے پر آئے */
+    /* پرنٹ سیٹنگز - اصل قدرتی ہائی کوالٹی ویو */
     @media print {
         html, body {
             margin: 0 !important;
             padding: 0 !important;
             background: #ffffff !important;
-            height: auto !important;
-            overflow: visible !important;
         }
         .portal-header, 
         .main-nav, 
@@ -414,62 +345,59 @@
             box-shadow: none !important;
             padding: 0 !important;
             margin: 0 auto !important;
-            transform: scale(0.90) !important;
-            transform-origin: top center !important;
-            page-break-after: avoid !important;
-            page-break-inside: avoid !important;
+            transform: none !important;
         }
         .ds-top-header {
-            margin-bottom: 2px !important;
-            padding: 0 35px 2px 35px !important;
-            border-bottom: 1.5px solid #1e3a5f !important;
+            margin-bottom: 6px !important;
+            padding: 0 45px 4px 45px !important;
+            border-bottom: 2px solid #1e3a5f !important;
         }
         .ds-logo-top {
-            width: 40px !important;
-            height: 40px !important;
+            width: 60px !important;
+            height: 60px !important;
         }
         .ds-main-heading {
-            font-size: 19px !important;
-            margin-bottom: 1px !important;
-            line-height: 1.15 !important;
+            font-size: 28px !important;
+            margin-bottom: 2px !important;
+            line-height: 1.25 !important;
         }
         .ds-sub-heading {
-            font-size: 9.5px !important;
-            padding: 1px 8px !important;
+            font-size: 13px !important;
+            padding: 2px 14px !important;
         }
         table.ds-main-table th, table.ds-main-table td {
-            padding: 1.5px 1px !important;
-            font-size: 7.5px !important;
-            line-height: 1.12 !important;
+            padding: 4px 2px !important;
+            font-size: 10px !important;
+            line-height: 1.25 !important;
         }
         .th-sec-head, table.ds-main-table td.sec-col {
-            font-size: 8px !important;
-            width: 22px !important;
-            padding: 2px 1px !important;
+            font-size: 11px !important;
+            width: 28px !important;
+            padding: 4px 1px !important;
         }
         .th-cls-head, table.ds-main-table td.cls-col {
-            font-size: 7.5px !important;
-            width: 66px !important;
+            font-size: 10px !important;
+            width: 82px !important;
         }
         .th-day-head {
-            height: 17px !important;
-            font-size: 8.8px !important;
+            height: 24px !important;
+            font-size: 11.5px !important;
             background: #1e3a5f !important;
             color: #ffffff !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
         .th-time-row {
-            height: 13px !important;
-            font-size: 7.2px !important;
+            height: 19px !important;
+            font-size: 9.5px !important;
             background: #fffbeb !important;
             color: #92400e !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
         .th-date-row {
-            height: 18px !important;
-            font-size: 7.2px !important;
+            height: 28px !important;
+            font-size: 9.5px !important;
             background: #f0fdfa !important;
             color: #0f766e !important;
             -webkit-print-color-adjust: exact !important;
@@ -484,11 +412,13 @@
             print-color-adjust: exact !important;
         }
         .ds-footer {
-            margin-top: 2px !important;
-            font-size: 7.2px !important;
-            padding: 2px 4px !important;
-            background: none !important;
-            border: none !important;
+            margin-top: 6px !important;
+            font-size: 10px !important;
+            padding: 4px 8px !important;
+            background: #f8fafc !important;
+            border: 1px solid #e2e8f0 !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
     }
 </style>
@@ -505,7 +435,7 @@
         </div>
 
         <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-            <!-- لامحدود زوم کنٹرولز (اوپر نیچے دائیں بائیں مکمل سائز) -->
+            <!-- زوم کنٹرولز -->
             <div class="zoom-btn-group">
                 <button type="button" class="btn-zoom" onclick="changeZoom(15)" title="زوم بڑا کریں">🔍 زوم بڑا (+)</button>
                 <span id="zoomPercentageLabel" class="zoom-level-badge">100%</span>
@@ -515,7 +445,7 @@
 
             <!-- پی ڈی ایف ڈاؤنلوڈ بٹن -->
             <button type="button" id="btnDownloadPDF" onclick="downloadAsPDF()" class="btn btn-danger" style="background: #dc2626; color: #fff; font-weight: 800; padding: 8px 18px; font-size: 13px; border: none; border-radius: 6px; box-shadow: 0 4px 14px rgba(220,38,38,0.35); display: flex; align-items: center; gap: 6px; cursor: pointer;">
-                <span>📥</span> <span>PDF ڈاؤنلوڈ (1 صفحہ)</span>
+                <span>📥</span> <span>PDF ڈاؤنلوڈ کریں</span>
             </button>
 
             <!-- واٹس ایپ 1-کلک بٹن -->
@@ -527,7 +457,7 @@
 
             <!-- پرنٹ بٹن -->
             <button type="button" class="btn btn-primary" onclick="window.print()" style="padding: 8px 20px; font-size: 13px; font-weight: 800; box-shadow: 0 4px 15px rgba(30,58,95,0.3);">
-                🖨️ پرنٹ (1 صفحہ)
+                🖨️ پرنٹ کریں
             </button>
         </div>
     </div>
@@ -686,19 +616,11 @@ function applyZoom() {
     const el = document.getElementById('datesheetPrintable');
     const badge = document.getElementById('zoomPercentageLabel');
     if (el) {
-        // قدرتی زوم جو اوپر نیچے دائیں بائیں ہر طرف بڑا ہوتا ہے
         const scaleVal = currentZoomPercent / 100;
         el.style.zoom = scaleVal;
-        
-        // فائر فاکس یا دیگر براؤزرز کے لیے متبادل
         if (!('zoom' in el.style)) {
             el.style.transform = `scale(${scaleVal})`;
             el.style.transformOrigin = 'top center';
-            if (scaleVal > 1.0) {
-                el.style.marginBottom = `${(scaleVal - 1.0) * 550}px`;
-            } else {
-                el.style.marginBottom = '0px';
-            }
         }
     }
     if (badge) {
@@ -713,25 +635,26 @@ function downloadAsPDF() {
     btn.disabled = true;
     btn.innerHTML = '⏳ پی ڈی ایف تیار ہو رہی ہے...';
 
-    // پی ڈی ایف کے لیے مخصوص سنگل پیج موڈ
-    element.classList.add('pdf-export-mode');
+    // وقتی طور پر زوم اصل حالت پر
+    const oldZoom = element.style.zoom;
+    element.style.zoom = '1';
 
     const opt = {
-        margin: [3, 4, 3, 4],
+        margin: [5, 5, 5, 5],
         filename: 'Jamia_Ashrafia_DateSheet_1448H.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2.2, useCORS: true, letterRendering: true, scrollY: 0 },
+        html2canvas: { scale: 2.2, useCORS: true, letterRendering: true },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
     html2pdf().set(opt).from(element).save().then(() => {
-        element.classList.remove('pdf-export-mode');
+        element.style.zoom = oldZoom;
         btn.disabled = false;
-        btn.innerHTML = '<span>📥</span> <span>PDF ڈاؤنلوڈ (1 صفحہ)</span>';
+        btn.innerHTML = '<span>📥</span> <span>PDF ڈاؤنلوڈ کریں</span>';
     }).catch(err => {
-        element.classList.remove('pdf-export-mode');
+        element.style.zoom = oldZoom;
         btn.disabled = false;
-        btn.innerHTML = '<span>📥</span> <span>PDF ڈاؤنلوڈ (1 صفحہ)</span>';
+        btn.innerHTML = '<span>📥</span> <span>PDF ڈاؤنلوڈ کریں</span>';
         window.print();
     });
 }
