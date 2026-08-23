@@ -753,9 +753,22 @@ def view_datesheet(datesheet_id):
         return redirect(url_for('datesheets_list'))
 
     days = json.loads(datesheet['days_data']) if datesheet['days_data'] else []
-    classes = json.loads(datesheet['classes_data']) if datesheet['classes_data'] else []
+    raw_classes = json.loads(datesheet['classes_data']) if datesheet['classes_data'] else []
 
-    return render_template('view_datesheet.html', datesheet=datesheet, days=days, classes=classes)
+    # Structure into contiguous section groups
+    structured_sections = []
+    current_sec = None
+    for row in raw_classes:
+        sec_name = row.get('section', '').strip()
+        if current_sec is None or current_sec['section_name'] != sec_name:
+            current_sec = {'section_name': sec_name, 'rows': []}
+            structured_sections.append(current_sec)
+        current_sec['rows'].append({
+            'class_name': row.get('class_name', '').strip(),
+            'papers': row.get('papers', [])
+        })
+
+    return render_template('view_datesheet.html', datesheet=datesheet, days=days, structured_sections=structured_sections)
 
 @app.route('/datesheet/<int:datesheet_id>/edit', methods=['GET', 'POST'])
 def edit_datesheet(datesheet_id):
