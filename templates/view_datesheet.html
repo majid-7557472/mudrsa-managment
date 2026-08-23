@@ -1,26 +1,25 @@
 ﻿{% extends "base.html" %}
-{% block title %}{{ datesheet['title'] }} - باضابطہ رنگین امتحانی ڈیٹ شیٹ{% endblock %}
+{% block title %}{{ datesheet['title'] }} - الجامعۃ الاشرفیہ لاہور{% endblock %}
 {% set active_page = 'exams' %}
 
 {% block extra_head %}
-<!-- خوبصورت و صاف عربی خطوط معہ جوڑ سپورٹ -->
+<!-- فونٹس برائے مستند خطاطی و پرنٹ -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@700;800&family=Cairo:wght@700;800;900&family=Noto+Naskh+Arabic:wght@700;800&family=Noto+Sans+Arabic:wght@700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,700;1,700&family=Noto+Naskh+Arabic:wght@600;700;800&family=Noto+Nastaliq+Urdu:wght@700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
-    /* A4 پورٹریٹ پرنٹ پیج */
+    /* A4 پورٹریٹ پیج سیٹنگز */
     @page {
         size: A4 portrait;
-        margin: 5mm 5mm 5mm 5mm;
+        margin: 4mm 6mm 4mm 6mm;
     }
 
     .datesheet-outer-box {
-        background: #f1f5f9;
-        padding: 15px;
-        border-radius: var(--r-md);
-        box-shadow: var(--shadow-sm);
+        background: #e2e8f0;
+        padding: 12px;
+        border-radius: 8px;
         margin-bottom: 25px;
     }
 
@@ -30,268 +29,248 @@
         align-items: center;
         flex-wrap: wrap;
         gap: 10px;
-        margin-bottom: 14px;
-        padding-bottom: 10px;
-        border-bottom: 2px solid #cbd5e1;
+        margin-bottom: 12px;
+        padding: 10px 14px;
+        background: #ffffff;
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
     }
 
-    /* زوم کنٹرولز کا گروپ */
     .zoom-btn-group {
         display: inline-flex;
         align-items: center;
-        background: #ffffff;
-        border: 2px solid #94a3b8;
-        border-radius: 8px;
-        padding: 3px 6px;
-        gap: 5px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        background: #f8fafc;
+        border: 1.5px solid #94a3b8;
+        border-radius: 6px;
+        padding: 2px 5px;
+        gap: 4px;
     }
     .btn-zoom {
-        background: #f8fafc;
-        border: 1px solid #94a3b8;
-        border-radius: 6px;
-        padding: 5px 12px;
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        padding: 4px 10px;
         font-size: 13px;
         font-weight: 800;
         color: #0f172a;
         cursor: pointer;
-        transition: all 0.15s ease;
     }
     .btn-zoom:hover {
-        background: #1e3a5f;
+        background: #0f172a;
         color: #ffffff;
-        border-color: #1e3a5f;
     }
     .zoom-level-badge {
         font-size: 13px;
         font-weight: 900;
-        color: #0f766e;
-        background: #f0fdfa;
-        padding: 3px 10px;
-        border-radius: 6px;
-        border: 1.5px solid #99f6e4;
-        min-width: 44px;
+        color: #0f172a;
+        padding: 2px 6px;
+        min-width: 40px;
         text-align: center;
     }
 
-    /* پرنٹ ایبل کنٹینر - بالکل صاف، شفاف، ہائی ڈیفینیشن */
+    /* اصل پرنٹ ایبل پیپر - ہو بہو اصلی کاغذ جیسا */
     .printable-datesheet {
         background: #ffffff !important;
         width: 100% !important;
-        max-width: 980px;
+        max-width: 960px;
         margin: 0 auto;
         color: #000000 !important;
         direction: rtl !important;
-        font-family: 'Cairo', 'Almarai', 'Noto Naskh Arabic', 'Noto Sans Arabic', Tahoma, sans-serif !important;
-        padding: 16px 20px;
-        border: 2.5px solid #0f2744;
-        border-radius: 10px;
-        box-shadow: 0 10px 30px rgba(15,39,68,0.12);
+        font-family: 'Noto Naskh Arabic', 'Amiri', 'Traditional Arabic', Tahoma, sans-serif !important;
+        padding: 10px 14px 8px 14px;
+        border: 2px solid #000000;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
         box-sizing: border-box !important;
-        letter-spacing: normal !important;
     }
 
     /* ٹاپ ہیڈر */
     .ds-top-header {
         position: relative;
         text-align: center;
-        margin-bottom: 10px;
-        padding: 2px 70px 8px 70px;
-        border-bottom: 2px solid #0f2744;
-        letter-spacing: normal !important;
+        margin-bottom: 6px;
+        padding: 0 60px 4px 60px;
     }
     .ds-logo-top {
         position: absolute;
         top: 0;
         left: 0;
-        width: 65px;
-        height: 65px;
+        width: 68px;
+        height: 68px;
         object-fit: contain;
     }
-    .ds-main-heading {
-        font-family: 'Cairo', 'Almarai', 'Noto Naskh Arabic', sans-serif !important;
-        font-size: 34px;
-        font-weight: 900;
-        color: #0f2744 !important;
-        margin: 0 0 4px 0;
-        line-height: 1.25;
-        letter-spacing: normal !important;
-        word-spacing: normal !important;
-    }
-    .ds-sub-heading {
-        font-size: 14.5px;
+    
+    /* خطاطی عنوان (الجامعۃ الاشرفیہ لاہور) */
+    .ds-calligraphy-title {
+        font-family: 'Amiri', 'Noto Naskh Arabic', serif;
+        font-size: 44px;
         font-weight: 800;
-        color: #92400e !important;
+        color: #000000 !important;
         margin: 0;
-        display: inline-block;
-        background: #fffbeb;
-        padding: 3px 22px;
-        border-radius: 20px;
-        border: 1.5px solid #f59e0b;
-        letter-spacing: normal !important;
+        line-height: 1.15;
+        letter-spacing: 0px !important;
+        text-shadow: 0.5px 0.5px 0px #000;
+    }
+    .ds-sub-title-text {
+        font-family: 'Noto Naskh Arabic', 'Amiri', sans-serif;
+        font-size: 16px;
+        font-weight: 800;
+        color: #000000 !important;
+        margin: 2px 0 0 0;
+        letter-spacing: 0px !important;
     }
 
-    /* مین ٹیبل */
+    /* مین آفیشل ٹیبل - 100% مستند ڈیزائن */
     table.ds-main-table {
         width: 100% !important;
         border-collapse: collapse !important;
-        border: 2.5px solid #0f2744 !important;
+        border: 2px solid #000000 !important;
         direction: rtl !important;
         table-layout: fixed !important;
-        margin: 0 auto !important;
+        margin: 4px auto 0 auto !important;
         background: #ffffff !important;
-        letter-spacing: normal !important;
     }
 
     table.ds-main-table th, 
     table.ds-main-table td {
-        border: 1.5px solid #475569 !important;
-        padding: 4px 2px !important;
+        border: 1.2px solid #000000 !important;
+        padding: 3px 2px !important;
         text-align: center !important;
         vertical-align: middle !important;
         color: #000000 !important;
         box-sizing: border-box !important;
         white-space: pre-line !important;
-        letter-spacing: normal !important;
+        font-family: 'Noto Naskh Arabic', 'Amiri', Tahoma, sans-serif !important;
     }
 
-    /* ہیڈر کالمز (الأيام) */
+    /* رو 1: الأيام */
     .th-sec-head {
-        background: #0f2744 !important;
-        color: #ffffff !important;
-        font-size: 12px !important;
-        font-weight: 900 !important;
-        width: 34px !important;
-        border-color: #0f2744 !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 13.5px !important;
+        font-weight: 800 !important;
+        width: 38px !important;
+        height: 24px !important;
     }
     .th-cls-head {
-        background: #0f2744 !important;
-        color: #ffffff !important;
-        font-size: 12px !important;
-        font-weight: 900 !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 13.5px !important;
+        font-weight: 800 !important;
         width: 95px !important;
-        border-color: #0f2744 !important;
     }
     .th-day-head {
-        background: linear-gradient(180deg, #1e3a5f 0%, #0f2744 100%) !important;
-        color: #ffffff !important;
-        font-size: 13.5px !important;
-        font-weight: 900 !important;
-        height: 28px !important;
-        border-color: #0f2744 !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 14.5px !important;
+        font-weight: 800 !important;
     }
 
-    /* اوقات رو */
-    .th-time-row {
-        background: #fef3c7 !important;
-        color: #78350f !important;
-        font-size: 10.5px !important;
-        font-weight: 900 !important;
+    /* رو 2: الوقت */
+    .th-time-label {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 12.5px !important;
+        font-weight: 800 !important;
         height: 22px !important;
-        border-color: #d97706 !important;
+    }
+    .th-time-val {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 12px !important;
+        font-weight: 800 !important;
+        direction: rtl !important;
     }
 
-    /* تواریخ رو */
-    .th-date-row {
-        background: #ecfdf5 !important;
-        color: #065f46 !important;
-        font-size: 10.5px !important;
-        font-weight: 900 !important;
-        height: 32px !important;
+    /* رو 3: التأريخ (کالی پٹی معہ سفید لکھائی ہو بہو پیپر کی طرح) */
+    .th-date-label {
+        background: #111827 !important;
+        color: #ffffff !important;
+        font-size: 13px !important;
+        font-weight: 800 !important;
+        height: 36px !important;
+        border-color: #000000 !important;
+    }
+    .th-date-box {
+        background: #111827 !important;
+        color: #ffffff !important;
+        font-size: 12px !important;
+        font-weight: 800 !important;
         line-height: 1.25 !important;
-        border-color: #059669 !important;
+        border-color: #000000 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
     }
-    .th-date-row .hijri {
-        font-weight: 900;
-        font-size: 11px;
-        color: #065f46;
+    .th-date-box .hijri {
+        font-weight: 800;
+        font-size: 13px;
+        color: #ffffff;
     }
-    .th-date-row .greg {
-        font-size: 10px;
-        color: #1e293b;
+    .th-date-box .greg {
+        font-size: 11.5px;
+        color: #ffffff;
         font-weight: 800;
     }
 
-    /* دائیں جانب رنگین سیکشن کالم (المرحلہ) */
+    /* دائیں جانب سیاہ سیکشن کالم (المرحلہ) */
     table.ds-main-table td.sec-col {
+        background: #111827 !important;
         color: #ffffff !important;
-        font-weight: 900 !important;
-        font-size: 12px !important;
-        width: 34px !important;
+        font-weight: 800 !important;
+        font-size: 13px !important;
+        width: 38px !important;
         writing-mode: vertical-rl !important;
         transform: rotate(180deg) !important;
         padding: 6px 1px !important;
         text-align: center !important;
         vertical-align: middle !important;
-        border-left: 2.5px solid #0f2744 !important;
-        letter-spacing: normal !important;
+        border: 1.2px solid #000000 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        letter-spacing: 0px !important;
     }
 
-    /* ہر مرحلے کا مخصوص رنگین شیڈ */
-    .sec-color-0 { background: linear-gradient(180deg, #1e3a5f 0%, #0f2744 100%) !important; } /* العالمية */
-    .sec-color-1 { background: linear-gradient(180deg, #1d4ed8 0%, #1e40af 100%) !important; } /* العالية */
-    .sec-color-2 { background: linear-gradient(180deg, #047857 0%, #064e3b 100%) !important; } /* الثانوية الخاصة */
-    .sec-color-3 { background: linear-gradient(180deg, #b45309 0%, #78350f 100%) !important; } /* الثانوية العامة */
-    .sec-color-4 { background: linear-gradient(180deg, #6d28d9 0%, #4c1d95 100%) !important; } /* التجويد */
-    .sec-color-5 { background: linear-gradient(180deg, #b91c1c 0%, #7f1d1d 100%) !important; } /* تخصص في الإفتاء */
-    .sec-color-6 { background: linear-gradient(180deg, #0369a1 0%, #075985 100%) !important; } /* المعهد */
-
-    /* کلاس کالم (الصف / المرحلة) */
+    /* کلاس کالم (الصف) */
     table.ds-main-table td.cls-col {
-        background-color: #f8fafc !important;
-        font-weight: 900 !important;
-        font-size: 11px !important;
-        color: #0f2744 !important;
+        background-color: #ffffff !important;
+        font-weight: 800 !important;
+        font-size: 12.5px !important;
+        color: #000000 !important;
         width: 95px !important;
         text-align: center !important;
         line-height: 1.25 !important;
-        padding: 4px 2px !important;
-        border-right: 2px solid #475569 !important;
+        padding: 3px 2px !important;
     }
 
-    /* کتاب و پرچہ کے خانے (واضح، موٹی اور صاف لکھائی) */
+    /* کتاب و پرچہ کے خانے (خالص اصل پیپر جیسا انداز) */
     table.ds-main-table td.paper-col {
         background-color: #ffffff !important;
-        font-size: 11px !important;
+        font-size: 11.5px !important;
         font-weight: 700 !important;
         color: #000000 !important;
         line-height: 1.3 !important;
-        padding: 4px 2px !important;
+        padding: 3px 2px !important;
         text-align: center !important;
     }
-    table.ds-main-table tr:hover td.paper-col {
-        background-color: #f0fdf4 !important;
-    }
 
-    /* جوابی کاپی کے بیجز */
-    .badge-num-1 {
+    /* جوابی کاپی کے نشانات ❶ اور ❷ */
+    .badge-num-1, .badge-num-2 {
         display: inline-block;
-        color: #0369a1;
+        color: #000000;
         font-weight: 900;
-        font-size: 12.5px;
-        margin-right: 2px;
-    }
-    .badge-num-2 {
-        display: inline-block;
-        color: #b45309;
-        font-weight: 900;
-        font-size: 12.5px;
+        font-size: 13px;
         margin-right: 2px;
     }
 
-    /* فوٹر */
+    /* فوٹر وضاحتی نوٹ */
     .ds-footer {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-top: 8px;
-        font-size: 11px;
+        margin-top: 5px;
+        font-size: 12px;
         font-weight: 800;
-        color: #0f172a !important;
-        padding: 5px 12px;
-        background: #f8fafc;
-        border-radius: 6px;
-        border: 1.5px solid #cbd5e1;
+        color: #000000 !important;
+        padding: 3px 6px;
     }
 
     /* واٹس ایپ ماڈل */
@@ -313,14 +292,14 @@
         background: #ffffff;
         width: 100%;
         max-width: 520px;
-        border-radius: 12px;
+        border-radius: 10px;
         box-shadow: 0 20px 40px rgba(0,0,0,0.25);
         padding: 24px;
         direction: rtl;
         text-align: right;
     }
 
-    /* پرنٹ سیٹنگز - بالکل صاف و کرکرا 1 صفحہ */
+    /* ہو بہو پرنٹ سیٹنگز برائے 1 سنگل A4 پیج */
     @media print {
         html, body {
             margin: 0 !important;
@@ -349,9 +328,9 @@
             zoom: 1 !important;
             width: 100% !important;
             max-width: 100% !important;
-            border: 2px solid #0f2744 !important;
+            border: 2px solid #000000 !important;
             box-shadow: none !important;
-            padding: 2px !important;
+            padding: 6px 10px 4px 10px !important;
             margin: 0 auto !important;
             transform: none !important;
             page-break-after: avoid !important;
@@ -359,77 +338,65 @@
         }
         .ds-top-header {
             margin-bottom: 4px !important;
-            padding: 0 45px 3px 45px !important;
-            border-bottom: 2px solid #0f2744 !important;
+            padding: 0 50px 2px 50px !important;
         }
         .ds-logo-top {
-            width: 50px !important;
-            height: 50px !important;
+            width: 54px !important;
+            height: 54px !important;
         }
-        .ds-main-heading {
-            font-size: 26px !important;
-            margin-bottom: 2px !important;
-            line-height: 1.2 !important;
+        .ds-calligraphy-title {
+            font-size: 36px !important;
+            line-height: 1.15 !important;
         }
-        .ds-sub-heading {
-            font-size: 11.5px !important;
-            padding: 1px 14px !important;
+        .ds-sub-title-text {
+            font-size: 13px !important;
         }
         table.ds-main-table th, table.ds-main-table td {
-            padding: 2.8px 1.5px !important;
-            font-size: 9.2px !important;
-            line-height: 1.2 !important;
-            border: 1.2px solid #334155 !important;
+            padding: 2.2px 1.5px !important;
+            font-size: 9.8px !important;
+            line-height: 1.18 !important;
+            border: 1px solid #000000 !important;
         }
         .th-sec-head, table.ds-main-table td.sec-col {
-            font-size: 10px !important;
-            width: 26px !important;
-            padding: 3px 1px !important;
-        }
-        .th-cls-head, table.ds-main-table td.cls-col {
-            font-size: 9.5px !important;
-            width: 80px !important;
-        }
-        .th-day-head {
-            height: 22px !important;
             font-size: 10.5px !important;
-            background: #0f2744 !important;
+            width: 28px !important;
+            background: #000000 !important;
             color: #ffffff !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
-        .th-time-row {
-            height: 17px !important;
-            font-size: 8.5px !important;
-            background: #fef3c7 !important;
-            color: #78350f !important;
+        .th-cls-head, table.ds-main-table td.cls-col {
+            font-size: 10px !important;
+            width: 82px !important;
+        }
+        .th-day-head {
+            height: 20px !important;
+            font-size: 11px !important;
+        }
+        .th-time-label, .th-time-val {
+            height: 16px !important;
+            font-size: 9px !important;
+        }
+        .th-date-label, .th-date-box {
+            height: 26px !important;
+            font-size: 9.5px !important;
+            background: #000000 !important;
+            color: #ffffff !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
-        .th-date-row {
-            height: 25px !important;
-            font-size: 8.5px !important;
-            background: #ecfdf5 !important;
-            color: #065f46 !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
+        .th-date-box .hijri {
+            font-size: 10px !important;
+            color: #ffffff !important;
         }
-        table.ds-main-table td.sec-col {
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-        .badge-num-1, .badge-num-2 {
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
+        .th-date-box .greg {
+            font-size: 9px !important;
+            color: #ffffff !important;
         }
         .ds-footer {
-            margin-top: 4px !important;
-            font-size: 9px !important;
-            padding: 3px 6px !important;
-            background: #f8fafc !important;
-            border: 1px solid #cbd5e1 !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
+            margin-top: 3px !important;
+            font-size: 9.5px !important;
+            padding: 1px 4px !important;
         }
     }
 </style>
@@ -442,7 +409,7 @@
     <div class="datesheet-toolbar no-print">
         <div style="display: flex; align-items: center; gap: 10px;">
             <a href="{{ url_for('datesheets_list') }}" class="btn btn-muted" style="padding: 7px 14px; font-size: 13px;">← واپس فہرست</a>
-            <h3 style="font-size: 18px; font-weight: 800; color: var(--primary); margin: 0;">🎨 باضابطہ امتحانی ڈیٹ شیٹ</h3>
+            <h3 style="font-size: 18px; font-weight: 800; color: #000000; margin: 0;">📜 امتحانی ڈیٹ شیٹ (اصل ادارہ جاتی نمونہ)</h3>
         </div>
 
         <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
@@ -456,7 +423,7 @@
 
             <!-- پی ڈی ایف ڈاؤنلوڈ بٹن -->
             <button type="button" id="btnDownloadPDF" onclick="downloadAsPDF()" class="btn btn-danger" style="background: #dc2626; color: #fff; font-weight: 800; padding: 8px 18px; font-size: 13px; border: none; border-radius: 6px; box-shadow: 0 4px 14px rgba(220,38,38,0.35); display: flex; align-items: center; gap: 6px; cursor: pointer;">
-                <span>📥</span> <span>PDF ڈاؤنلوڈ (HD)</span>
+                <span>📥</span> <span>PDF ڈاؤنلوڈ کریں</span>
             </button>
 
             <!-- واٹس ایپ 1-کلک بٹن -->
@@ -466,50 +433,48 @@
 
             <a href="{{ url_for('edit_datesheet', datesheet_id=datesheet['id']) }}" class="btn btn-gold" style="padding: 7px 16px; font-size: 13px; font-weight: bold;">✏️ ترمیم</a>
 
-            <!-- پرنٹ بٹن (1 صفحہ) -->
-            <button type="button" class="btn btn-primary" onclick="window.print()" style="padding: 8px 20px; font-size: 13px; font-weight: 800; box-shadow: 0 4px 15px rgba(30,58,95,0.3);">
+            <!-- پرنٹ بٹن -->
+            <button type="button" class="btn btn-primary" onclick="window.print()" style="background: #000000; border-color: #000000; padding: 8px 20px; font-size: 13px; font-weight: 800;">
                 🖨️ پرنٹ (1 صفحہ)
             </button>
         </div>
     </div>
 
-    <!-- باضابطہ رنگین ڈیٹ شیٹ (الٹرا ایچ ڈی کوالٹی معہ مکمل الفاظ کے جوڑ) -->
+    <!-- ہو بہو اصل کاغذ کی طرح ڈیٹ شیٹ -->
     <div id="datesheetPrintable" class="printable-datesheet">
         
         <!-- ہیڈر -->
         <div class="ds-top-header">
             <img src="{{ url_for('static', filename='logo.png') }}" class="ds-logo-top" alt="مونوگرام" onerror="this.style.display='none'">
-            <h1 class="ds-main-heading">{{ datesheet['institution_name'] or 'الجامعۃ الاشرفیہ لاہور' }}</h1>
-            <div>
-                <span class="ds-sub-heading">{{ datesheet['title'] }} - {{ datesheet['academic_year'] }}</span>
-            </div>
+            <div class="ds-calligraphy-title">الْجَامِعَةُ الأَشْرَفِيَّةِ لاَهُوْر</div>
+            <div class="ds-sub-title-text">{{ datesheet['title'] }} للعام - {{ datesheet['academic_year'] }}</div>
         </div>
 
-        <!-- امتحانی شیڈول ٹیبل (7 کالمز: مرحلہ، الصف، السبت، الأحد، الإثنين، الثلاثاء، الأربعاء) -->
+        <!-- امتحانی شیڈول ٹیبل (7 کالمز: الأيام، الصف، السبت، الأحد، الإثنين، الثلاثاء، الأربعاء) -->
         <table class="ds-main-table">
             <thead>
-                <!-- رو 1: الایام -->
+                <!-- رو 1: الأيام -->
                 <tr>
-                    <th class="th-sec-head" style="width: 3.5%;">المرحلة</th>
-                    <th class="th-cls-head" style="width: 14.5%;">الصف</th>
+                    <th class="th-sec-head">الأيام</th>
+                    <th class="th-cls-head">الصف</th>
                     {% for d in days %}
                         <th class="th-day-head" style="width: 16.4%;">{{ d['day'] }}</th>
                     {% endfor %}
                 </tr>
                 <!-- رو 2: الوقت -->
                 <tr>
-                    <th class="th-time-row" style="font-size: 11px;">الوقت</th>
-                    <th class="th-time-row" style="font-size: 10.5px;">{{ datesheet['exam_timing'] }}</th>
+                    <th class="th-time-label">الوقت</th>
+                    <th class="th-time-val">{{ datesheet['exam_timing'] }}</th>
                     {% for d in days %}
-                        <th class="th-time-row" style="direction: ltr; font-family: monospace;">{{ datesheet['exam_timing'] }}</th>
+                        <th class="th-time-val">{{ datesheet['exam_timing'] }}</th>
                     {% endfor %}
                 </tr>
-                <!-- رو 3: التاریخ (ہجری + عیسوی) -->
+                <!-- رو 3: التأريخ (کالی پٹی معہ سفید لکھائی) -->
                 <tr>
-                    <th class="th-date-row" style="font-size: 11px;">التاريخ</th>
-                    <th class="th-date-row" style="font-size: 10px;">{{ days[0]['gregorian'] }}</th>
+                    <th class="th-date-label">التأريخ</th>
+                    <th class="th-date-box">{{ days[0]['gregorian'] }}</th>
                     {% for d in days %}
-                        <th class="th-date-row">
+                        <th class="th-date-box">
                             <div class="hijri">{{ d['hijri'] }}</div>
                             <div class="greg">{{ d['gregorian'] }}</div>
                         </th>
@@ -517,14 +482,13 @@
                 </tr>
             </thead>
             <tbody>
-                {# درجات کی قطاریں رنگین سیکشنز کے ساتھ #}
+                {# درجات کی قطاریں سیاہ سیکشن کالم کے ساتھ #}
                 {% for sec in structured_sections %}
-                    {% set sec_idx = loop.index0 % 7 %}
                     {% for row in sec['rows'] %}
                     <tr>
-                        {# 1. دائیں طرف رنگین سیکشن کالم (صرف پہلی قطار میں معہ rowspan) #}
+                        {# 1. دائیں طرف سیاہ سیکشن کالم (صرف پہلی قطار میں معہ rowspan) #}
                         {% if loop.first %}
-                            <td class="sec-col sec-color-{{ sec_idx }}" rowspan="{{ sec['rows']|length }}">
+                            <td class="sec-col" rowspan="{{ sec['rows']|length }}">
                                 <span dir="rtl">{{ sec['section_name'] }}</span>
                             </td>
                         {% endif %}
@@ -565,7 +529,7 @@
 <div id="waModal" class="wa-modal-overlay">
     <div class="wa-modal-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 10px;">
-            <h3 style="margin: 0; color: #1e3a5f; font-size: 19px; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+            <h3 style="margin: 0; color: #000000; font-size: 19px; font-weight: 800; display: flex; align-items: center; gap: 8px;">
                 <span>📲</span> <span>واٹس ایپ پر ڈیٹ شیٹ روانہ کریں</span>
             </h3>
             <button type="button" onclick="closeWhatsAppModal()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: #94a3b8;">✕</button>
@@ -650,7 +614,7 @@ function downloadAsPDF() {
     element.style.zoom = '1';
 
     const opt = {
-        margin: [5, 5, 5, 5],
+        margin: [4, 5, 4, 5],
         filename: 'Jamia_Ashrafia_DateSheet_1448H.pdf',
         image: { type: 'jpeg', quality: 1.0 },
         html2canvas: { 
@@ -666,11 +630,11 @@ function downloadAsPDF() {
     html2pdf().set(opt).from(element).save().then(() => {
         element.style.zoom = oldZoom;
         btn.disabled = false;
-        btn.innerHTML = '<span>📥</span> <span>PDF ڈاؤنلوڈ (HD)</span>';
+        btn.innerHTML = '<span>📥</span> <span>PDF ڈاؤنلوڈ کریں</span>';
     }).catch(err => {
         element.style.zoom = oldZoom;
         btn.disabled = false;
-        btn.innerHTML = '<span>📥</span> <span>PDF ڈاؤنلوڈ (HD)</span>';
+        btn.innerHTML = '<span>📥</span> <span>PDF ڈاؤنلوڈ کریں</span>';
         window.print();
     });
 }
