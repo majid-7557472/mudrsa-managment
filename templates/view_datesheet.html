@@ -3,10 +3,10 @@
 {% set active_page = 'exams' %}
 
 {% block extra_head %}
-<!-- خوبصورت و صاف عربی خطوط -->
+<!-- خوبصورت و صاف عربی خطوط معہ جوڑ سپورٹ -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700;800&family=Noto+Sans+Arabic:wght@700;800;900&family=Scheherazade+New:wght@700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@700;800&family=Cairo:wght@700;800;900&family=Noto+Naskh+Arabic:wght@700;800&family=Noto+Sans+Arabic:wght@700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
@@ -82,14 +82,13 @@
         margin: 0 auto;
         color: #000000 !important;
         direction: rtl !important;
-        font-family: 'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif !important;
+        font-family: 'Cairo', 'Almarai', 'Noto Naskh Arabic', 'Noto Sans Arabic', Tahoma, sans-serif !important;
         padding: 16px 20px;
         border: 2.5px solid #0f2744;
         border-radius: 10px;
         box-shadow: 0 10px 30px rgba(15,39,68,0.12);
         box-sizing: border-box !important;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
+        letter-spacing: normal !important;
     }
 
     /* ٹاپ ہیڈر */
@@ -99,6 +98,7 @@
         margin-bottom: 10px;
         padding: 2px 70px 8px 70px;
         border-bottom: 2px solid #0f2744;
+        letter-spacing: normal !important;
     }
     .ds-logo-top {
         position: absolute;
@@ -109,13 +109,14 @@
         object-fit: contain;
     }
     .ds-main-heading {
-        font-family: 'Scheherazade New', 'Amiri', 'Noto Sans Arabic', serif;
-        font-size: 36px;
+        font-family: 'Cairo', 'Almarai', 'Noto Naskh Arabic', sans-serif !important;
+        font-size: 34px;
         font-weight: 900;
         color: #0f2744 !important;
         margin: 0 0 4px 0;
         line-height: 1.25;
-        letter-spacing: 0.5px;
+        letter-spacing: normal !important;
+        word-spacing: normal !important;
     }
     .ds-sub-heading {
         font-size: 14.5px;
@@ -127,6 +128,7 @@
         padding: 3px 22px;
         border-radius: 20px;
         border: 1.5px solid #f59e0b;
+        letter-spacing: normal !important;
     }
 
     /* مین ٹیبل */
@@ -138,6 +140,7 @@
         table-layout: fixed !important;
         margin: 0 auto !important;
         background: #ffffff !important;
+        letter-spacing: normal !important;
     }
 
     table.ds-main-table th, 
@@ -149,6 +152,7 @@
         color: #000000 !important;
         box-sizing: border-box !important;
         white-space: pre-line !important;
+        letter-spacing: normal !important;
     }
 
     /* ہیڈر کالمز (الأيام) */
@@ -217,10 +221,10 @@
         writing-mode: vertical-rl !important;
         transform: rotate(180deg) !important;
         padding: 6px 1px !important;
-        letter-spacing: 1.5px;
         text-align: center !important;
         vertical-align: middle !important;
         border-left: 2.5px solid #0f2744 !important;
+        letter-spacing: normal !important;
     }
 
     /* ہر مرحلے کا مخصوص رنگین شیڈ */
@@ -469,7 +473,7 @@
         </div>
     </div>
 
-    <!-- باضابطہ رنگین ڈیٹ شیٹ (الٹرا ایچ ڈی کوالٹی) -->
+    <!-- باضابطہ رنگین ڈیٹ شیٹ (الٹرا ایچ ڈی کوالٹی معہ مکمل الفاظ کے جوڑ) -->
     <div id="datesheetPrintable" class="printable-datesheet">
         
         <!-- ہیڈر -->
@@ -649,7 +653,13 @@ function downloadAsPDF() {
         margin: [5, 5, 5, 5],
         filename: 'Jamia_Ashrafia_DateSheet_1448H.pdf',
         image: { type: 'jpeg', quality: 1.0 },
-        html2canvas: { scale: 3.0, useCORS: true, letterRendering: true, scrollY: 0 },
+        html2canvas: { 
+            scale: 3.0, 
+            useCORS: true, 
+            letterRendering: true, 
+            scrollY: 0,
+            logging: false
+        },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
