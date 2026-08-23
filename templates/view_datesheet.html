@@ -22,6 +22,7 @@
         border-radius: var(--r-md);
         box-shadow: var(--shadow-sm);
         margin-bottom: 25px;
+        overflow-x: auto;
     }
 
     .datesheet-toolbar {
@@ -35,14 +36,16 @@
         border-bottom: 1.5px solid var(--border);
     }
 
+    /* زوم کنٹرولز کا گروپ */
     .zoom-btn-group {
         display: inline-flex;
         align-items: center;
         background: #ffffff;
         border: 1.5px solid #cbd5e1;
         border-radius: 8px;
-        padding: 2px 4px;
-        gap: 4px;
+        padding: 3px 6px;
+        gap: 6px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
     .btn-zoom {
         background: #f1f5f9;
@@ -53,13 +56,26 @@
         font-weight: 800;
         color: #1e3a5f;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: all 0.15s ease;
     }
     .btn-zoom:hover {
-        background: #e2e8f0;
+        background: #1e3a5f;
+        color: #ffffff;
+        border-color: #1e3a5f;
+    }
+    .zoom-level-badge {
+        font-size: 13px;
+        font-weight: 900;
+        color: #0f766e;
+        background: #f0fdfa;
+        padding: 4px 10px;
+        border-radius: 6px;
+        border: 1px solid #99f6e4;
+        min-width: 45px;
+        text-align: center;
     }
 
-    /* پرنٹ ایبل کنٹینر - سکرین پر مکمل اور کشادہ */
+    /* پرنٹ ایبل کنٹینر - لامحدود قدرتی زوم ایبل */
     .printable-datesheet {
         background: #ffffff !important;
         width: 100% !important;
@@ -72,8 +88,8 @@
         border: 2px solid #cbd5e1;
         border-radius: 12px;
         box-shadow: 0 8px 30px rgba(30,58,95,0.09);
-        transform-origin: top center;
-        transition: transform 0.2s ease;
+        transition: zoom 0.15s ease, transform 0.15s ease;
+        box-sizing: border-box !important;
     }
 
     /* ٹاپ ہیڈر */
@@ -273,12 +289,13 @@
 
     /* پی ڈی ایف ایکسپورٹ کے دوران 100% چھوٹا و متوازن سنگل پیج موڈ */
     .pdf-export-mode {
+        zoom: 1 !important;
+        transform: none !important;
         width: 760px !important;
         max-width: 760px !important;
         padding: 6px 8px !important;
         box-shadow: none !important;
         border: none !important;
-        transform: none !important;
         margin: 0 auto !important;
     }
     .pdf-export-mode .ds-top-header {
@@ -390,13 +407,14 @@
             margin: 0 !important;
         }
         .printable-datesheet {
+            zoom: 1 !important;
             width: 100% !important;
             max-width: 100% !important;
             border: none !important;
             box-shadow: none !important;
             padding: 0 !important;
             margin: 0 auto !important;
-            transform: scale(0.92) !important;
+            transform: scale(0.90) !important;
             transform-origin: top center !important;
             page-break-after: avoid !important;
             page-break-inside: avoid !important;
@@ -421,16 +439,16 @@
         }
         table.ds-main-table th, table.ds-main-table td {
             padding: 1.5px 1px !important;
-            font-size: 7.6px !important;
+            font-size: 7.5px !important;
             line-height: 1.12 !important;
         }
         .th-sec-head, table.ds-main-table td.sec-col {
-            font-size: 8.2px !important;
+            font-size: 8px !important;
             width: 22px !important;
             padding: 2px 1px !important;
         }
         .th-cls-head, table.ds-main-table td.cls-col {
-            font-size: 7.6px !important;
+            font-size: 7.5px !important;
             width: 66px !important;
         }
         .th-day-head {
@@ -487,16 +505,17 @@
         </div>
 
         <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-            <!-- زوم کنٹرولز -->
+            <!-- لامحدود زوم کنٹرولز (اوپر نیچے دائیں بائیں مکمل سائز) -->
             <div class="zoom-btn-group">
-                <button type="button" class="btn-zoom" onclick="changeZoom(0.08)" title="زوم بڑا کریں">🔍 بڑا (+)</button>
-                <button type="button" class="btn-zoom" onclick="changeZoom(-0.08)" title="زوم چھوٹا کریں">🔍 چھوٹا (-)</button>
-                <button type="button" class="btn-zoom" onclick="resetZoom()" title="اصل سائز">🔄 100%</button>
+                <button type="button" class="btn-zoom" onclick="changeZoom(15)" title="زوم بڑا کریں">🔍 زوم بڑا (+)</button>
+                <span id="zoomPercentageLabel" class="zoom-level-badge">100%</span>
+                <button type="button" class="btn-zoom" onclick="changeZoom(-15)" title="زوم چھوٹا کریں">🔍 زوم چھوٹا (-)</button>
+                <button type="button" class="btn-zoom" onclick="resetZoom()" title="اصل 100% سائز">🔄 ری سیٹ</button>
             </div>
 
             <!-- پی ڈی ایف ڈاؤنلوڈ بٹن -->
             <button type="button" id="btnDownloadPDF" onclick="downloadAsPDF()" class="btn btn-danger" style="background: #dc2626; color: #fff; font-weight: 800; padding: 8px 18px; font-size: 13px; border: none; border-radius: 6px; box-shadow: 0 4px 14px rgba(220,38,38,0.35); display: flex; align-items: center; gap: 6px; cursor: pointer;">
-                <span>📥</span> <span>PDF ڈاؤنلوڈ کریں (1 صفحہ)</span>
+                <span>📥</span> <span>PDF ڈاؤنلوڈ (1 صفحہ)</span>
             </button>
 
             <!-- واٹس ایپ 1-کلک بٹن -->
@@ -651,27 +670,39 @@
 </div>
 
 <script>
-let currentZoom = 1.0;
+let currentZoomPercent = 100;
 
 function changeZoom(delta) {
-    currentZoom = Math.min(Math.max(currentZoom + delta, 0.75), 1.5);
+    currentZoomPercent = Math.min(Math.max(currentZoomPercent + delta, 60), 300);
     applyZoom();
 }
 
 function resetZoom() {
-    currentZoom = 1.0;
+    currentZoomPercent = 100;
     applyZoom();
 }
 
 function applyZoom() {
     const el = document.getElementById('datesheetPrintable');
+    const badge = document.getElementById('zoomPercentageLabel');
     if (el) {
-        el.style.transform = `scale(${currentZoom})`;
-        if (currentZoom > 1.0) {
-            el.style.marginBottom = `${(currentZoom - 1.0) * 450}px`;
-        } else {
-            el.style.marginBottom = '0px';
+        // قدرتی زوم جو اوپر نیچے دائیں بائیں ہر طرف بڑا ہوتا ہے
+        const scaleVal = currentZoomPercent / 100;
+        el.style.zoom = scaleVal;
+        
+        // فائر فاکس یا دیگر براؤزرز کے لیے متبادل
+        if (!('zoom' in el.style)) {
+            el.style.transform = `scale(${scaleVal})`;
+            el.style.transformOrigin = 'top center';
+            if (scaleVal > 1.0) {
+                el.style.marginBottom = `${(scaleVal - 1.0) * 550}px`;
+            } else {
+                el.style.marginBottom = '0px';
+            }
         }
+    }
+    if (badge) {
+        badge.innerText = currentZoomPercent + '%';
     }
 }
 
@@ -682,7 +713,7 @@ function downloadAsPDF() {
     btn.disabled = true;
     btn.innerHTML = '⏳ پی ڈی ایف تیار ہو رہی ہے...';
 
-    // اپلائی کریں کمپیکٹ سنگل پیج موڈ
+    // پی ڈی ایف کے لیے مخصوص سنگل پیج موڈ
     element.classList.add('pdf-export-mode');
 
     const opt = {
@@ -696,11 +727,11 @@ function downloadAsPDF() {
     html2pdf().set(opt).from(element).save().then(() => {
         element.classList.remove('pdf-export-mode');
         btn.disabled = false;
-        btn.innerHTML = '<span>📥</span> <span>PDF ڈاؤنلوڈ کریں (1 صفحہ)</span>';
+        btn.innerHTML = '<span>📥</span> <span>PDF ڈاؤنلوڈ (1 صفحہ)</span>';
     }).catch(err => {
         element.classList.remove('pdf-export-mode');
         btn.disabled = false;
-        btn.innerHTML = '<span>📥</span> <span>PDF ڈاؤنلوڈ کریں (1 صفحہ)</span>';
+        btn.innerHTML = '<span>📥</span> <span>PDF ڈاؤنلوڈ (1 صفحہ)</span>';
         window.print();
     });
 }
