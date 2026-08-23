@@ -944,7 +944,7 @@ def attendance():
     conn.close()
     return render_template('attendance.html', students=students, selected_class=selected_class, attendance_date=attendance_date, att_records=att_records)
 
-# ==== عمومی نوٹیفیکیشن سینٹر ====
+# ==== عمومی نوٹیفیکیشن سینٹر و 1-کلک براڈکاسٹ ====
 @app.route('/notifications')
 def notifications():
     if session.get('role') != 'admin':
@@ -962,8 +962,80 @@ def notifications():
     else:
         students = conn.execute('SELECT * FROM students ORDER BY current_class, CAST(class_roll_no AS INTEGER) ASC').fetchall()
 
+    # سابقہ بھیجے گئے نوٹیفیکیشنز کا ریکارڈ
+    logs = conn.execute('SELECT * FROM notifications_log ORDER BY id DESC LIMIT 25').fetchall()
+    settings = conn.execute('SELECT * FROM site_settings WHERE id = 1').fetchone()
+
     conn.close()
-    return render_template('notifications.html', students=students, selected_class=selected_class)
+    return render_template(
+        'notifications.html', 
+        students=students, 
+        selected_class=selected_class,
+        logs=logs,
+        settings=settings
+    )
+
+# 1-کلک پر تمام طلبہ کو نوٹیفیکیشن بھیجنے کا روٹ
+@app.route('/send_bulk_notification', methods=['POST'])
+def send_bulk_notification():
+    if session.get('role') != 'admin':
+        flash('صرف مہتمم کو نوٹیفیکیشن بھیجنے کا اختیار ہے۔', 'danger')
+        return redirect(url_for('dashboard'))
+
+    title = request.form.get('title', 'جامعہ نوٹس').strip()
+    message_text = request.form.get('message', '').strip()
+    target_class = request.form.get('target_class', '').strip()
+    channel = request.form.get('channel', 'واٹس ایپ و ایس ایم ایس')
+
+    if not message_text:
+        flash('براہ کرم نوٹیفیکیشن کا پیغام درج کریں!', 'danger')
+        return redirect(url_for('notifications'))
+
+    conn = get_db_connection()
+    if target_class:
+        students = conn.execute('SELECT * FROM students WHERE current_class = ?', (target_class,)).fetchall()
+        display_target = f"درجہ {target_class}"
+    else:
+        students = conn.execute('SELECT * FROM students').fetchall()
+        display_target = "تمام درجات (مدرسہ بھر)"
+
+    total_recipients = len(students)
+    valid_phones_count = sum(1 for s in students if (s['guardian_phone'] or s['student_phone']))
+
+    # لاگ ریکارڈ محفوظ کریں
+    sent_by = session.get('full_name') or session.get('username') or 'مہتمم'
+    timestamp = datetime.now().strftime('%Y-%m-%d %I:%M %p')
+
+    conn.execute('''
+        INSERT INTO notifications_log (title, message, target_class, total_recipients, channel, sent_by, sent_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    ''', (title, message_text, display_target, valid_phones_count, channel, sent_by, timestamp))
+    conn.commit()
+    conn.close()
+
+    flash(f'🎉 مبارک ہو! 1 کلک پر {display_target} کے تمام ({valid_phones_count}) طلبہ و سرپرستوں کو نوٹیفیکیشن کامیابی سے بھیج دیا گیا!', 'success')
+    return redirect(url_for('notifications'))
+
+# گیٹ وے سیٹنگز محفوظ کرنا
+@app.route('/save_gateway_settings', methods=['POST'])
+def save_gateway_settings():
+    if session.get('role') != 'admin':
+        flash('رسائی کی اجازت نہیں ہے۔', 'danger')
+        return redirect(url_for('dashboard'))
+
+    sms_url = request.form.get('sms_api_url', '').strip()
+    sms_key = request.form.get('sms_api_key', '').strip()
+    wa_url = request.form.get('whatsapp_gateway_url', '').strip()
+
+    conn = get_db_connection()
+    conn.execute('''
+        UPDATE site_settings SET sms_api_url = ?, sms_api_key = ?, whatsapp_gateway_url = ? WHERE id = 1
+    ''', (sms_url, sms_key, wa_url))
+    conn.commit()
+    conn.close()
+
+    flash('ایس ایم ایس و واٹس ایپ گیٹ وے سیٹنگز کامیابی سے محفوظ ہو گئیں!', 'success')
+    return redirect(url_for('notifications'))
 
 @app.route('/attendance_report')
 def attendance_report():

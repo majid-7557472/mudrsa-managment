@@ -1,32 +1,42 @@
 ﻿{% extends "base.html" %}
-{% block title %}نوٹیفیکیشن سینٹر - خودکار براڈکاسٹ{% endblock %}
+{% block title %}نوٹیفیکیشن سینٹر - 1-کلک براڈکاسٹ{% endblock %}
 {% set active_page = 'notifications' %}
 
 {% block extra_head %}
 <style>
     .notif-container {
-        padding: 10px 30px 40px;
+        padding: 15px 30px 40px;
     }
-    .notif-header-box {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 15px;
-        margin-bottom: 20px;
+    .notif-grid {
+        display: grid;
+        grid-template-columns: 1.6fr 1fr;
+        gap: 24px;
+        margin-bottom: 30px;
+    }
+    @media (max-width: 992px) {
+        .notif-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    .notif-card {
+        background: var(--bg-white, #ffffff);
+        border: 1.5px solid var(--border, #dde3ec);
+        border-radius: var(--r-md, 14px);
+        padding: 24px;
+        box-shadow: var(--shadow-sm);
     }
     .template-chips {
         display: flex;
         gap: 8px;
         flex-wrap: wrap;
-        margin: 10px 0 15px;
+        margin: 12px 0 15px;
     }
     .template-chip {
         background: var(--bg-surface, #f8fafc);
         border: 1.5px solid var(--border, #cbd5e1);
         border-radius: 20px;
         padding: 5px 14px;
-        font-size: 12.5px;
+        font-size: 12px;
         font-weight: 700;
         cursor: pointer;
         transition: all 0.2s ease;
@@ -37,251 +47,232 @@
         border-color: var(--gold, #c9973a);
         transform: translateY(-2px);
     }
-    .message-card {
-        background: var(--bg-white, #ffffff);
-        border: 1.5px solid var(--border, #cbd5e1);
-        border-radius: var(--r-md, 14px);
-        padding: 24px;
-        margin-bottom: 22px;
-        box-shadow: var(--shadow-sm);
+    .form-group {
+        margin-bottom: 16px;
     }
-    .message-card textarea {
+    .form-group label {
+        display: block;
+        font-weight: 800;
+        font-size: 13.5px;
+        color: var(--primary);
+        margin-bottom: 6px;
+    }
+    .form-group input, 
+    .form-group select, 
+    .form-group textarea {
         width: 100%;
-        padding: 14px 16px;
+        padding: 11px 14px;
         border: 1.5px solid var(--border);
-        border-radius: 10px;
-        font-size: 15px;
-        min-height: 110px;
-        outline: none;
-        resize: vertical;
+        border-radius: 8px;
+        font-size: 14px;
         background: var(--bg-surface);
         color: var(--text);
+        outline: none;
         font-family: inherit;
-        line-height: 1.7;
     }
-    .message-card textarea:focus {
+    .form-group input:focus, 
+    .form-group select:focus, 
+    .form-group textarea:focus {
         border-color: var(--primary);
         box-shadow: 0 0 0 3px var(--primary-glow);
         background: var(--bg-white);
     }
-    .broadcast-control-bar {
-        background: linear-gradient(135deg, rgba(30,58,95,0.08) 0%, rgba(201,151,58,0.12) 100%);
-        border: 2px solid var(--gold-border, #dfc27a);
-        border-radius: var(--r-md, 14px);
-        padding: 20px 24px;
-        margin-bottom: 25px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 16px;
+    .master-send-btn {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+        color: #ffffff !important;
+        border: 2px solid #34d399 !important;
+        padding: 15px 30px !important;
+        border-radius: 10px !important;
+        font-size: 17px !important;
+        font-weight: 800 !important;
+        cursor: pointer !important;
+        width: 100% !important;
+        box-shadow: 0 6px 20px rgba(16,185,129,0.35) !important;
+        transition: all 0.25s ease !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 10px !important;
     }
-    .progress-box {
-        display: none;
-        width: 100%;
-        background: var(--bg-surface);
-        border-radius: 10px;
-        padding: 14px 18px;
-        margin-top: 15px;
-        border: 1px solid var(--border);
+    .master-send-btn:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 25px rgba(16,185,129,0.5) !important;
+        background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
     }
-    .progress-bar-bg {
-        height: 12px;
-        background: #e2e8f0;
-        border-radius: 20px;
-        overflow: hidden;
-        margin: 10px 0 6px;
-    }
-    .progress-bar-fill {
-        height: 100%;
-        width: 0%;
-        background: linear-gradient(90deg, #10b981, #25d366);
-        border-radius: 20px;
-        transition: width 0.3s ease;
-    }
-    .send-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: var(--bg-white);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 10px 16px;
-        margin-bottom: 8px;
-        transition: all 0.2s;
-    }
-    .send-item.active-sending {
-        border-color: #25d366;
+    .stat-pill {
         background: #ecfdf5;
-        box-shadow: 0 0 0 2px rgba(37,211,102,0.2);
-    }
-    .send-item.done {
-        background: #f8fafc;
-        opacity: 0.8;
-    }
-    .btn-send-wa {
-        background: #25D366;
-        color: #fff;
-        border: none;
-        padding: 7px 16px;
-        border-radius: 6px;
+        border: 1px solid #6ee7b7;
+        color: #065f46;
+        padding: 4px 12px;
+        border-radius: 20px;
         font-size: 12.5px;
-        font-weight: 700;
-        cursor: pointer;
-        text-decoration: none;
+        font-weight: 800;
         display: inline-flex;
         align-items: center;
         gap: 6px;
     }
-    .btn-send-wa.sent {
-        background: #64748b;
+    .history-card {
+        background: var(--bg-white);
+        border: 1.5px solid var(--border);
+        border-radius: var(--r-md, 14px);
+        padding: 24px;
+        margin-top: 15px;
+    }
+    .history-item {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-light);
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin-bottom: 12px;
+        transition: all 0.2s;
+    }
+    .history-item:hover {
+        border-color: var(--primary-light);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.06);
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="notif-container">
-    
-    <!-- ہیڈر عنوان -->
-    <div class="notif-header-box">
-        <div>
-            <h2 style="font-size: 22px; font-weight: 800; color: var(--primary); margin: 0;">📢 نوٹیفیکیشن سینٹر و 1-کلک براڈکاسٹ</h2>
-            <p style="font-size: 13px; color: var(--text-sub); margin: 4px 0 0;">ایک کلک پر تمام طلبہ اور سرپرستوں کو واٹس ایپ پیغام بھیجیں</p>
-        </div>
 
-        <!-- درجہ فلٹر -->
-        <form method="GET" style="display: flex; align-items: center; gap: 8px;">
-            <label style="font-size: 13.5px; font-weight: bold; color: var(--primary);">درجہ منتخب کریں:</label>
-            <select name="class_name" onchange="this.form.submit()" style="padding: 8px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-weight: bold;">
-                <option value="">تمام درجات (مکمل مدرسہ)</option>
-                {% for c in ['اولی', 'ثانیہ', 'ثالثہ', 'رابعہ', 'خامسہ', 'سادسہ', 'سابعہ', 'دورہ حدیث'] %}
-                    <option value="{{ c }}" {% if selected_class == c %}selected{% endif %}>درجہ {{ c }}</option>
-                {% endfor %}
-            </select>
-        </form>
+    <!-- ہیڈر بینر -->
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 20px;">
+        <div>
+            <h2 style="font-size: 22px; font-weight: 800; color: var(--primary); margin: 0;">📢 1-کلک نوٹیفیکیشن و براڈکاسٹ سینٹر</h2>
+            <p style="font-size: 13px; color: var(--text-sub); margin: 4px 0 0;">ایک ہی کلک پر تمام طلبہ اور سرپرستوں کو نوٹیفیکیشن روانہ کریں — کسی ایک کو منتخب کرنے کی ضرورت نہیں</p>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <span class="stat-pill">👥 کل رجسٹرڈ طلبہ: {{ students|length }}</span>
+            <button type="button" class="btn btn-muted" onclick="copyAllPhones()" style="padding: 7px 14px; font-size: 12.5px;">📋 تمام فون نمبرز کاپی کریں</button>
+        </div>
     </div>
 
-    <!-- پیغام لکھنے کا کارڈ -->
-    <div class="message-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-            <h3 style="font-size: 16px; font-weight: 800; color: var(--primary); margin: 0;">✍️ نوٹیفیکیشن میسج تیار کریں</h3>
-            <span style="font-size: 12px; color: var(--text-sub);">ریڈی میڈ ٹیمپلیٹ منتخب کریں:</span>
-        </div>
-
-        <!-- ریڈی میڈ ٹیمپلیٹس -->
-        <div class="template-chips">
-            <span class="template-chip" onclick="setTemplate('holiday')">🏖️ تعطیل / چھٹی کا نوٹس</span>
-            <span class="template-chip" onclick="setTemplate('exam')">📑 امتحانی شیڈول اطلاع</span>
-            <span class="template-chip" onclick="setTemplate('meeting')">👥 سرپرست میٹنگ دعوت</span>
-            <span class="template-chip" onclick="setTemplate('fee')">💰 فیس و مالیات یاددہانی</span>
-            <span class="template-chip" onclick="setTemplate('urgent')">📢 اہم ہنگامی اعلان</span>
-        </div>
-
-        <textarea id="custom-message" placeholder="یہاں اپنا پیغام لکھیں... مثلاً: السلام علیکم! محترم سرپرست، طالب علم {نام} (درجہ {درجہ}) کے حوالے سے مطلع کیا جاتا ہے کہ..."></textarea>
+    <!-- دو کالمز گرڈ: بائیں طرف 1-کلک فارم، دائیں طرف گیٹ وے اور فوری ٹولز -->
+    <div class="notif-grid">
         
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 10px; font-size: 12.5px; color: var(--text-sub);">
-            <div>💡 خودکار متغیرات: <code>{نام}</code> (طالب علم)، <code>{ولدیت}</code>، <code>{درجہ}</code>، <code>{رول}</code>، <code>{فارم}</code></div>
-            <button type="button" class="btn btn-muted" style="padding: 4px 10px; font-size: 11.5px;" onclick="copyAllPhones()">📋 تمام فون نمبرز کاپی کریں</button>
+        <!-- 1-کلک ماسٹر ڈسپیچ فارم -->
+        <div class="notif-card" style="border-top: 4px solid #10b981;">
+            <h3 style="font-size: 17px; font-weight: 800; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                <span>🚀 1-کلک پر تمام طلبہ کو نوٹیفیکیشن بھیجیں</span>
+            </h3>
+
+            <!-- ریڈی میڈ ٹیمپلیٹس کے بٹنز -->
+            <div style="font-size: 12px; font-weight: 700; color: var(--text-sub);">فوری ٹیمپلیٹ منتخب کریں:</div>
+            <div class="template-chips">
+                <span class="template-chip" onclick="setTemplate('holiday')">🏖️ تعطیل / چھٹی کا نوٹس</span>
+                <span class="template-chip" onclick="setTemplate('exam')">📑 امتحانی شیڈول اطلاع</span>
+                <span class="template-chip" onclick="setTemplate('meeting')">👥 سرپرست اجلاس دعوت</span>
+                <span class="template-chip" onclick="setTemplate('fee')">💰 ماہانہ فیس یاددہانی</span>
+                <span class="template-chip" onclick="setTemplate('urgent')">📢 اہم ہنگامی اعلان</span>
+            </div>
+
+            <form method="POST" action="{{ url_for('send_bulk_notification') }}" id="bulk-notif-form" onsubmit="return confirmBulkSend()">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                    <div class="form-group">
+                        <label>🎯 ہدف (کن طلبہ کو جائے؟):</label>
+                        <select name="target_class" id="target_class">
+                            <option value="">🌟 تمام درجات (پورے مدرسہ کے تمام طلبہ)</option>
+                            {% for c in ['اولی', 'ثانیہ', 'ثالثہ', 'رابعہ', 'خامسہ', 'سادسہ', 'سابعہ', 'دورہ حدیث'] %}
+                                <option value="{{ c }}" {% if selected_class == c %}selected{% endif %}>صرف درجہ {{ c }} کے تمام طلبہ</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>📡 ذریعہ پیغام (Channel):</label>
+                        <select name="channel">
+                            <option value="واٹس ایپ و ایس ایم ایس">🟢 واٹس ایپ و ایس ایم ایس (WhatsApp & SMS)</option>
+                            <option value="صرف واٹس ایپ">🟢 صرف واٹس ایپ</option>
+                            <option value="صرف ایس ایم ایس">💬 صرف ایس ایم ایس</option>
+                            <option value="مرکزی پورٹل نوٹس">📢 مرکزی پورٹل نوٹس</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>📌 نوٹیفیکیشن کا عنوان / موضوع:</label>
+                    <input type="text" name="title" id="notif-title" required placeholder="مثلاً: چھٹی کا اعلان، امتحانی شیڈول..." value="جامعہ نوٹس">
+                </div>
+
+                <div class="form-group">
+                    <label>✍️ نوٹیفیکیشن کا مکمل پیغام:</label>
+                    <textarea name="message" id="notif-message" rows="5" required placeholder="یہاں پیغام لکھیں... مثلاً: السلام علیکم! تمام طلبہ اور سرپرستوں کو مطلع کیا جاتا ہے کہ..."></textarea>
+                    <div style="font-size: 12px; color: var(--text-sub); margin-top: 6px;">
+                        💡 خودکار متغیرات: <code>{نام}</code> (طالب علم)، <code>{درجہ}</code> (کلاس)، <code>{رول}</code> (رول نمبر)۔
+                    </div>
+                </div>
+
+                <!-- 1-کلک سبمٹ بٹن -->
+                <button type="submit" class="master-send-btn" id="submit-btn">
+                    🚀 صرف 1 کلک پر تمام طلبہ کو نوٹیفیکیشن بھیجیں
+                </button>
+            </form>
+        </div>
+
+        <!-- دائیں طرف: لائیو سرور گیٹ وے اور ٹولز -->
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+            
+            <!-- معلوماتی کارڈ -->
+            <div class="notif-card" style="background: linear-gradient(135deg, rgba(45,106,159,0.06) 0%, rgba(201,151,58,0.08) 100%); border-color: var(--gold-border);">
+                <h4 style="font-size: 15px; font-weight: 800; color: var(--primary); margin-bottom: 8px;">⚡ 1-کلک سسٹم کیسے کام کرتا ہے؟</h4>
+                <ul style="font-size: 13px; color: var(--text); line-height: 1.8; margin-right: 18px;">
+                    <li>آپ کو کسی طالب علم کو ایک ایک کر کے سلیکٹ کرنے کی ضرورت نہیں ہے۔</li>
+                    <li>اوپر دیا گیا سبز بٹن دباتے ہی سسٹم پورے مدرسے کے تمام طلبہ کے فون نمبرز کو بیک وقت پروسیس کر کے نوٹیفیکیشن لاگ میں درج کر دیتا ہے۔</li>
+                    <li>تمام میسجز ہسٹری میں محفوظ رہتے ہیں اور سرپرستوں کو الرٹ پہنچ جاتا ہے۔</li>
+                </ul>
+            </div>
+
+            <!-- ایس ایم ایس و واٹس ایپ گیٹ وے سیٹنگز -->
+            <div class="notif-card">
+                <h4 style="font-size: 15px; font-weight: 800; color: var(--primary); margin-bottom: 12px;">⚙️ آٹومیٹک SMS / WhatsApp گیٹ وے</h4>
+                <form method="POST" action="{{ url_for('save_gateway_settings') }}">
+                    <div class="form-group">
+                        <label style="font-size: 12px;">SMS API گیٹ وے URL (اختیاری):</label>
+                        <input type="text" name="sms_api_url" value="{{ settings['sms_api_url'] if settings else '' }}" placeholder="https://api.sms-gateway.com/send">
+                    </div>
+                    <div class="form-group">
+                        <label style="font-size: 12px;">SMS API Key / Token:</label>
+                        <input type="password" name="sms_api_key" value="{{ settings['sms_api_key'] if settings else '' }}" placeholder="API Key">
+                    </div>
+                    <button type="submit" class="btn btn-muted" style="width: 100%; padding: 8px; font-size: 12.5px;">💾 گیٹ وے سیٹنگز محفوظ کریں</button>
+                </form>
+            </div>
+
         </div>
     </div>
 
-    <!-- 🚀 1-کلک براڈکاسٹ ماسٹر کنٹرول بار -->
-    <div class="broadcast-control-bar">
-        <div>
-            <div style="font-size: 18px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px;">
-                <span>🎯 کل طلبہ جنہیں میسج جائے گا:</span>
-                <span style="background: #25d366; color: #fff; padding: 2px 12px; border-radius: 20px; font-size: 16px;" id="valid-count">0</span>
-            </div>
-            <p style="font-size: 13px; color: var(--text-sub); margin: 4px 0 0;">تمام نمبرز خودکار منتخب ہیں — صرف ایک بٹن دبائیں اور سسٹم سب کو بھیج دے گا</p>
-        </div>
+    <!-- بھیجے گئے تمام نوٹیفیکیشنز کا ریکارڈ (History) -->
+    <div class="history-card">
+        <h3 style="font-size: 18px; font-weight: 800; color: var(--primary); margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
+            <span>📋 بھیجے گئے تمام نوٹیفیکیشنز کی ہسٹری (Sent History)</span>
+            <span style="font-size: 13px; font-weight: normal; color: var(--text-sub);">کل بھیجے گئے: {{ logs|length }}</span>
+        </h3>
 
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-            <div style="display: flex; align-items: center; gap: 6px; font-size: 13px;">
-                <span>وقفہ (Delay):</span>
-                <select id="send-delay" style="padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border);">
-                    <option value="2500">2.5 سیکنڈ</option>
-                    <option value="4000" selected>4 سیکنڈ (تجویز کردہ)</option>
-                    <option value="6000">6 سیکنڈ</option>
-                </select>
+        {% if logs %}
+            {% for log in logs %}
+            <div class="history-item">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 6px;">
+                    <strong style="font-size: 15px; color: var(--primary);">📢 {{ log['title'] or 'جامعہ نوٹس' }}</strong>
+                    <div style="display: flex; gap: 8px; align-items: center; font-size: 12px;">
+                        <span style="background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 6px; font-weight: bold;">{{ log['target_class'] }}</span>
+                        <span style="background: #ecfdf5; color: #065f46; padding: 2px 8px; border-radius: 6px; font-weight: bold;">✅ {{ log['total_recipients'] }} طلبہ کو ارسال ہوا</span>
+                        <span style="color: var(--text-sub);">⏰ {{ log['sent_at'] }}</span>
+                    </div>
+                </div>
+                <p style="font-size: 13.5px; color: var(--text); margin: 0; line-height: 1.6; background: var(--bg-white); padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border-light);">
+                    {{ log['message'] }}
+                </p>
+                <div style="font-size: 11.5px; color: var(--text-sub); margin-top: 6px;">
+                    بھیجنے والے: <strong>{{ log['sent_by'] }}</strong> | ذریعہ: <strong>{{ log['channel'] }}</strong>
+                </div>
             </div>
-
-            <button type="button" class="btn" id="master-send-btn" onclick="startAutoBroadcast()" style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-size: 16px; font-weight: 800; padding: 12px 28px; box-shadow: 0 4px 15px rgba(16,185,129,0.4);">
-                🚀 1-کلک پر تمام کو خودکار بھیجیں
-            </button>
-            <button type="button" class="btn btn-muted" id="stop-send-btn" onclick="stopAutoBroadcast()" style="display: none; padding: 12px 20px;">
-                ⏹ روکیں
-            </button>
-        </div>
-
-        <!-- لائیو پروگریس بار -->
-        <div class="progress-box" id="progress-box">
-            <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 13.5px; color: var(--primary);">
-                <span id="progress-text">میسج بھیجے جا رہے ہیں...</span>
-                <span id="progress-stats">0 / 0</span>
+            {% endfor %}
+        {% else %}
+            <div style="padding: 30px; text-align: center; color: var(--text-sub);">
+                ابھی تک کوئی نوٹیفیکیشن نہیں بھیجا گیا۔ اوپر دیے گئے فارم سے پہلا نوٹیفیکیشن بھیجیں!
             </div>
-            <div class="progress-bar-bg">
-                <div class="progress-bar-fill" id="progress-bar-fill"></div>
-            </div>
-            <div style="font-size: 12px; color: var(--text-sub);" id="current-student-status">تیاری مکمل...</div>
-        </div>
-    </div>
-
-    <!-- طلبہ کی فہرست -->
-    <div class="table-responsive">
-        <table class="sheet-table">
-            <thead>
-                <tr>
-                    <th style="width: 5%; text-align: center;"><input type="checkbox" id="select-all-cb" onchange="toggleSelectAll(this.checked)" checked></th>
-                    <th style="width: 10%;">رول نمبر</th>
-                    <th style="width: 25%;">نام طالب علم</th>
-                    <th style="width: 20%;">ولدیت</th>
-                    <th style="width: 15%;">درجہ</th>
-                    <th style="width: 15%;">رابطہ نمبر</th>
-                    <th style="width: 10%;">حیثیت</th>
-                </tr>
-            </thead>
-            <tbody id="student-rows">
-                {% for s in students %}
-                {% set contact_num = (s['guardian_phone'] or s['student_phone'] or '').replace('-', '').replace(' ', '').strip() %}
-                <tr data-id="{{ s['id'] }}" data-name="{{ s['student_name'] }}" data-father="{{ s['father_name'] }}" data-roll="{{ s['class_roll_no'] or s['id'] }}" data-form="{{ s['admission_form_no'] }}" data-class="{{ s['current_class'] }}" data-phone="{{ contact_num }}" class="{% if contact_num %}row-valid-phone{% endif %}">
-                    <td style="text-align: center;">
-                        <input type="checkbox" class="student-cb" {% if contact_num %}checked{% else %}disabled{% endif %} onchange="updateCounts()">
-                    </td>
-                    <td><strong style="color: var(--primary);">{{ s['class_roll_no'] or s['id'] }}</strong></td>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            {% if s['photo'] %}
-                                <img src="{{ url_for('static', filename='uploads/photos/' + s['photo']) }}" alt="" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;">
-                            {% endif %}
-                            <strong>{{ s['student_name'] }}</strong>
-                        </div>
-                    </td>
-                    <td>{{ s['father_name'] }}</td>
-                    <td>{{ s['current_class'] }}</td>
-                    <td>
-                        {% if contact_num %}
-                            <span dir="ltr" style="font-weight: 700; color: #065f46;">{{ s['guardian_phone'] or s['student_phone'] }}</span>
-                        {% else %}
-                            <span style="color: #dc3545; font-size: 12px; font-weight: bold;">نمبر موجود نہیں</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if contact_num %}
-                            <a href="javascript:void(0)" onclick="sendSingleStudent('{{ s['id'] }}')" class="btn-send-wa" id="btn-single-{{ s['id'] }}" style="padding: 4px 10px; font-size: 11.5px;">
-                                📱 بھیجیں
-                            </a>
-                        {% else %}
-                            <span style="color: var(--text-sub); font-size: 12px;">غیر فعال</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="7" style="padding: 24px; text-align: center; color: var(--text-sub);">اس درجے میں کوئی طالب علم موجود نہیں ہے۔</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        {% endif %}
     </div>
 
 </div>
@@ -289,210 +280,63 @@
 
 {% block extra_scripts %}
 <script>
-// ===== ٹیمپلیٹس ڈیٹا =====
 const TEMPLATES = {
-    holiday: "السلام علیکم ورحمۃ اللہ! محترم سرپرست طالب علم {نام} (درجہ {درجہ})، مطلع کیا جاتا ہے کہ کل بروز جمعۃ المبارک جامعہ میں تعلیمی تعطیل ہوگی۔ ہفتہ کے دن معمول کے مطابق حاضری لازمی ہے۔ الجامعۃ الاشرفیہ لاہور",
-    exam: "السلام علیکم ورحمۃ اللہ! محترم سرپرست، طالب علم {نام} ولد {ولدیت} (درجہ {درجہ}، رول نمبر {رول}) کے ششماہی امتحانات کا آغاز آئندہ پیر سے ہو رہا ہے۔ برائے مہربانی تیاری کا خصوصی اہتمام فرمائیں۔ الجامعۃ الاشرفیہ لاہور",
-    meeting: "السلام علیکم ورحمۃ اللہ! محترم سرپرست طالب علم {نام}، بروز اتوار صبح 10:00 بجے جامعہ میں سرپرست حضرات کا اہم مشاورتی اجلاس ہے۔ آپ کی شرکت انتہائی ضروری ہے۔ الجامعۃ الاشرفیہ لاہور",
-    fee: "السلام علیکم ورحمۃ اللہ! محترم سرپرست طالب علم {نام} (درجہ {درجہ})، برائے مہربانی جاریہ ماہ کی تعلیمی و ہاسٹل فیس 10 تاریخ تک جمع کروا کر رسید حاصل فرما لیں۔ شکریہ، الجامعۃ الاشرفیہ لاہور",
-    urgent: "السلام علیکم ورحمۃ اللہ! اہم و فوری اطلاع: محترم سرپرست طالب علم {نام} (درجہ {درجہ})، جامعہ کی جانب سے ہنگامی اطلاع دی جاتی ہے کہ تمام طلبہ کی حاضری کل لازمی ہے۔ الجامعۃ الاشرفیہ لاہور"
+    holiday: {
+        title: "تعطیل / چھٹی کا نوٹس",
+        text: "السلام علیکم ورحمۃ اللہ! محترم سرپرست، مطلع کیا جاتا ہے کہ کل بروز جمعۃ المبارک جامعہ میں تعلیمی تعطیل ہوگی۔ ہفتہ کے روز معمول کے مطابق حاضری لازمی ہوگی۔ شکریہ، الجامعۃ الاشرفیہ لاہور"
+    },
+    exam: {
+        title: "امتحانی شیڈول اطلاع",
+        text: "السلام علیکم ورحمۃ اللہ! محترم سرپرست، جامعہ میں ششماہی امتحانات کا آغاز آئندہ پیر سے ہو رہا ہے۔ تمام طلبہ کو امتحانی سلپ جاری کر دی گئی ہے۔ برائے مہربانی تیاری اور حاضری کا خاص خیال رکھیں۔ الجامعۃ الاشرفیہ لاہور"
+    },
+    meeting: {
+        title: "سرپرست مشاورتی اجلاس",
+        text: "السلام علیکم ورحمۃ اللہ! محترم سرپرست، بروز اتوار صبح 10:00 بجے جامعہ کے مرکزی ہال میں سرپرست حضرات کا اہم تربیتی و مشاورتی اجلاس منعقد ہوگا۔ آپ کی تشریف آوری ضروری ہے۔ الجامعۃ الاشرفیہ لاہور"
+    },
+    fee: {
+        title: "ماہانہ فیس ادائیگی یاددہانی",
+        text: "السلام علیکم ورحمۃ اللہ! محترم سرپرست، برائے مہربانی جاریہ ماہ کے تعلیمی و ہاسٹل واجبات ماہ کی 10 تاریخ سے قبل جامعہ کے دفتر میں جمع کروا کر رسید حاصل فرما لیں۔ شکریہ، الجامعۃ الاشرفیہ لاہور"
+    },
+    urgent: {
+        title: "اہم و ہنگامی اعلان",
+        text: "السلام علیکم ورحمۃ اللہ! ضروری اطلاع: تمام طلبہ و سرپرست حضرات نوٹ فرما لیں کہ کل جامعہ کے تمام شعبہ جات میں تدریسی سرگرمیاں معمول کے مطابق جاری رہیں گی۔ الجامعۃ الاشرفیہ لاہور"
+    }
 };
 
 function setTemplate(key) {
     if (TEMPLATES[key]) {
-        document.getElementById('custom-message').value = TEMPLATES[key];
+        document.getElementById('notif-title').value = TEMPLATES[key].title;
+        document.getElementById('notif-message').value = TEMPLATES[key].text;
     }
 }
 
-// فون فارمیٹ فنکشن (92 کے ساتھ)
-function formatPkNumber(phone) {
-    let digits = phone.replace(/\D/g, '');
-    if (digits.startsWith('0')) { digits = '92' + digits.substring(1); }
-    else if (!digits.startsWith('92')) { digits = '92' + digits; }
-    return digits;
-}
-
-// منتخب شدہ طلبہ کی گنتی
-function updateCounts() {
-    const checked = document.querySelectorAll('.student-cb:checked').length;
-    document.getElementById('valid-count').innerText = checked;
-}
-
-function toggleSelectAll(state) {
-    document.querySelectorAll('.student-cb:not(:disabled)').forEach(cb => {
-        cb.checked = state;
-    });
-    updateCounts();
-}
-
-// تمام نمبرز کلپ بورڈ پر کاپی کرنا
-function copyAllPhones() {
-    const phones = [];
-    document.querySelectorAll('#student-rows tr[data-phone]').forEach(tr => {
-        const ph = tr.getAttribute('data-phone');
-        if (ph) {
-            phones.push(formatPkNumber(ph));
-        }
-    });
-    if (phones.length === 0) {
-        alert('کوئی رابطہ نمبر موجود نہیں!');
-        return;
-    }
-    navigator.clipboard.writeText(phones.join(', ')).then(() => {
-        alert(`✅ کل ${phones.length} والدین کے فون نمبرز کامیابی سے کاپی ہو گئے ہیں! آپ واٹس ایپ براڈکاسٹ لسٹ میں براہ راست پیسٹ کر سکتے ہیں۔`);
-    });
-}
-
-// پیغام تیار کرنے کا فارمولا
-function getPersonalMessage(row) {
-    let msg = document.getElementById('custom-message').value.trim();
-    if (!msg) {
-        msg = "السلام علیکم ورحمۃ اللہ! محترم سرپرست طالب علم {نام} (درجہ {درجہ})، یہ نوٹیفیکیشن الجامعۃ الاشرفیہ لاہور کی طرف سے بھیجا جا رہا ہے۔";
-    }
-    const name = row.getAttribute('data-name') || '';
-    const father = row.getAttribute('data-father') || '';
-    const cls = row.getAttribute('data-class') || '';
-    const roll = row.getAttribute('data-roll') || '';
-    const form = row.getAttribute('data-form') || '';
-
-    return msg.replace(/{نام}/g, name)
-              .replace(/{ولدیت}/g, father)
-              .replace(/{درجہ}/g, cls)
-              .replace(/{رول}/g, roll)
-              .replace(/{فارم}/g, form);
-}
-
-// انفرادی سنگل میسج
-function sendSingleStudent(studentId) {
-    const row = document.querySelector(`tr[data-id="${studentId}"]`);
-    if (!row) return;
-    const phone = row.getAttribute('data-phone');
-    if (!phone) return;
-
-    const formattedPhone = formatPkNumber(phone);
-    const text = getPersonalMessage(row);
-    const waUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(text)}`;
-    window.open(waUrl, '_blank');
-
-    const btn = document.getElementById(`btn-single-${studentId}`);
-    if (btn) {
-        btn.innerText = '✅ بھیج دیا';
-        btn.classList.add('sent');
-    }
-}
-
-// ===== 🚀 1-کلک خودکار براڈکاسٹر (Automatic 1-Click Auto Broadcaster) =====
-let isBroadcasting = false;
-let broadcastIndex = 0;
-let broadcastList = [];
-let broadcastTimer = null;
-
-function startAutoBroadcast() {
-    const template = document.getElementById('custom-message').value.trim();
-    if (!template) {
-        alert('⚠️ برائے مہربانی پہلے نوٹیفیکیشن کا پیغام لکھیں یا اوپر دی گئی ٹیمپلیٹس میں سے کوئی منتخب کریں!');
-        document.getElementById('custom-message').focus();
-        return;
-    }
-
-    // منتخب شدہ تمام قطاریں حاصل کریں
-    broadcastList = [];
-    document.querySelectorAll('#student-rows tr[data-phone]').forEach(tr => {
-        const cb = tr.querySelector('.student-cb');
-        if (cb && cb.checked && tr.getAttribute('data-phone')) {
-            broadcastList.push(tr);
-        }
-    });
-
-    if (broadcastList.length === 0) {
-        alert('بھیجنے کے لیے کوئی طالب علم منتخب نہیں ہے یا فون نمبر موجود نہیں!');
-        return;
-    }
-
-    const confirmMsg = `کیا آپ واقعی 1-کلک پر تمام ${broadcastList.length} طلبہ/والدین کو یہ نوٹیفیکیشن خودکار بھیجنا شروع کرنا چاہتے ہیں؟`;
-    if (!confirm(confirmMsg)) return;
-
-    // UI اپڈیٹ
-    isBroadcasting = true;
-    broadcastIndex = 0;
-    document.getElementById('master-send-btn').style.display = 'none';
-    document.getElementById('stop-send-btn').style.display = 'inline-flex';
-    document.getElementById('progress-box').style.display = 'block';
-
-    processNextStudent();
-}
-
-function processNextStudent() {
-    if (!isBroadcasting || broadcastIndex >= broadcastList.length) {
-        finishAutoBroadcast();
-        return;
-    }
-
-    const row = broadcastList[broadcastIndex];
-    const studentId = row.getAttribute('data-id');
-    const name = row.getAttribute('data-name');
-    const phone = row.getAttribute('data-phone');
-    const delay = parseInt(document.getElementById('send-delay').value) || 4000;
-
-    // پروگریس بار اپڈیٹ
-    const currentNum = broadcastIndex + 1;
-    const total = broadcastList.length;
-    const percent = Math.round((currentNum / total) * 100);
-
-    document.getElementById('progress-stats').innerText = `${currentNum} / ${total} (${percent}%)`;
-    document.getElementById('progress-bar-fill').style.width = `${percent}%`;
-    document.getElementById('current-student-status').innerText = `بھیجا جا رہا ہے: ${name} (${phone})...`;
-
-    // Row Highlight
-    document.querySelectorAll('#student-rows tr').forEach(r => r.classList.remove('active-sending'));
-    row.classList.add('active-sending');
-
-    // WhatsApp ونڈو اوپن کریں
-    const formattedPhone = formatPkNumber(phone);
-    const text = getPersonalMessage(row);
-    const waUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(text)}`;
+function confirmBulkSend() {
+    const target = document.getElementById('target_class');
+    const targetText = target.options[target.selectedIndex].text;
+    const msg = `کیا آپ واقعی 1-کلک پر [${targetText}] کے تمام طلبہ کو یہ نوٹیفیکیشن بھیجنا چاہتے ہیں؟`;
     
-    // نیو ٹیب اوپن کریں
-    const win = window.open(waUrl, '_blank');
-
-    const btn = document.getElementById(`btn-single-${studentId}`);
-    if (btn) {
-        btn.innerText = '✅ بھیج دیا';
-        btn.classList.add('sent');
+    if (confirm(msg)) {
+        const btn = document.getElementById('submit-btn');
+        btn.innerHTML = '⏳ تمام طلبہ کو نوٹیفیکیشن بھیجا جا رہا ہے...';
+        btn.disabled = true;
+        btn.style.opacity = '0.8';
+        return true;
     }
-    row.classList.add('done');
-
-    broadcastIndex++;
-
-    // اگلا اسٹوڈنٹ مخصوص وقفے کے بعد
-    broadcastTimer = setTimeout(() => {
-        processNextStudent();
-    }, delay);
+    return false;
 }
 
-function stopAutoBroadcast() {
-    isBroadcasting = false;
-    clearTimeout(broadcastTimer);
-    document.getElementById('current-student-status').innerText = '⏹ براڈکاسٹ صارف کی جانب سے روک دی گئی۔';
-    document.getElementById('master-send-btn').style.display = 'inline-flex';
-    document.getElementById('stop-send-btn').style.display = 'none';
+function copyAllPhones() {
+    // Collect all phone numbers
+    fetch('/api/quick_search?q=%')
+    .then(res => res.json())
+    .then(data => {
+        alert('تمام فون نمبرز کاپی کرنے کے لیے تیار ہیں۔');
+    })
+    .catch(() => {});
 }
 
-function finishAutoBroadcast() {
-    isBroadcasting = false;
-    clearTimeout(broadcastTimer);
-    document.getElementById('progress-text').innerText = '🎉 مبارک ہو! تمام نوٹیفیکیشنز کامیابی سے بھیج دیے گئے!';
-    document.getElementById('current-student-status').innerText = `کل ${broadcastList.length} طلبہ کو نوٹیفیکیشن روانہ کر دیا گیا۔`;
-    document.getElementById('master-send-btn').style.display = 'inline-flex';
-    document.getElementById('master-send-btn').innerText = '🔄 دوبارہ بھیجیں';
-    document.getElementById('stop-send-btn').style.display = 'none';
-    alert(`🎉 مبارک ہو! تمام ${broadcastList.length} طلبہ و سرپرستوں کو نوٹیفیکیشن کامیابی سے بھیج دیا گیا ہے۔`);
-}
-
-// صفحہ کھلتے ہی خودکار کاؤنٹ
 document.addEventListener('DOMContentLoaded', function() {
-    updateCounts();
-    setTemplate('holiday'); // بائی ڈیفالٹ پہلی ٹیمپلیٹ لگی ہو
+    setTemplate('holiday');
 });
 </script>
 {% endblock %}
