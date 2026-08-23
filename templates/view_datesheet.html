@@ -56,7 +56,7 @@
         background: #e2e8f0;
     }
 
-    /* پرنٹ ایبل کنٹینر */
+    /* پرنٹ ایبل کنٹینر - سکرین ڈسپلے */
     .printable-datesheet {
         background: #ffffff !important;
         width: 100% !important;
@@ -266,6 +266,71 @@
         background: #f8fafc;
         border-radius: 6px;
         border: 1px solid #e2e8f0;
+    }
+
+    /* پی ڈی ایف ایکسپورٹ کے دوران 1-صفحہ سیٹنگز */
+    .pdf-export-mode {
+        width: 780px !important;
+        max-width: 780px !important;
+        padding: 6px 8px !important;
+        box-shadow: none !important;
+        border: none !important;
+        transform: none !important;
+        margin: 0 auto !important;
+    }
+    .pdf-export-mode .ds-top-header {
+        margin-bottom: 2px !important;
+        padding: 0 35px 2px 35px !important;
+        border-bottom: 1.5px solid #1e3a5f !important;
+    }
+    .pdf-export-mode .ds-logo-top {
+        width: 44px !important;
+        height: 44px !important;
+    }
+    .pdf-export-mode .ds-main-heading {
+        font-size: 21px !important;
+        margin-bottom: 1px !important;
+        line-height: 1.15 !important;
+    }
+    .pdf-export-mode .ds-sub-heading {
+        font-size: 10px !important;
+        padding: 1px 10px !important;
+    }
+    .pdf-export-mode table.ds-main-table th, 
+    .pdf-export-mode table.ds-main-table td {
+        padding: 1.6px 1px !important;
+        font-size: 7.8px !important;
+        line-height: 1.12 !important;
+    }
+    .pdf-export-mode .th-sec-head, 
+    .pdf-export-mode table.ds-main-table td.sec-col {
+        font-size: 8.5px !important;
+        width: 22px !important;
+        padding: 2px 1px !important;
+    }
+    .pdf-export-mode .th-cls-head, 
+    .pdf-export-mode table.ds-main-table td.cls-col {
+        font-size: 7.8px !important;
+        width: 68px !important;
+    }
+    .pdf-export-mode .th-day-head {
+        height: 18px !important;
+        font-size: 9px !important;
+    }
+    .pdf-export-mode .th-time-row {
+        height: 14px !important;
+        font-size: 7.5px !important;
+    }
+    .pdf-export-mode .th-date-row {
+        height: 20px !important;
+        font-size: 7.5px !important;
+    }
+    .pdf-export-mode .ds-footer {
+        margin-top: 2px !important;
+        font-size: 7.5px !important;
+        padding: 2px 4px !important;
+        background: none !important;
+        border: none !important;
     }
 
     /* واٹس ایپ ماڈل */
@@ -613,30 +678,25 @@ function downloadAsPDF() {
     btn.disabled = true;
     btn.innerHTML = '⏳ پی ڈی ایف تیار ہو رہی ہے...';
 
-    const oldTransform = element.style.transform;
-    const oldMargin = element.style.marginBottom;
-    element.style.transform = 'none';
-    element.style.marginBottom = '0px';
+    // اپلائی کریں سنگل پیج موڈ
+    element.classList.add('pdf-export-mode');
 
     const opt = {
-        margin: [3, 4, 3, 4],
+        margin: [4, 4, 4, 4],
         filename: 'Jamia_Ashrafia_DateSheet_1448H.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2.0, useCORS: true, letterRendering: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: 'avoid-all' }
+        html2canvas: { scale: 2.2, useCORS: true, letterRendering: true, scrollY: 0 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
     html2pdf().set(opt).from(element).save().then(() => {
+        element.classList.remove('pdf-export-mode');
         btn.disabled = false;
         btn.innerHTML = '<span>📥</span> <span>PDF ڈاؤنلوڈ کریں (1 صفحہ)</span>';
-        element.style.transform = oldTransform;
-        element.style.marginBottom = oldMargin;
     }).catch(err => {
+        element.classList.remove('pdf-export-mode');
         btn.disabled = false;
         btn.innerHTML = '<span>📥</span> <span>PDF ڈاؤنلوڈ کریں (1 صفحہ)</span>';
-        element.style.transform = oldTransform;
-        element.style.marginBottom = oldMargin;
         window.print();
     });
 }
