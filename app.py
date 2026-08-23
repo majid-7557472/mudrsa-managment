@@ -311,12 +311,17 @@ def admission():
                     cursor.execute('INSERT INTO custom_values (field_id, record_id, field_value) VALUES (?, ?, ?)', (field_id, student_id, val.strip()))
 
             conn.commit()
+            conn.close()
             flash(f'طالب علم کا داخلہ کامیابی سے محفوظ ہو گیا!', 'success')
             return redirect(url_for('admission_slip', student_id=student_id))
         except sqlite3.IntegrityError:
-            flash('خرابی: اس فارم نمبر کا طالب علم پہلے سے موجود ہے!', 'danger')
-        finally:
             conn.close()
+            flash('خرابی: اس فارم داخلہ نمبر کا طالب علم پہلے سے موجود ہے! برائے مہربانی نیا فارم نمبر درج کریں۔', 'danger')
+            return redirect(url_for('admission'))
+        except Exception as e:
+            conn.close()
+            flash(f'خرابی: {str(e)}', 'danger')
+            return redirect(url_for('admission'))
 
     custom_fields = conn.execute("SELECT * FROM custom_fields WHERE section = 'student'").fetchall()
     conn.close()
