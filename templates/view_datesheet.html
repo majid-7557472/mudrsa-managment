@@ -17,30 +17,29 @@
     }
 
     .datesheet-outer-box {
-        background: var(--bg-surface, #f8fafc);
-        padding: 16px;
-        border-radius: 10px;
-        margin-bottom: 25px;
-        box-shadow: var(--shadow-sm);
+        background: #f1f5f9;
+        padding: 10px 14px;
+        border-radius: 8px;
+        margin-bottom: 20px;
     }
 
-    /* ٹول بار - مکمل ایک خوبصورت سیدھی لائن میں */
+    /* ٹول بار */
     .datesheet-toolbar {
         width: 100%;
         display: flex;
         justify-content: space-between;
         align-items: center;
         flex-wrap: wrap;
-        gap: 10px;
-        margin-bottom: 16px;
-        padding-bottom: 12px;
-        border-bottom: 1.5px solid var(--border, #cbd5e1);
+        gap: 8px;
+        margin-bottom: 8px;
+        padding-bottom: 8px;
+        border-bottom: 1.5px solid #cbd5e1;
     }
 
     .toolbar-left-group {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
         flex-wrap: wrap;
     }
 
@@ -57,8 +56,8 @@
         background: #f8fafc;
         border: 1px solid #cbd5e1;
         border-radius: 4px;
-        padding: 5px 9px;
-        font-size: 12.5px;
+        padding: 4px 8px;
+        font-size: 12px;
         font-weight: 800;
         color: #0f172a;
         cursor: pointer;
@@ -69,11 +68,11 @@
         color: #ffffff;
     }
     .zoom-level-badge {
-        font-size: 12.5px;
+        font-size: 12px;
         font-weight: 900;
         color: #0f172a;
-        padding: 2px 6px;
-        min-width: 38px;
+        padding: 2px 5px;
+        min-width: 36px;
         text-align: center;
     }
 
@@ -83,44 +82,44 @@
         justify-content: center;
         width: 100%;
         overflow-x: auto;
-        padding: 4px 0;
     }
 
-    /* اصل پرنٹ ایبل پیپر - ہو بہو اصل کاغذ کا ڈیزائن */
+    /* اصل پرنٹ ایبل پیپر - پورا پیج ایک ہی سکرین پر مکمل نظر آنے والا سائز */
     .printable-datesheet {
         background: #ffffff !important;
         width: 100% !important;
-        max-width: 820px;
+        max-width: 780px;
         margin: 0 auto;
         color: #000000 !important;
         direction: rtl !important;
         font-family: 'Noto Naskh Arabic', 'Amiri', Tahoma, sans-serif !important;
-        padding: 12px 14px 8px 14px;
+        padding: 8px 12px 6px 12px;
         border: 2px solid #000000;
-        box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+        box-shadow: 0 4px 18px rgba(0,0,0,0.12);
         box-sizing: border-box !important;
+        transition: transform 0.15s ease;
     }
 
     /* ٹاپ ہیڈر */
     .ds-top-header {
         position: relative;
         text-align: center;
-        margin-bottom: 5px;
-        padding: 0 50px 3px 50px;
+        margin-bottom: 3px;
+        padding: 0 40px 2px 40px;
     }
     .ds-logo-top {
         position: absolute;
         top: 0;
         left: 0;
-        width: 52px;
-        height: 52px;
+        width: 42px;
+        height: 42px;
         object-fit: contain;
     }
     
     /* خطاطی عنوان */
     .ds-calligraphy-title {
         font-family: 'Amiri', 'Noto Naskh Arabic', serif;
-        font-size: 32px;
+        font-size: 26px;
         font-weight: 800;
         color: #000000 !important;
         margin: 0;
@@ -129,28 +128,28 @@
     }
     .ds-sub-title-text {
         font-family: 'Noto Naskh Arabic', 'Amiri', sans-serif;
-        font-size: 13px;
+        font-size: 11px;
         font-weight: 800;
         color: #000000 !important;
         margin: 1px 0 0 0;
         letter-spacing: 0px !important;
     }
 
-    /* مین آفیشل ٹیبل - 100% 1 صفحے پر فٹ */
+    /* مین آفیشل ٹیبل - 100% 1 صفحے پر پورا نظر آنے کے لیے */
     table.ds-main-table {
         width: 100% !important;
         border-collapse: collapse !important;
-        border: 2px solid #000000 !important;
+        border: 1.8px solid #000000 !important;
         direction: rtl !important;
         table-layout: fixed !important;
-        margin: 3px auto 0 auto !important;
+        margin: 2px auto 0 auto !important;
         background: #ffffff !important;
     }
 
     table.ds-main-table th, 
     table.ds-main-table td {
-        border: 1.2px solid #000000 !important;
-        padding: 2.8px 1.5px !important;
+        border: 1px solid #000000 !important;
+        padding: 2px 1px !important;
         text-align: center !important;
         vertical-align: middle !important;
         color: #000000 !important;
@@ -163,22 +162,22 @@
     .th-sec-head {
         background: #ffffff !important;
         color: #000000 !important;
-        font-size: 11.5px !important;
+        font-size: 10px !important;
         font-weight: 800 !important;
-        width: 30px !important;
-        height: 22px !important;
+        width: 26px !important;
+        height: 18px !important;
     }
     .th-cls-head {
         background: #ffffff !important;
         color: #000000 !important;
-        font-size: 11.5px !important;
+        font-size: 10px !important;
         font-weight: 800 !important;
-        width: 80px !important;
+        width: 72px !important;
     }
     .th-day-head {
         background: #ffffff !important;
         color: #000000 !important;
-        font-size: 12.5px !important;
+        font-size: 11px !important;
         font-weight: 800 !important;
     }
 
@@ -186,14 +185,14 @@
     .th-time-label {
         background: #ffffff !important;
         color: #000000 !important;
-        font-size: 10.5px !important;
+        font-size: 9px !important;
         font-weight: 800 !important;
-        height: 18px !important;
+        height: 15px !important;
     }
     .th-time-val {
         background: #ffffff !important;
         color: #000000 !important;
-        font-size: 10px !important;
+        font-size: 8.5px !important;
         font-weight: 800 !important;
         direction: rtl !important;
     }
@@ -202,28 +201,28 @@
     .th-date-label {
         background: #111827 !important;
         color: #ffffff !important;
-        font-size: 10.5px !important;
+        font-size: 9.5px !important;
         font-weight: 800 !important;
-        height: 28px !important;
+        height: 24px !important;
         border-color: #000000 !important;
     }
     .th-date-box {
         background: #111827 !important;
         color: #ffffff !important;
-        font-size: 10px !important;
+        font-size: 9px !important;
         font-weight: 800 !important;
-        line-height: 1.2 !important;
+        line-height: 1.18 !important;
         border-color: #000000 !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
     }
     .th-date-box .hijri {
         font-weight: 800;
-        font-size: 10.5px;
+        font-size: 9.5px;
         color: #ffffff;
     }
     .th-date-box .greg {
-        font-size: 9.5px;
+        font-size: 8.5px;
         color: #ffffff;
         font-weight: 800;
     }
@@ -233,14 +232,14 @@
         background: #111827 !important;
         color: #ffffff !important;
         font-weight: 800 !important;
-        font-size: 10.5px !important;
-        width: 30px !important;
+        font-size: 9.5px !important;
+        width: 26px !important;
         writing-mode: vertical-rl !important;
         transform: rotate(180deg) !important;
-        padding: 5px 1px !important;
+        padding: 3px 1px !important;
         text-align: center !important;
         vertical-align: middle !important;
-        border: 1.2px solid #000000 !important;
+        border: 1px solid #000000 !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
         letter-spacing: 0px !important;
@@ -250,22 +249,22 @@
     table.ds-main-table td.cls-col {
         background-color: #ffffff !important;
         font-weight: 800 !important;
-        font-size: 10.5px !important;
+        font-size: 9.5px !important;
         color: #000000 !important;
-        width: 80px !important;
+        width: 72px !important;
         text-align: center !important;
-        line-height: 1.2 !important;
-        padding: 2.5px 1px !important;
+        line-height: 1.18 !important;
+        padding: 2px 1px !important;
     }
 
     /* کتاب و پرچہ کے خانے */
     table.ds-main-table td.paper-col {
         background-color: #ffffff !important;
-        font-size: 9.8px !important;
+        font-size: 8.8px !important;
         font-weight: 700 !important;
         color: #000000 !important;
-        line-height: 1.25 !important;
-        padding: 2.8px 1.5px !important;
+        line-height: 1.18 !important;
+        padding: 2px 1px !important;
         text-align: center !important;
     }
 
@@ -274,7 +273,7 @@
         display: inline-block;
         color: #000000;
         font-weight: 900;
-        font-size: 11px;
+        font-size: 10px;
         margin-right: 1px;
     }
 
@@ -283,11 +282,11 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-top: 4px;
-        font-size: 10px;
+        margin-top: 3px;
+        font-size: 9px;
         font-weight: 800;
         color: #000000 !important;
-        padding: 2px 4px;
+        padding: 2px 3px;
     }
 
     /* واٹس ایپ ماڈل */
@@ -362,61 +361,61 @@
             padding: 0 40px 1px 40px !important;
         }
         .ds-logo-top {
-            width: 44px !important;
-            height: 44px !important;
+            width: 42px !important;
+            height: 42px !important;
         }
         .ds-calligraphy-title {
-            font-size: 28px !important;
+            font-size: 26px !important;
             line-height: 1.15 !important;
         }
         .ds-sub-title-text {
-            font-size: 11.5px !important;
+            font-size: 11px !important;
         }
         table.ds-main-table th, table.ds-main-table td {
             padding: 2px 1px !important;
-            font-size: 9px !important;
+            font-size: 8.8px !important;
             line-height: 1.15 !important;
             border: 1px solid #000000 !important;
         }
         .th-sec-head, table.ds-main-table td.sec-col {
-            font-size: 9.2px !important;
-            width: 25px !important;
+            font-size: 9px !important;
+            width: 24px !important;
             background: #000000 !important;
             color: #ffffff !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
         .th-cls-head, table.ds-main-table td.cls-col {
-            font-size: 9px !important;
-            width: 72px !important;
+            font-size: 8.8px !important;
+            width: 70px !important;
         }
         .th-day-head {
             height: 18px !important;
-            font-size: 10px !important;
+            font-size: 9.8px !important;
         }
         .th-time-label, .th-time-val {
             height: 14px !important;
-            font-size: 8.5px !important;
+            font-size: 8px !important;
         }
         .th-date-label, .th-date-box {
-            height: 23px !important;
-            font-size: 8.8px !important;
+            height: 22px !important;
+            font-size: 8.5px !important;
             background: #000000 !important;
             color: #ffffff !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
         .th-date-box .hijri {
-            font-size: 9.2px !important;
+            font-size: 9px !important;
             color: #ffffff !important;
         }
         .th-date-box .greg {
-            font-size: 8.2px !important;
+            font-size: 8px !important;
             color: #ffffff !important;
         }
         .ds-footer {
             margin-top: 2px !important;
-            font-size: 8.8px !important;
+            font-size: 8.5px !important;
             padding: 1px 2px !important;
         }
     }
@@ -428,9 +427,9 @@
 
     <!-- خوبصورت و صاف ٹول بار -->
     <div class="datesheet-toolbar no-print">
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <a href="{{ url_for('datesheets_list') }}" class="btn btn-muted" style="padding: 7px 14px; font-size: 13px;">← واپس فہرست</a>
-            <h3 style="font-size: 17px; font-weight: 800; color: var(--text-main, #0f172a); margin: 0;">📜 امتحانی ڈیٹ شیٹ (Jamia Ashrafia)</h3>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <a href="{{ url_for('datesheets_list') }}" class="btn btn-muted" style="padding: 5px 10px; font-size: 12px;">← واپس فہرست</a>
+            <span style="font-size: 14px; font-weight: 800; color: #000000;">📜 امتحانی ڈیٹ شیٹ (100% فٹ ٹو سکرین)</span>
         </div>
 
         <div class="toolbar-left-group">
@@ -439,29 +438,29 @@
                 <button type="button" class="btn-zoom" onclick="changeZoom(15)" title="زوم بڑا کریں">🔍 بڑا (+)</button>
                 <span id="zoomPercentageLabel" class="zoom-level-badge">100%</span>
                 <button type="button" class="btn-zoom" onclick="changeZoom(-15)" title="زوم چھوٹا کریں">🔍 چھوٹا (-)</button>
-                <button type="button" class="btn-zoom" onclick="resetZoom()" title="اصل 100% سائز">🔄 ری سیٹ</button>
+                <button type="button" class="btn-zoom" onclick="resetZoom()" title="اصل 100% سائز">🔄 100%</button>
             </div>
 
             <!-- پی ڈی ایف ڈاؤنلوڈ بٹن -->
-            <button type="button" id="btnDownloadPDF" onclick="downloadAsPDF()" class="btn btn-danger" style="background: #dc2626; color: #fff; font-weight: 800; padding: 7px 15px; font-size: 13px; border: none; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 5px;">
-                <span>📥</span> <span>PDF ڈاؤنلوڈ</span>
+            <button type="button" id="btnDownloadPDF" onclick="downloadAsPDF()" class="btn btn-danger" style="background: #dc2626; color: #fff; font-weight: 800; padding: 5px 12px; font-size: 12px; border: none; border-radius: 5px; cursor: pointer;">
+                📥 PDF (1 صفحہ)
             </button>
 
             <!-- واٹس ایپ 1-کلک بٹن -->
-            <button type="button" class="btn btn-success" onclick="openWhatsAppModal()" style="background: #25D366; color: #fff; font-weight: 800; padding: 7px 14px; font-size: 13px; border: none; border-radius: 6px; display: flex; align-items: center; gap: 5px;">
-                <span>📲</span> <span>واٹس ایپ</span>
+            <button type="button" class="btn btn-success" onclick="openWhatsAppModal()" style="background: #25D366; color: #fff; font-weight: 800; padding: 5px 11px; font-size: 12px; border: none; border-radius: 5px;">
+                📲 واٹس ایپ
             </button>
 
-            <a href="{{ url_for('edit_datesheet', datesheet_id=datesheet['id']) }}" class="btn btn-gold" style="padding: 7px 14px; font-size: 13px; font-weight: bold;">✏️ ترمیم</a>
+            <a href="{{ url_for('edit_datesheet', datesheet_id=datesheet['id']) }}" class="btn btn-gold" style="padding: 5px 11px; font-size: 12px; font-weight: bold;">✏️ ترمیم</a>
 
             <!-- پرنٹ بٹن -->
-            <button type="button" class="btn btn-primary" onclick="window.print()" style="background: #0f172a; border-color: #0f172a; padding: 7px 18px; font-size: 13px; font-weight: 800;">
+            <button type="button" class="btn btn-primary" onclick="window.print()" style="background: #000000; border-color: #000000; padding: 5px 14px; font-size: 12px; font-weight: 800;">
                 🖨️ پرنٹ (1 صفحہ)
             </button>
         </div>
     </div>
 
-    <!-- ڈیٹ شیٹ پیپر ریپر -->
+    <!-- ڈیٹ شیٹ پیپر ریپر - پورا پیج بغیر سکرول کے 1 نظر میں -->
     <div class="datesheet-paper-wrapper">
         <div id="datesheetPrintable" class="printable-datesheet">
             
@@ -653,11 +652,11 @@ function downloadAsPDF() {
     html2pdf().set(opt).from(element).save().then(() => {
         element.style.zoom = oldZoom;
         btn.disabled = false;
-        btn.innerHTML = '<span>📥</span> <span>PDF ڈاؤنلوڈ</span>';
+        btn.innerHTML = '<span>📥</span> <span>PDF (1 صفحہ)</span>';
     }).catch(err => {
         element.style.zoom = oldZoom;
         btn.disabled = false;
-        btn.innerHTML = '<span>📥</span> <span>PDF ڈاؤنلوڈ</span>';
+        btn.innerHTML = '<span>📥</span> <span>PDF (1 صفحہ)</span>';
         window.print();
     });
 }
