@@ -279,6 +279,7 @@
 
         {% if user_role in ['admin', 'exams'] %}
         <a href="{{ url_for('exams') }}" class="nav-item {% if active_page == 'exams' %}active{% endif %}" data-tooltip="امتحانات اور نشست بندی">📑 امتحانی نظام و نشست بندی</a>
+        <a href="{{ url_for('datesheets_list') }}" class="nav-item {% if request.endpoint in ['datesheets_list', 'create_datesheet', 'view_datesheet', 'edit_datesheet'] %}active{% endif %}" data-tooltip="امتحانی ڈیٹ شیٹ جنریٹر">📅 امتحانی ڈیٹ شیٹ</a>
         {% endif %}
 
         {% if user_role == 'admin' %}

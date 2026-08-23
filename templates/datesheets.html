@@ -1,0 +1,61 @@
+﻿{% extends "base.html" %}
+{% block title %}امتحانی ڈیٹ شیٹس{% endblock %}
+{% set active_page = 'exams' %}
+
+{% block content %}
+<div class="content-box">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1.5px solid var(--border);">
+        <div>
+            <h2 style="font-size: 22px; font-weight: 800; color: var(--primary); margin: 0;">📅 امتحانی ڈیٹ شیٹ جنریٹر و مینیجر</h2>
+            <p style="font-size: 13px; color: var(--text-sub); margin: 4px 0 0;">تمام درجات و مراحل کی مشترکہ امتحانی ڈیٹ شیٹ بنائیں، پرنٹ کریں یا ترمیم کریں</p>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <a href="{{ url_for('exams') }}" class="btn btn-muted" style="padding: 9px 16px; font-size: 13px;">📑 امتحانی نشست بندی</a>
+            <a href="{{ url_for('create_datesheet') }}" class="btn btn-primary" style="padding: 9px 20px; font-size: 14px; font-weight: 800;">
+                ✨ + نئی ڈیٹ شیٹ بنائیں
+            </a>
+        </div>
+    </div>
+
+    <!-- ڈیٹ شیٹس کارڈز / لسٹ -->
+    {% if datesheets %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
+            {% for ds in datesheets %}
+            <div style="background: var(--bg-white); border: 1.5px solid var(--border); border-radius: var(--r-md); padding: 20px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between; border-top: 4px solid var(--gold);">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                        <h3 style="font-size: 17px; font-weight: 800; color: var(--primary); margin: 0;">{{ ds['title'] }}</h3>
+                        <span style="background: var(--gold-pale); color: var(--gold); border: 1px solid var(--gold-border); padding: 2px 8px; border-radius: 6px; font-size: 11.5px; font-weight: bold;">{{ ds['academic_year'] }}</span>
+                    </div>
+                    <div style="font-size: 12.5px; color: var(--text-sub); margin-bottom: 8px;">
+                        ⏰ امتحانی اوقات: <strong style="color: var(--text);">{{ ds['exam_timing'] }}</strong>
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-sub); margin-bottom: 16px;">
+                        🗓️ تاریخ اندراج: {{ ds['created_at'] }}
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 8px; justify-content: flex-end; border-top: 1px solid var(--border-light); padding-top: 14px;">
+                    <a href="{{ url_for('view_datesheet', datesheet_id=ds['id']) }}" class="btn btn-primary" style="padding: 6px 14px; font-size: 12.5px;">👁️ ڈیٹ شیٹ دیکھیں / پرنٹ</a>
+                    <a href="{{ url_for('edit_datesheet', datesheet_id=ds['id']) }}" class="btn btn-gold" style="padding: 6px 12px; font-size: 12.5px;">✏️ ترمیم</a>
+                    <form method="POST" action="{{ url_for('delete_datesheet', datesheet_id=ds['id']) }}" onsubmit="return confirm('کیا آپ واقعی یہ ڈیٹ شیٹ حذف کرنا چاہتے ہیں؟')" style="display: inline;">
+                        <button type="submit" class="btn btn-danger" style="padding: 6px 10px; font-size: 12px;">🗑️</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 50px 20px; background: var(--bg-surface); border-radius: var(--r-md); border: 2px dashed var(--border);">
+            <div style="font-size: 40px; margin-bottom: 10px;">📅</div>
+            <h3 style="font-size: 18px; color: var(--primary); margin-bottom: 8px;">کوئی ڈیٹ شیٹ موجود نہیں ہے</h3>
+            <p style="font-size: 13.5px; color: var(--text-sub); margin-bottom: 20px;">نئی امتحانی ڈیٹ شیٹ تیار کرنے کے لیے نیچے دیے گئے بٹن پر کلک کریں۔</p>
+            <a href="{{ url_for('create_datesheet') }}" class="btn btn-primary" style="padding: 10px 24px; font-weight: bold;">
+                ✨ نئی ڈیٹ شیٹ بنائیں
+            </a>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

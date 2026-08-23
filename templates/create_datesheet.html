@@ -1,0 +1,497 @@
+﻿{% extends "base.html" %}
+{% block title %}{% if datesheet %}ترمیم ڈیٹ شیٹ{% else %}نئی امتحانی ڈیٹ شیٹ بنائیں{% endif %}{% endblock %}
+{% set active_page = 'exams' %}
+
+{% block extra_head %}
+<style>
+    .builder-section {
+        background: var(--bg-white);
+        border: 1.5px solid var(--border);
+        border-radius: var(--r-md);
+        padding: 22px;
+        margin-bottom: 22px;
+        box-shadow: var(--shadow-sm);
+    }
+    .builder-section-title {
+        font-size: 16.5px;
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 10px;
+        border-bottom: 1.5px solid var(--border-light);
+    }
+    .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px;
+    }
+    .form-group label {
+        display: block;
+        font-weight: 700;
+        font-size: 13px;
+        color: var(--text);
+        margin-bottom: 6px;
+    }
+    .form-group input, 
+    .form-group select {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1.5px solid var(--border);
+        border-radius: 8px;
+        font-size: 14px;
+        background: var(--bg-surface);
+        outline: none;
+    }
+    .form-group input:focus, 
+    .form-group select:focus {
+        border-color: var(--primary);
+        background: #ffffff;
+    }
+    .table-builder {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+    .table-builder th, 
+    .table-builder td {
+        border: 1px solid var(--border);
+        padding: 8px 10px;
+        font-size: 13px;
+        text-align: center;
+    }
+    .table-builder th {
+        background: var(--bg-surface);
+        color: var(--primary);
+        font-weight: 800;
+    }
+    .subject-input-box {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .subject-input-box input {
+        flex: 1;
+        padding: 6px 8px;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        font-size: 12px;
+    }
+    .copy-select {
+        width: 48px;
+        padding: 6px 2px;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-box">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 20px;">
+        <div>
+            <h2 style="font-size: 22px; font-weight: 800; color: var(--primary); margin: 0;">
+                {% if datesheet %}✏️ ترمیم امتحانی ڈیٹ شیٹ{% else %}✨ نئی امتحانی ڈیٹ شیٹ تیار کریں{% endif %}
+            </h2>
+            <p style="font-size: 13px; color: var(--text-sub); margin: 4px 0 0;">تمام درجات کے امتحانی ایام اور کتب کا شیڈول ترتیب دیں</p>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <button type="button" class="btn btn-gold" onclick="loadDefaultTemplate()" style="padding: 8px 16px; font-size: 13px; font-weight: bold;">
+                ⚡ درس نظامی کا مکمل شیڈول لوڈ کریں
+            </button>
+            <a href="{{ url_for('datesheets_list') }}" class="btn btn-muted" style="padding: 8px 16px; font-size: 13px;">← واپس</a>
+        </div>
+    </div>
+
+    <form method="POST" id="datesheet-form" onsubmit="return prepareDatesheetSubmission()">
+        <input type="hidden" name="days_json" id="days_json">
+        <input type="hidden" name="classes_json" id="classes_json">
+
+        <!-- 1. بنیادی معلومات -->
+        <div class="builder-section">
+            <div class="builder-section-title">
+                <span>1. بنیادی عنوان و اوقات</span>
+            </div>
+            
+            <div class="grid-3">
+                <div class="form-group">
+                    <label>جامعہ / مدرسہ کا نام:</label>
+                    <input type="text" name="institution_name" id="institution_name" value="{{ datesheet['institution_name'] if datesheet else 'الجامعۃ الاشرفیہ لاہور' }}" required>
+                </div>
+                <div class="form-group">
+                    <label>امتحانی عنوان (Title):</label>
+                    <input type="text" name="title" id="title" value="{{ datesheet['title'] if datesheet else 'جدول الاختبارات لجميع المراحل الدراسية' }}" required>
+                </div>
+                <div class="form-group">
+                    <label>تعلیمی سال:</label>
+                    <input type="text" name="academic_year" id="academic_year" value="{{ datesheet['academic_year'] if datesheet else '1447-1448ھ / 2026ء' }}" required>
+                </div>
+                <div class="form-group">
+                    <label>امتحانی اوقات (Timing):</label>
+                    <input type="text" name="exam_timing" id="exam_timing" value="{{ datesheet['exam_timing'] if datesheet else '08:00 إلى 11:00' }}" required>
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label>فوٹر وضاحتی نوٹ:</label>
+                    <input type="text" name="footer_note" id="footer_note" value="{{ datesheet['footer_note'] if datesheet else 'جس خانے میں ❶ لکھا ہے وہ پرچہ ایک ہی جوابی شیٹ پر حل کیا جائے اور جس خانے میں ❷ لکھا ہے وہ پرچہ دو جوابی شیٹوں پر حل کیا جائے۔' }}" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. امتحانی ایام و تواریخ -->
+        <div class="builder-section">
+            <div class="builder-section-title">
+                <span>2. امتحانی ایام و تواریخ (Days & Dates)</span>
+                <button type="button" class="btn btn-muted" onclick="addDayColumn()" style="padding: 4px 12px; font-size: 12px;">+ نیا دن شامل کریں</button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table-builder" id="days-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">نمبر شمار</th>
+                            <th>دن (Day Name)</th>
+                            <th>ہجری تاریخ (Hijri Date)</th>
+                            <th>عیسوی تاریخ (Gregorian Date)</th>
+                            <th style="width: 60px;">حذف</th>
+                        </tr>
+                    </thead>
+                    <tbody id="days-tbody">
+                        <!-- جاوااسکرپٹ سے رینڈر ہوگا -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 3. درجات و پرچوں کا جدول -->
+        <div class="builder-section">
+            <div class="builder-section-title">
+                <span>3. درجات و کتب کا شیڈول (Classes & Subject Matrix)</span>
+                <button type="button" class="btn btn-muted" onclick="addClassRow()" style="padding: 4px 12px; font-size: 12px;">+ نیا درجہ شامل کریں</button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table-builder" id="matrix-table">
+                    <thead>
+                        <tr id="matrix-header-row">
+                            <th style="width: 110px;">شعبہ / مرحلہ</th>
+                            <th style="width: 140px;">درجہ / کلاس</th>
+                            <!-- ایام کے کالمز یہاں آئیں گے -->
+                            <th style="width: 50px;">حذف</th>
+                        </tr>
+                    </thead>
+                    <tbody id="matrix-tbody">
+                        <!-- جاوااسکرپٹ سے رینڈر ہوگا -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 25px;">
+            <button type="submit" class="btn btn-primary" style="padding: 14px 40px; font-size: 16px; font-weight: 800; box-shadow: var(--shadow-md);">
+                💾 ڈیٹ شیٹ محفوظ کریں اور پریویو دیکھیں
+            </button>
+        </div>
+
+    </form>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// ابتدائی ڈیٹا
+let daysData = {{ datesheet['days_data']|safe if datesheet else '[]' }};
+let classesData = {{ datesheet['classes_data']|safe if datesheet else '[]' }};
+
+const DEFAULT_DAYS = [
+    {day: "السبت", hijri: "15 ربیع الاول", gregorian: "29 اگست"},
+    {day: "الأحد", hijri: "16 ربیع الاول", gregorian: "30 اگست"},
+    {day: "الإثنين", hijri: "17 ربیع الاول", gregorian: "31 اگست"},
+    {day: "الثلاثاء", hijri: "18 ربیع الاول", gregorian: "01 ستمبر"},
+    {day: "الأربعاء", hijri: "19 ربیع الاول", gregorian: "02 ستمبر"}
+];
+
+const DEFAULT_CLASSES = [
+    {
+        section: "العالیة",
+        class_name: "السنة الثانية (دورہ حدیث)",
+        papers: [
+            {subject: "شرح معاني الآثار مع الموطا للامام مالک", copies: 2},
+            {subject: "الصحیح للبخاري کامل", copies: 1},
+            {subject: "الصحیح لمسلم کامل مع حفظ حدیث", copies: 1},
+            {subject: "السنن لأبي داود کامل", copies: 1},
+            {subject: "الجامع للترمذي کامل", copies: 1}
+        ]
+    },
+    {
+        section: "العالیة",
+        class_name: "السنة الأولى (سابعہ)",
+        papers: [
+            {subject: "التبيان في علوم القرآن مع تفسير البيضاوي", copies: 1},
+            {subject: "تقابل اديان مع اصول افتاء مع الهداية ج3", copies: 2},
+            {subject: "مشکوٰۃ المصابیح (کامل) مع حفظ حدیث", copies: 1},
+            {subject: "شرح نخبة الفکر مع تیسیر المصطلح الحديث", copies: 1},
+            {subject: "الهداية ج4", copies: 1}
+        ]
+    },
+    {
+        section: "العالیة",
+        class_name: "السنة الثانية (سادسہ)",
+        papers: [
+            {subject: "الفوز الکبیر مع الجلالین کامل", copies: 1},
+            {subject: "الهيئة الصغریٰ مع شرح العقائد", copies: 1},
+            {subject: "التوضیح مع الهدایة ج2", copies: 2},
+            {subject: "السراجي مع کتاب الآثار مع حفظ حدیث", copies: 1},
+            {subject: "دیوان الحماسة مع متن الکافي", copies: 1}
+        ]
+    },
+    {
+        section: "العالیة",
+        class_name: "السنة الأولى (خامسہ)",
+        papers: [
+            {subject: "ترجمة القرآن مع آثار السنن مع حفظ حدیث", copies: 1},
+            {subject: "الانتباهات المفيدة مع شرح عقيدة الطحاوية و معین الفلسفة", copies: 1},
+            {subject: "الحسامي مع نور الأنوار", copies: 1},
+            {subject: "دیوان المتنبي مع المعلقات السبع / مختصر المعاني", copies: 2},
+            {subject: "الهداية ج1", copies: 1}
+        ]
+    },
+    {
+        section: "الثانوية الخاصة",
+        class_name: "السنة الثانية (رابعہ)",
+        papers: [
+            {subject: "ترجمة القرآن مع ریاض الصالحین مع حفظ حدیث و معلم الإنشاء", copies: 1},
+            {subject: "نور الأنوار مع المقامات", copies: 2},
+            {subject: "کنز الدقائق کامل", copies: 1},
+            {subject: "شرح الجامي", copies: 1},
+            {subject: "دروس البلاغة مع القطبي", copies: 1}
+        ]
+    },
+    {
+        section: "الثانوية الخاصة",
+        class_name: "السنة الأولى (ثالثہ)",
+        papers: [
+            {subject: "ترجمة القرآن مع ریاض الصالحین مع حفظ حدیث", copies: 1},
+            {subject: "أصول الشاشي مع مبادي الاصول", copies: 1},
+            {subject: "مختصر القدوري (کامل)", copies: 1},
+            {subject: "نفحة العرب مع معلم الانشاء", copies: 1},
+            {subject: "کافية مع شرح التهذیب مع متن عقيدة الطحاوية", copies: 2}
+        ]
+    },
+    {
+        section: "الثانوية العامة",
+        class_name: "السنة الثانية (ثانیہ)",
+        papers: [
+            {subject: "جزء عم مع فوائد مکیة", copies: 1},
+            {subject: "علم الصیغة مع خاصیات ابواب", copies: 1},
+            {subject: "زاد الطالبین مع حفظ حدیث و القراءة الراشدة و معلم الانشاء", copies: 1},
+            {subject: "هدایة النحو مع التمارین مع تیسیر المنطق مع المرقاة", copies: 2},
+            {subject: "مختصر القدوري", copies: 1}
+        ]
+    },
+    {
+        section: "الثانوية العامة",
+        class_name: "السنة الأولى (اولیٰ)",
+        papers: [
+            {subject: "جمال القرآن مع تعلیم الاسلام", copies: 1},
+            {subject: "الصرف مع صفوة المصادر مع الانکلیزیة", copies: 2},
+            {subject: "النجوم مع الحوار", copies: 1},
+            {subject: "تسهیل النحو مع کریما / تیسیر المبتدي", copies: 2},
+            {subject: "الطریقة العصریة مع عربی کا معلم ج1، 2", copies: 1}
+        ]
+    },
+    {
+        section: "التجويد",
+        class_name: "التجوید للعلماء",
+        papers: [
+            {subject: "جمال القرآن", copies: 1},
+            {subject: "تفهیم الوقوف", copies: 1},
+            {subject: "معلم التجوید", copies: 1},
+            {subject: "الاختبار الشفوي", copies: 0},
+            {subject: "--", copies: 0}
+        ]
+    },
+    {
+        section: "التجويد",
+        class_name: "التجوید للحفاظ",
+        papers: [
+            {subject: "جمال القرآن", copies: 1},
+            {subject: "خلاصة التجوید", copies: 1},
+            {subject: "سیرة الرسول ﷺ مع تعلیم الاسلام", copies: 1},
+            {subject: "الاختبار الشفوي", copies: 0},
+            {subject: "--", copies: 0}
+        ]
+    },
+    {
+        section: "تخصص في الإفتاء",
+        class_name: "السنة الثانية",
+        papers: [
+            {subject: "الاشباه والنظائر", copies: 0},
+            {subject: "الدر المختار ج3", copies: 0},
+            {subject: "تمرین افتاء", copies: 0},
+            {subject: "امداد الاحکام جلد 1، 2", copies: 0},
+            {subject: "--", copies: 0}
+        ]
+    },
+    {
+        section: "المعهد",
+        class_name: "الدبلوم",
+        papers: [
+            {subject: "التجوید", copies: 1},
+            {subject: "اللغة العربية (س)", copies: 1},
+            {subject: "الحاسوب", copies: 1},
+            {subject: "اللغة الانجليزية", copies: 1},
+            {subject: "اللغة العربية (م) مع الاختبار الشفوي", copies: 1}
+        ]
+    }
+];
+
+function loadDefaultTemplate() {
+    daysData = JSON.parse(JSON.stringify(DEFAULT_DAYS));
+    classesData = JSON.parse(JSON.stringify(DEFAULT_CLASSES));
+    renderDaysTable();
+    renderMatrixTable();
+}
+
+function renderDaysTable() {
+    const tbody = document.getElementById('days-tbody');
+    let html = '';
+    daysData.forEach((d, idx) => {
+        html += `
+            <tr>
+                <td><strong>${idx + 1}</strong></td>
+                <td><input type="text" value="${d.day}" oninput="daysData[${idx}].day = this.value; renderMatrixHeader();" style="text-align:center;"></td>
+                <td><input type="text" value="${d.hijri}" oninput="daysData[${idx}].hijri = this.value;" style="text-align:center;"></td>
+                <td><input type="text" value="${d.gregorian}" oninput="daysData[${idx}].gregorian = this.value;" style="text-align:center;"></td>
+                <td><button type="button" class="btn btn-danger" onclick="removeDay(${idx})" style="padding: 2px 6px; font-size: 11px;">✕</button></td>
+            </tr>
+        `;
+    });
+    tbody.innerHTML = html;
+    renderMatrixHeader();
+}
+
+function addDayColumn() {
+    daysData.push({day: "الخميس", hijri: "20 ربيع الأول", gregorian: "03 ستمبر"});
+    classesData.forEach(c => {
+        if (!c.papers) c.papers = [];
+        c.papers.push({subject: "", copies: 1});
+    });
+    renderDaysTable();
+    renderMatrixTable();
+}
+
+function removeDay(idx) {
+    if (daysData.length <= 1) { alert("کم از کم 1 دن ہونا ضروری ہے!"); return; }
+    daysData.splice(idx, 1);
+    classesData.forEach(c => {
+        if (c.papers && c.papers.length > idx) {
+            c.papers.splice(idx, 1);
+        }
+    });
+    renderDaysTable();
+    renderMatrixTable();
+}
+
+function renderMatrixHeader() {
+    const theadRow = document.getElementById('matrix-header-row');
+    let html = `
+        <th style="width: 120px;">شعبہ / مرحلہ</th>
+        <th style="width: 140px;">درجہ / کلاس</th>
+    `;
+    daysData.forEach((d, idx) => {
+        html += `<th style="min-width: 160px;">${d.day || `دن ${idx + 1}`}</th>`;
+    });
+    html += `<th style="width: 50px;">حذف</th>`;
+    theadRow.innerHTML = html;
+}
+
+function renderMatrixTable() {
+    renderMatrixHeader();
+    const tbody = document.getElementById('matrix-tbody');
+    let html = '';
+
+    classesData.forEach((row, rowIdx) => {
+        html += `<tr>`;
+        html += `<td><input type="text" value="${row.section || ''}" oninput="classesData[${rowIdx}].section = this.value;" style="width:100%; font-weight:bold;"></td>`;
+        html += `<td><input type="text" value="${row.class_name || ''}" oninput="classesData[${rowIdx}].class_name = this.value;" style="width:100%; font-weight:bold;"></td>`;
+
+        daysData.forEach((d, dayIdx) => {
+            const paper = (row.papers && row.papers[dayIdx]) ? row.papers[dayIdx] : {subject: "", copies: 1};
+            html += `
+                <td>
+                    <div class="subject-input-box">
+                        <input type="text" value="${paper.subject || ''}" oninput="updatePaperSubject(${rowIdx}, ${dayIdx}, this.value)" placeholder="کتاب / پرچہ">
+                        <select class="copy-select" onchange="updatePaperCopies(${rowIdx}, ${dayIdx}, this.value)" title="جوابی شیٹوں کی تعداد">
+                            <option value="0" ${paper.copies == 0 ? 'selected' : ''}>-</option>
+                            <option value="1" ${paper.copies == 1 ? 'selected' : ''}>❶</option>
+                            <option value="2" ${paper.copies == 2 ? 'selected' : ''}>❷</option>
+                        </select>
+                    </div>
+                </td>
+            `;
+        });
+
+        html += `<td><button type="button" class="btn btn-danger" onclick="removeClassRow(${rowIdx})" style="padding: 2px 6px; font-size: 11px;">✕</button></td>`;
+        html += `</tr>`;
+    });
+
+    tbody.innerHTML = html;
+}
+
+function updatePaperSubject(rowIdx, dayIdx, val) {
+    if (!classesData[rowIdx].papers) classesData[rowIdx].papers = [];
+    while (classesData[rowIdx].papers.length <= dayIdx) {
+        classesData[rowIdx].papers.push({subject: "", copies: 1});
+    }
+    classesData[rowIdx].papers[dayIdx].subject = val;
+}
+
+function updatePaperCopies(rowIdx, dayIdx, val) {
+    if (!classesData[rowIdx].papers) classesData[rowIdx].papers = [];
+    while (classesData[rowIdx].papers.length <= dayIdx) {
+        classesData[rowIdx].papers.push({subject: "", copies: 1});
+    }
+    classesData[rowIdx].papers[dayIdx].copies = parseInt(val);
+}
+
+function addClassRow() {
+    const emptyPapers = daysData.map(() => ({subject: "", copies: 1}));
+    classesData.push({
+        section: "العالیة",
+        class_name: "نیا درجہ",
+        papers: emptyPapers
+    });
+    renderMatrixTable();
+}
+
+function removeClassRow(idx) {
+    if (classesData.length <= 1) { alert("کم از کم 1 درجہ ہونا ضروری ہے!"); return; }
+    classesData.splice(idx, 1);
+    renderMatrixTable();
+}
+
+function prepareDatesheetSubmission() {
+    document.getElementById('days_json').value = JSON.stringify(daysData);
+    document.getElementById('classes_json').value = JSON.stringify(classesData);
+    return true;
+}
+
+// ابتدائی لوڈ
+document.addEventListener('DOMContentLoaded', function() {
+    if (daysData.length === 0 || classesData.length === 0) {
+        loadDefaultTemplate();
+    } else {
+        renderDaysTable();
+        renderMatrixTable();
+    }
+});
+</script>
+{% endblock %}

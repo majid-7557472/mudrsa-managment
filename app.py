@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 import sqlite3
 import csv
 import io
+import json
 from datetime import date, datetime
 import calendar
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -83,7 +84,8 @@ ROLE_PERMISSIONS = {
     'exams': [
         'exams', 'delete_exam', 'exam_result_sheet', 'export_exam_sheet_csv',
         'result_card', 'seating_plan', 'edit_seating', 'delete_seating',
-        'exam_roll_slip', 'marks_entry'
+        'exam_roll_slip', 'marks_entry', 'datesheets_list', 'create_datesheet',
+        'edit_datesheet', 'view_datesheet', 'delete_datesheet'
     ],
 }
 # یہ صفحات ہر لاگ ان یوزر کے لیے کھلے رہیں گے، رول سے قطع نظر
@@ -706,6 +708,95 @@ def delete_exam(exam_id):
     conn.close()
     flash('امتحان ڈیلیٹ کر دیا گیا!', 'success')
     return redirect(url_for('exams'))
+
+# ==== امتحانی ڈیٹ شیٹ روٹس (Master Exam Date Sheets) ====
+@app.route('/datesheets')
+def datesheets_list():
+    conn = get_db_connection()
+    datesheets = conn.execute('SELECT * FROM exam_datesheets ORDER BY id DESC').fetchall()
+    conn.close()
+    return render_template('datesheets.html', datesheets=datesheets)
+
+@app.route('/datesheet/create', methods=['GET', 'POST'])
+def create_datesheet():
+    if request.method == 'POST':
+        title = request.form.get('title', '').strip()
+        institution_name = request.form.get('institution_name', 'الجامعۃ الاشرفیہ لاہور').strip()
+        academic_year = request.form.get('academic_year', '').strip()
+        exam_timing = request.form.get('exam_timing', '08:00 إلى 11:00').strip()
+        footer_note = request.form.get('footer_note', '').strip()
+        days_json = request.form.get('days_json', '[]')
+        classes_json = request.form.get('classes_json', '[]')
+        created_at = datetime.now().strftime('%Y-%m-%d')
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO exam_datesheets (title, institution_name, academic_year, exam_timing, days_data, classes_data, footer_note, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (title, institution_name, academic_year, exam_timing, days_json, classes_json, footer_note, created_at))
+        new_id = cursor.lastrowid
+        conn.commit()
+        conn.close()
+        flash('امتحانی ڈیٹ شیٹ کامیابی سے تیار ہو گئی!', 'success')
+        return redirect(url_for('view_datesheet', datesheet_id=new_id))
+
+    return render_template('create_datesheet.html', datesheet=None)
+
+@app.route('/datesheet/<int:datesheet_id>/view')
+def view_datesheet(datesheet_id):
+    conn = get_db_connection()
+    datesheet = conn.execute('SELECT * FROM exam_datesheets WHERE id = ?', (datesheet_id,)).fetchone()
+    conn.close()
+    if not datesheet:
+        flash('ڈیٹ شیٹ نہیں ملی!', 'danger')
+        return redirect(url_for('datesheets_list'))
+
+    days = json.loads(datesheet['days_data']) if datesheet['days_data'] else []
+    classes = json.loads(datesheet['classes_data']) if datesheet['classes_data'] else []
+
+    return render_template('view_datesheet.html', datesheet=datesheet, days=days, classes=classes)
+
+@app.route('/datesheet/<int:datesheet_id>/edit', methods=['GET', 'POST'])
+def edit_datesheet(datesheet_id):
+    conn = get_db_connection()
+    datesheet = conn.execute('SELECT * FROM exam_datesheets WHERE id = ?', (datesheet_id,)).fetchone()
+
+    if not datesheet:
+        conn.close()
+        flash('ڈیٹ شیٹ نہیں ملی!', 'danger')
+        return redirect(url_for('datesheets_list'))
+
+    if request.method == 'POST':
+        title = request.form.get('title', '').strip()
+        institution_name = request.form.get('institution_name', 'الجامعۃ الاشرفیہ لاہور').strip()
+        academic_year = request.form.get('academic_year', '').strip()
+        exam_timing = request.form.get('exam_timing', '08:00 إلى 11:00').strip()
+        footer_note = request.form.get('footer_note', '').strip()
+        days_json = request.form.get('days_json', '[]')
+        classes_json = request.form.get('classes_json', '[]')
+
+        conn.execute('''
+            UPDATE exam_datesheets 
+            SET title = ?, institution_name = ?, academic_year = ?, exam_timing = ?, days_data = ?, classes_data = ?, footer_note = ?
+            WHERE id = ?
+        ''', (title, institution_name, academic_year, exam_timing, days_json, classes_json, footer_note, datesheet_id))
+        conn.commit()
+        conn.close()
+        flash('ڈیٹ شیٹ میں تبدیلیاں کامیابی سے محفوظ ہو گئیں!', 'success')
+        return redirect(url_for('view_datesheet', datesheet_id=datesheet_id))
+
+    conn.close()
+    return render_template('create_datesheet.html', datesheet=datesheet)
+
+@app.route('/datesheet/<int:datesheet_id>/delete', methods=['POST'])
+def delete_datesheet(datesheet_id):
+    conn = get_db_connection()
+    conn.execute('DELETE FROM exam_datesheets WHERE id = ?', (datesheet_id,))
+    conn.commit()
+    conn.close()
+    flash('ڈیٹ شیٹ حذف کر دی گئی!', 'success')
+    return redirect(url_for('datesheets_list'))
 
 # 10. امتحانی رزلٹ شیٹ
 @app.route('/exam/<int:exam_id>/result_sheet')
