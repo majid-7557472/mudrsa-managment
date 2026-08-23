@@ -17,74 +17,87 @@
     }
 
     .datesheet-outer-box {
-        background: #f1f5f9;
-        padding: 10px;
-        border-radius: 8px;
+        background: var(--bg-surface, #f8fafc);
+        padding: 16px;
+        border-radius: 10px;
         margin-bottom: 25px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        box-shadow: var(--shadow-sm);
     }
 
+    /* ٹول بار - مکمل ایک خوبصورت سیدھی لائن میں */
     .datesheet-toolbar {
         width: 100%;
-        max-width: 800px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1.5px solid var(--border, #cbd5e1);
+    }
+
+    .toolbar-left-group {
+        display: flex;
+        align-items: center;
         gap: 8px;
-        margin-bottom: 10px;
-        padding: 8px 12px;
-        background: #ffffff;
-        border-radius: 6px;
-        border: 1px solid #cbd5e1;
+        flex-wrap: wrap;
     }
 
     .zoom-btn-group {
         display: inline-flex;
         align-items: center;
-        background: #f8fafc;
+        background: #ffffff;
         border: 1.5px solid #94a3b8;
         border-radius: 6px;
         padding: 2px 4px;
         gap: 3px;
     }
     .btn-zoom {
-        background: #ffffff;
+        background: #f8fafc;
         border: 1px solid #cbd5e1;
         border-radius: 4px;
-        padding: 4px 8px;
-        font-size: 12px;
+        padding: 5px 9px;
+        font-size: 12.5px;
         font-weight: 800;
         color: #0f172a;
         cursor: pointer;
+        transition: all 0.15s;
     }
     .btn-zoom:hover {
         background: #0f172a;
         color: #ffffff;
     }
     .zoom-level-badge {
-        font-size: 12px;
+        font-size: 12.5px;
         font-weight: 900;
         color: #0f172a;
-        padding: 2px 4px;
-        min-width: 36px;
+        padding: 2px 6px;
+        min-width: 38px;
         text-align: center;
     }
 
-    /* اصل پرنٹ ایبل پیپر - پرفیکٹ 1 صفحہ سائز (Exact 1-Page A4 Proportion) */
+    /* ڈیٹ شیٹ پیپر ریپر */
+    .datesheet-paper-wrapper {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        overflow-x: auto;
+        padding: 4px 0;
+    }
+
+    /* اصل پرنٹ ایبل پیپر - ہو بہو اصل کاغذ کا ڈیزائن */
     .printable-datesheet {
         background: #ffffff !important;
         width: 100% !important;
-        max-width: 790px;
+        max-width: 820px;
         margin: 0 auto;
         color: #000000 !important;
         direction: rtl !important;
         font-family: 'Noto Naskh Arabic', 'Amiri', Tahoma, sans-serif !important;
-        padding: 10px 12px 6px 12px;
+        padding: 12px 14px 8px 14px;
         border: 2px solid #000000;
-        box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+        box-shadow: 0 6px 24px rgba(0,0,0,0.12);
         box-sizing: border-box !important;
     }
 
@@ -92,22 +105,22 @@
     .ds-top-header {
         position: relative;
         text-align: center;
-        margin-bottom: 4px;
-        padding: 0 45px 3px 45px;
+        margin-bottom: 5px;
+        padding: 0 50px 3px 50px;
     }
     .ds-logo-top {
         position: absolute;
         top: 0;
         left: 0;
-        width: 48px;
-        height: 48px;
+        width: 52px;
+        height: 52px;
         object-fit: contain;
     }
     
     /* خطاطی عنوان */
     .ds-calligraphy-title {
         font-family: 'Amiri', 'Noto Naskh Arabic', serif;
-        font-size: 30px;
+        font-size: 32px;
         font-weight: 800;
         color: #000000 !important;
         margin: 0;
@@ -116,7 +129,7 @@
     }
     .ds-sub-title-text {
         font-family: 'Noto Naskh Arabic', 'Amiri', sans-serif;
-        font-size: 12.5px;
+        font-size: 13px;
         font-weight: 800;
         color: #000000 !important;
         margin: 1px 0 0 0;
@@ -137,7 +150,7 @@
     table.ds-main-table th, 
     table.ds-main-table td {
         border: 1.2px solid #000000 !important;
-        padding: 2.5px 1.5px !important;
+        padding: 2.8px 1.5px !important;
         text-align: center !important;
         vertical-align: middle !important;
         color: #000000 !important;
@@ -150,22 +163,22 @@
     .th-sec-head {
         background: #ffffff !important;
         color: #000000 !important;
-        font-size: 11px !important;
+        font-size: 11.5px !important;
         font-weight: 800 !important;
-        width: 28px !important;
-        height: 20px !important;
+        width: 30px !important;
+        height: 22px !important;
     }
     .th-cls-head {
         background: #ffffff !important;
         color: #000000 !important;
-        font-size: 11px !important;
+        font-size: 11.5px !important;
         font-weight: 800 !important;
-        width: 76px !important;
+        width: 80px !important;
     }
     .th-day-head {
         background: #ffffff !important;
         color: #000000 !important;
-        font-size: 11.5px !important;
+        font-size: 12.5px !important;
         font-weight: 800 !important;
     }
 
@@ -173,14 +186,14 @@
     .th-time-label {
         background: #ffffff !important;
         color: #000000 !important;
-        font-size: 10px !important;
+        font-size: 10.5px !important;
         font-weight: 800 !important;
-        height: 17px !important;
+        height: 18px !important;
     }
     .th-time-val {
         background: #ffffff !important;
         color: #000000 !important;
-        font-size: 9.5px !important;
+        font-size: 10px !important;
         font-weight: 800 !important;
         direction: rtl !important;
     }
@@ -189,15 +202,15 @@
     .th-date-label {
         background: #111827 !important;
         color: #ffffff !important;
-        font-size: 10px !important;
+        font-size: 10.5px !important;
         font-weight: 800 !important;
-        height: 26px !important;
+        height: 28px !important;
         border-color: #000000 !important;
     }
     .th-date-box {
         background: #111827 !important;
         color: #ffffff !important;
-        font-size: 9.5px !important;
+        font-size: 10px !important;
         font-weight: 800 !important;
         line-height: 1.2 !important;
         border-color: #000000 !important;
@@ -206,11 +219,11 @@
     }
     .th-date-box .hijri {
         font-weight: 800;
-        font-size: 10px;
+        font-size: 10.5px;
         color: #ffffff;
     }
     .th-date-box .greg {
-        font-size: 9px;
+        font-size: 9.5px;
         color: #ffffff;
         font-weight: 800;
     }
@@ -220,11 +233,11 @@
         background: #111827 !important;
         color: #ffffff !important;
         font-weight: 800 !important;
-        font-size: 10px !important;
-        width: 28px !important;
+        font-size: 10.5px !important;
+        width: 30px !important;
         writing-mode: vertical-rl !important;
         transform: rotate(180deg) !important;
-        padding: 4px 1px !important;
+        padding: 5px 1px !important;
         text-align: center !important;
         vertical-align: middle !important;
         border: 1.2px solid #000000 !important;
@@ -237,22 +250,22 @@
     table.ds-main-table td.cls-col {
         background-color: #ffffff !important;
         font-weight: 800 !important;
-        font-size: 10px !important;
+        font-size: 10.5px !important;
         color: #000000 !important;
-        width: 76px !important;
+        width: 80px !important;
         text-align: center !important;
         line-height: 1.2 !important;
-        padding: 2px 1px !important;
+        padding: 2.5px 1px !important;
     }
 
     /* کتاب و پرچہ کے خانے */
     table.ds-main-table td.paper-col {
         background-color: #ffffff !important;
-        font-size: 9.2px !important;
+        font-size: 9.8px !important;
         font-weight: 700 !important;
         color: #000000 !important;
-        line-height: 1.22 !important;
-        padding: 2.5px 1.5px !important;
+        line-height: 1.25 !important;
+        padding: 2.8px 1.5px !important;
         text-align: center !important;
     }
 
@@ -261,7 +274,7 @@
         display: inline-block;
         color: #000000;
         font-weight: 900;
-        font-size: 10.5px;
+        font-size: 11px;
         margin-right: 1px;
     }
 
@@ -271,7 +284,7 @@
         justify-content: space-between;
         align-items: center;
         margin-top: 4px;
-        font-size: 9.5px;
+        font-size: 10px;
         font-weight: 800;
         color: #000000 !important;
         padding: 2px 4px;
@@ -328,6 +341,10 @@
             background: #ffffff !important;
             margin: 0 !important;
         }
+        .datesheet-paper-wrapper {
+            padding: 0 !important;
+            overflow: visible !important;
+        }
         .printable-datesheet {
             zoom: 1 !important;
             width: 100% !important;
@@ -345,61 +362,61 @@
             padding: 0 40px 1px 40px !important;
         }
         .ds-logo-top {
-            width: 42px !important;
-            height: 42px !important;
+            width: 44px !important;
+            height: 44px !important;
         }
         .ds-calligraphy-title {
-            font-size: 26px !important;
+            font-size: 28px !important;
             line-height: 1.15 !important;
         }
         .ds-sub-title-text {
-            font-size: 11px !important;
+            font-size: 11.5px !important;
         }
         table.ds-main-table th, table.ds-main-table td {
             padding: 2px 1px !important;
-            font-size: 8.8px !important;
+            font-size: 9px !important;
             line-height: 1.15 !important;
             border: 1px solid #000000 !important;
         }
         .th-sec-head, table.ds-main-table td.sec-col {
-            font-size: 9px !important;
-            width: 24px !important;
+            font-size: 9.2px !important;
+            width: 25px !important;
             background: #000000 !important;
             color: #ffffff !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
         .th-cls-head, table.ds-main-table td.cls-col {
-            font-size: 8.8px !important;
-            width: 70px !important;
+            font-size: 9px !important;
+            width: 72px !important;
         }
         .th-day-head {
             height: 18px !important;
-            font-size: 9.8px !important;
+            font-size: 10px !important;
         }
         .th-time-label, .th-time-val {
             height: 14px !important;
-            font-size: 8px !important;
+            font-size: 8.5px !important;
         }
         .th-date-label, .th-date-box {
-            height: 22px !important;
-            font-size: 8.5px !important;
+            height: 23px !important;
+            font-size: 8.8px !important;
             background: #000000 !important;
             color: #ffffff !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
         .th-date-box .hijri {
-            font-size: 9px !important;
+            font-size: 9.2px !important;
             color: #ffffff !important;
         }
         .th-date-box .greg {
-            font-size: 8px !important;
+            font-size: 8.2px !important;
             color: #ffffff !important;
         }
         .ds-footer {
             margin-top: 2px !important;
-            font-size: 8.5px !important;
+            font-size: 8.8px !important;
             padding: 1px 2px !important;
         }
     }
@@ -409,14 +426,14 @@
 {% block content %}
 <div class="datesheet-outer-box">
 
-    <!-- ٹول بار -->
+    <!-- خوبصورت و صاف ٹول بار -->
     <div class="datesheet-toolbar no-print">
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <a href="{{ url_for('datesheets_list') }}" class="btn btn-muted" style="padding: 6px 12px; font-size: 12.5px;">← واپس</a>
-            <h4 style="font-size: 15px; font-weight: 800; color: #000000; margin: 0;">📜 امتحانی ڈیٹ شیٹ (1 صفحہ سائز)</h4>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <a href="{{ url_for('datesheets_list') }}" class="btn btn-muted" style="padding: 7px 14px; font-size: 13px;">← واپس فہرست</a>
+            <h3 style="font-size: 17px; font-weight: 800; color: var(--text-main, #0f172a); margin: 0;">📜 امتحانی ڈیٹ شیٹ (Jamia Ashrafia)</h3>
         </div>
 
-        <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+        <div class="toolbar-left-group">
             <!-- زوم کنٹرولز -->
             <div class="zoom-btn-group">
                 <button type="button" class="btn-zoom" onclick="changeZoom(15)" title="زوم بڑا کریں">🔍 بڑا (+)</button>
@@ -426,105 +443,107 @@
             </div>
 
             <!-- پی ڈی ایف ڈاؤنلوڈ بٹن -->
-            <button type="button" id="btnDownloadPDF" onclick="downloadAsPDF()" class="btn btn-danger" style="background: #dc2626; color: #fff; font-weight: 800; padding: 6px 14px; font-size: 12.5px; border: none; border-radius: 5px; cursor: pointer;">
-                <span>📥</span> <span>PDF (1 صفحہ)</span>
+            <button type="button" id="btnDownloadPDF" onclick="downloadAsPDF()" class="btn btn-danger" style="background: #dc2626; color: #fff; font-weight: 800; padding: 7px 15px; font-size: 13px; border: none; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                <span>📥</span> <span>PDF ڈاؤنلوڈ</span>
             </button>
 
             <!-- واٹس ایپ 1-کلک بٹن -->
-            <button type="button" class="btn btn-success" onclick="openWhatsAppModal()" style="background: #25D366; color: #fff; font-weight: 800; padding: 6px 12px; font-size: 12.5px; border: none; border-radius: 5px;">
+            <button type="button" class="btn btn-success" onclick="openWhatsAppModal()" style="background: #25D366; color: #fff; font-weight: 800; padding: 7px 14px; font-size: 13px; border: none; border-radius: 6px; display: flex; align-items: center; gap: 5px;">
                 <span>📲</span> <span>واٹس ایپ</span>
             </button>
 
-            <a href="{{ url_for('edit_datesheet', datesheet_id=datesheet['id']) }}" class="btn btn-gold" style="padding: 6px 12px; font-size: 12.5px; font-weight: bold;">✏️ ترمیم</a>
+            <a href="{{ url_for('edit_datesheet', datesheet_id=datesheet['id']) }}" class="btn btn-gold" style="padding: 7px 14px; font-size: 13px; font-weight: bold;">✏️ ترمیم</a>
 
             <!-- پرنٹ بٹن -->
-            <button type="button" class="btn btn-primary" onclick="window.print()" style="background: #000000; border-color: #000000; padding: 6px 16px; font-size: 12.5px; font-weight: 800;">
+            <button type="button" class="btn btn-primary" onclick="window.print()" style="background: #0f172a; border-color: #0f172a; padding: 7px 18px; font-size: 13px; font-weight: 800;">
                 🖨️ پرنٹ (1 صفحہ)
             </button>
         </div>
     </div>
 
-    <!-- ہو بہو اصل کاغذ کے 1 صفحہ سائز میں ڈیٹ شیٹ -->
-    <div id="datesheetPrintable" class="printable-datesheet">
-        
-        <!-- ہیڈر -->
-        <div class="ds-top-header">
-            <img src="{{ url_for('static', filename='logo.png') }}" class="ds-logo-top" alt="مونوگرام" onerror="this.style.display='none'">
-            <div class="ds-calligraphy-title">الْجَامِعَةُ الأَشْرَفِيَّةِ لاَهُوْر</div>
-            <div class="ds-sub-title-text">{{ datesheet['title'] }} للعام - {{ datesheet['academic_year'] }}</div>
-        </div>
+    <!-- ڈیٹ شیٹ پیپر ریپر -->
+    <div class="datesheet-paper-wrapper">
+        <div id="datesheetPrintable" class="printable-datesheet">
+            
+            <!-- ہیڈر -->
+            <div class="ds-top-header">
+                <img src="{{ url_for('static', filename='logo.png') }}" class="ds-logo-top" alt="مونوگرام" onerror="this.style.display='none'">
+                <div class="ds-calligraphy-title">الْجَامِعَةُ الأَشْرَفِيَّةِ لاَهُوْر</div>
+                <div class="ds-sub-title-text">{{ datesheet['title'] }} للعام - {{ datesheet['academic_year'] }}</div>
+            </div>
 
-        <!-- امتحانی شیڈول ٹیبل (7 کالمز) -->
-        <table class="ds-main-table">
-            <thead>
-                <!-- رو 1: الأيام -->
-                <tr>
-                    <th class="th-sec-head">الأيام</th>
-                    <th class="th-cls-head">الصف</th>
-                    {% for d in days %}
-                        <th class="th-day-head" style="width: 16.4%;">{{ d['day'] }}</th>
-                    {% endfor %}
-                </tr>
-                <!-- رو 2: الوقت -->
-                <tr>
-                    <th class="th-time-label">الوقت</th>
-                    <th class="th-time-val">{{ datesheet['exam_timing'] }}</th>
-                    {% for d in days %}
-                        <th class="th-time-val">{{ datesheet['exam_timing'] }}</th>
-                    {% endfor %}
-                </tr>
-                <!-- رو 3: التأريخ (کالی پٹی) -->
-                <tr>
-                    <th class="th-date-label">التأريخ</th>
-                    <th class="th-date-box">{{ days[0]['gregorian'] }}</th>
-                    {% for d in days %}
-                        <th class="th-date-box">
-                            <div class="hijri">{{ d['hijri'] }}</div>
-                            <div class="greg">{{ d['gregorian'] }}</div>
-                        </th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                {# درجات کی قطاریں سیاہ سیکشن کالم کے ساتھ #}
-                {% for sec in structured_sections %}
-                    {% for row in sec['rows'] %}
+            <!-- امتحانی شیڈول ٹیبل (7 کالمز) -->
+            <table class="ds-main-table">
+                <thead>
+                    <!-- رو 1: الأيام -->
                     <tr>
-                        {# 1. دائیں طرف سیاہ سیکشن کالم (صرف پہلی قطار میں معہ rowspan) #}
-                        {% if loop.first %}
-                            <td class="sec-col" rowspan="{{ sec['rows']|length }}">
-                                <span dir="rtl">{{ sec['section_name'] }}</span>
-                            </td>
-                        {% endif %}
-
-                        {# 2. کلاس کا نام #}
-                        <td class="cls-col">
-                            <span dir="rtl">{{ row['class_name'] }}</span>
-                        </td>
-
-                        {# 3. پرچے کے خانے #}
-                        {% for p in row['papers'] %}
-                            <td class="paper-col">
-                                <span dir="rtl">{{ p['subject'] }}</span>
-                                {% if p['copies'] == 1 %}
-                                    <span class="badge-num-1" title="ایک جوابی کاپی"> ❶</span>
-                                {% elif p['copies'] == 2 %}
-                                    <span class="badge-num-2" title="دو جوابی کاپیاں"> ❷</span>
-                                {% endif %}
-                            </td>
+                        <th class="th-sec-head">الأيام</th>
+                        <th class="th-cls-head">الصف</th>
+                        {% for d in days %}
+                            <th class="th-day-head" style="width: 16.4%;">{{ d['day'] }}</th>
                         {% endfor %}
                     </tr>
+                    <!-- رو 2: الوقت -->
+                    <tr>
+                        <th class="th-time-label">الوقت</th>
+                        <th class="th-time-val">{{ datesheet['exam_timing'] }}</th>
+                        {% for d in days %}
+                            <th class="th-time-val">{{ datesheet['exam_timing'] }}</th>
+                        {% endfor %}
+                    </tr>
+                    <!-- رو 3: التأريخ (کالی پٹی) -->
+                    <tr>
+                        <th class="th-date-label">التأريخ</th>
+                        <th class="th-date-box">{{ days[0]['gregorian'] }}</th>
+                        {% for d in days %}
+                            <th class="th-date-box">
+                                <div class="hijri">{{ d['hijri'] }}</div>
+                                <div class="greg">{{ d['gregorian'] }}</div>
+                            </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {# درجات کی قطاریں سیاہ سیکشن کالم کے ساتھ #}
+                    {% for sec in structured_sections %}
+                        {% for row in sec['rows'] %}
+                        <tr>
+                            {# 1. دائیں طرف سیاہ سیکشن کالم (صرف پہلی قطار میں معہ rowspan) #}
+                            {% if loop.first %}
+                                <td class="sec-col" rowspan="{{ sec['rows']|length }}">
+                                    <span dir="rtl">{{ sec['section_name'] }}</span>
+                                </td>
+                            {% endif %}
+
+                            {# 2. کلاس کا نام #}
+                            <td class="cls-col">
+                                <span dir="rtl">{{ row['class_name'] }}</span>
+                            </td>
+
+                            {# 3. پرچے کے خانے #}
+                            {% for p in row['papers'] %}
+                                <td class="paper-col">
+                                    <span dir="rtl">{{ p['subject'] }}</span>
+                                    {% if p['copies'] == 1 %}
+                                        <span class="badge-num-1" title="ایک جوابی کاپی"> ❶</span>
+                                    {% elif p['copies'] == 2 %}
+                                        <span class="badge-num-2" title="دو جوابی کاپیاں"> ❷</span>
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
                     {% endfor %}
-                {% endfor %}
-            </tbody>
-        </table>
+                </tbody>
+            </table>
 
-        <!-- فوٹر وضاحتی نوٹ -->
-        <div class="ds-footer">
-            <div>• {{ datesheet['footer_note'] }}</div>
-            <div>⏰ الوقت: <strong>{{ datesheet['exam_timing'] }}</strong></div>
+            <!-- فوٹر وضاحتی نوٹ -->
+            <div class="ds-footer">
+                <div>• {{ datesheet['footer_note'] }}</div>
+                <div>⏰ الوقت: <strong>{{ datesheet['exam_timing'] }}</strong></div>
+            </div>
+
         </div>
-
     </div>
 
 </div>
@@ -634,11 +653,11 @@ function downloadAsPDF() {
     html2pdf().set(opt).from(element).save().then(() => {
         element.style.zoom = oldZoom;
         btn.disabled = false;
-        btn.innerHTML = '<span>📥</span> <span>PDF (1 صفحہ)</span>';
+        btn.innerHTML = '<span>📥</span> <span>PDF ڈاؤنلوڈ</span>';
     }).catch(err => {
         element.style.zoom = oldZoom;
         btn.disabled = false;
-        btn.innerHTML = '<span>📥</span> <span>PDF (1 صفحہ)</span>';
+        btn.innerHTML = '<span>📥</span> <span>PDF ڈاؤنلوڈ</span>';
         window.print();
     });
 }
