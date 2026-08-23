@@ -1,4 +1,4 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Noto+Sans+Arabic:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Noto+Sans+Arabic:wght@400;500;600;700;800&display=swap');
 
 /* ===== رنگوں کے متغیر (CSS Variables) ===== */
 :root {
@@ -37,6 +37,17 @@
     --r-lg:  20px;
     --r-xl:  28px;
     --ease:  all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Backward compatibility aliases */
+    --primary-teal:  var(--primary);
+    --teal-dark:     var(--primary-mid);
+    --teal-light:    var(--primary-light);
+    --gold-accent:   var(--gold);
+    --gold-hover:    var(--gold-bright);
+    --gold-soft:     var(--gold-pale);
+    --bg-page:       var(--bg-body);
+    --shadow-soft:   var(--shadow-sm);
+    --shadow-hover:  var(--shadow-md);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
