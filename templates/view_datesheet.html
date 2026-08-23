@@ -3,22 +3,22 @@
 {% set active_page = 'exams' %}
 
 {% block extra_head %}
-<!-- خوبصورت عربی خطوط برائے پرنٹ و ڈسپلے -->
+<!-- خوبصورت و صاف عربی خطوط -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700;800&family=Noto+Sans+Arabic:wght@600;700;800;900&family=Scheherazade+New:wght@700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700;800&family=Noto+Sans+Arabic:wght@700;800;900&family=Scheherazade+New:wght@700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <style>
     /* A4 پورٹریٹ پرنٹ پیج */
     @page {
         size: A4 portrait;
-        margin: 6mm 6mm 6mm 6mm;
+        margin: 5mm 5mm 5mm 5mm;
     }
 
     .datesheet-outer-box {
-        background: var(--bg-surface, #f8fafc);
-        padding: 12px;
+        background: #f1f5f9;
+        padding: 15px;
         border-radius: var(--r-md);
         box-shadow: var(--shadow-sm);
         margin-bottom: 25px;
@@ -30,9 +30,9 @@
         align-items: center;
         flex-wrap: wrap;
         gap: 10px;
-        margin-bottom: 12px;
+        margin-bottom: 14px;
         padding-bottom: 10px;
-        border-bottom: 1.5px solid var(--border);
+        border-bottom: 2px solid #cbd5e1;
     }
 
     /* زوم کنٹرولز کا گروپ */
@@ -40,20 +40,20 @@
         display: inline-flex;
         align-items: center;
         background: #ffffff;
-        border: 1.5px solid #cbd5e1;
+        border: 2px solid #94a3b8;
         border-radius: 8px;
-        padding: 2px 5px;
-        gap: 4px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        padding: 3px 6px;
+        gap: 5px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
     }
     .btn-zoom {
-        background: #f1f5f9;
-        border: 1px solid #cbd5e1;
+        background: #f8fafc;
+        border: 1px solid #94a3b8;
         border-radius: 6px;
-        padding: 5px 11px;
+        padding: 5px 12px;
         font-size: 13px;
         font-weight: 800;
-        color: #1e3a5f;
+        color: #0f172a;
         cursor: pointer;
         transition: all 0.15s ease;
     }
@@ -67,71 +67,73 @@
         font-weight: 900;
         color: #0f766e;
         background: #f0fdfa;
-        padding: 3px 8px;
+        padding: 3px 10px;
         border-radius: 6px;
-        border: 1px solid #99f6e4;
-        min-width: 42px;
+        border: 1.5px solid #99f6e4;
+        min-width: 44px;
         text-align: center;
     }
 
-    /* پرنٹ ایبل کنٹینر - 1 ہی صفحے پر 100% متناسب و پرفیکٹ فٹ */
+    /* پرنٹ ایبل کنٹینر - بالکل صاف، شفاف، ہائی ڈیفینیشن */
     .printable-datesheet {
         background: #ffffff !important;
         width: 100% !important;
-        max-width: 940px;
+        max-width: 980px;
         margin: 0 auto;
-        color: #0f172a !important;
+        color: #000000 !important;
         direction: rtl !important;
         font-family: 'Noto Sans Arabic', 'Segoe UI', Tahoma, sans-serif !important;
-        padding: 12px 16px;
-        border: 2px solid #cbd5e1;
+        padding: 16px 20px;
+        border: 2.5px solid #0f2744;
         border-radius: 10px;
-        box-shadow: 0 6px 24px rgba(30,58,95,0.08);
+        box-shadow: 0 10px 30px rgba(15,39,68,0.12);
         box-sizing: border-box !important;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
 
     /* ٹاپ ہیڈر */
     .ds-top-header {
         position: relative;
         text-align: center;
-        margin-bottom: 8px;
-        padding: 2px 60px 6px 60px;
-        border-bottom: 2px solid #e2e8f0;
+        margin-bottom: 10px;
+        padding: 2px 70px 8px 70px;
+        border-bottom: 2px solid #0f2744;
     }
     .ds-logo-top {
         position: absolute;
         top: 0;
         left: 0;
-        width: 58px;
-        height: 58px;
+        width: 65px;
+        height: 65px;
         object-fit: contain;
     }
     .ds-main-heading {
         font-family: 'Scheherazade New', 'Amiri', 'Noto Sans Arabic', serif;
-        font-size: 32px;
-        font-weight: 800;
-        color: #1e3a5f !important;
+        font-size: 36px;
+        font-weight: 900;
+        color: #0f2744 !important;
         margin: 0 0 4px 0;
         line-height: 1.25;
         letter-spacing: 0.5px;
     }
     .ds-sub-heading {
-        font-size: 13.5px;
+        font-size: 14.5px;
         font-weight: 800;
-        color: #c9973a !important;
+        color: #92400e !important;
         margin: 0;
         display: inline-block;
-        background: #fff8e7;
-        padding: 3px 18px;
-        border-radius: 16px;
-        border: 1.2px solid #dfc27a;
+        background: #fffbeb;
+        padding: 3px 22px;
+        border-radius: 20px;
+        border: 1.5px solid #f59e0b;
     }
 
     /* مین ٹیبل */
     table.ds-main-table {
         width: 100% !important;
         border-collapse: collapse !important;
-        border: 2px solid #1e3a5f !important;
+        border: 2.5px solid #0f2744 !important;
         direction: rtl !important;
         table-layout: fixed !important;
         margin: 0 auto !important;
@@ -140,114 +142,117 @@
 
     table.ds-main-table th, 
     table.ds-main-table td {
-        border: 1.2px solid #cbd5e1 !important;
-        padding: 3.5px 2px !important;
+        border: 1.5px solid #475569 !important;
+        padding: 4px 2px !important;
         text-align: center !important;
         vertical-align: middle !important;
-        color: #0f172a !important;
+        color: #000000 !important;
         box-sizing: border-box !important;
         white-space: pre-line !important;
     }
 
     /* ہیڈر کالمز (الأيام) */
     .th-sec-head {
-        background: #1e3a5f !important;
+        background: #0f2744 !important;
         color: #ffffff !important;
-        font-size: 11.5px !important;
-        font-weight: 800 !important;
-        width: 32px !important;
+        font-size: 12px !important;
+        font-weight: 900 !important;
+        width: 34px !important;
+        border-color: #0f2744 !important;
     }
     .th-cls-head {
-        background: #1e3a5f !important;
+        background: #0f2744 !important;
         color: #ffffff !important;
-        font-size: 11.5px !important;
-        font-weight: 800 !important;
-        width: 90px !important;
+        font-size: 12px !important;
+        font-weight: 900 !important;
+        width: 95px !important;
+        border-color: #0f2744 !important;
     }
     .th-day-head {
-        background: linear-gradient(135deg, #1e3a5f 0%, #2b5282 100%) !important;
+        background: linear-gradient(180deg, #1e3a5f 0%, #0f2744 100%) !important;
         color: #ffffff !important;
-        font-size: 12.5px !important;
-        font-weight: 800 !important;
-        height: 26px !important;
+        font-size: 13.5px !important;
+        font-weight: 900 !important;
+        height: 28px !important;
+        border-color: #0f2744 !important;
     }
 
     /* اوقات رو */
     .th-time-row {
-        background: #fffbeb !important;
-        color: #92400e !important;
-        font-size: 10px !important;
-        font-weight: 800 !important;
-        height: 20px !important;
-        border-color: #fde68a !important;
+        background: #fef3c7 !important;
+        color: #78350f !important;
+        font-size: 10.5px !important;
+        font-weight: 900 !important;
+        height: 22px !important;
+        border-color: #d97706 !important;
     }
 
     /* تواریخ رو */
     .th-date-row {
-        background: #f0fdfa !important;
-        color: #0f766e !important;
-        font-size: 10px !important;
-        font-weight: 800 !important;
-        height: 30px !important;
-        line-height: 1.2 !important;
-        border-color: #99f6e4 !important;
+        background: #ecfdf5 !important;
+        color: #065f46 !important;
+        font-size: 10.5px !important;
+        font-weight: 900 !important;
+        height: 32px !important;
+        line-height: 1.25 !important;
+        border-color: #059669 !important;
     }
     .th-date-row .hijri {
-        font-weight: 800;
-        font-size: 10.5px;
-        color: #0f766e;
+        font-weight: 900;
+        font-size: 11px;
+        color: #065f46;
     }
     .th-date-row .greg {
-        font-size: 9.5px;
-        color: #475569;
-        font-weight: 700;
+        font-size: 10px;
+        color: #1e293b;
+        font-weight: 800;
     }
 
     /* دائیں جانب رنگین سیکشن کالم (المرحلہ) */
     table.ds-main-table td.sec-col {
         color: #ffffff !important;
-        font-weight: 800 !important;
-        font-size: 11px !important;
-        width: 32px !important;
+        font-weight: 900 !important;
+        font-size: 12px !important;
+        width: 34px !important;
         writing-mode: vertical-rl !important;
         transform: rotate(180deg) !important;
         padding: 6px 1px !important;
-        letter-spacing: 1.2px;
+        letter-spacing: 1.5px;
         text-align: center !important;
         vertical-align: middle !important;
-        border-left: 2px solid #1e3a5f !important;
+        border-left: 2.5px solid #0f2744 !important;
     }
 
     /* ہر مرحلے کا مخصوص رنگین شیڈ */
     .sec-color-0 { background: linear-gradient(180deg, #1e3a5f 0%, #0f2744 100%) !important; } /* العالمية */
     .sec-color-1 { background: linear-gradient(180deg, #1d4ed8 0%, #1e40af 100%) !important; } /* العالية */
-    .sec-color-2 { background: linear-gradient(180deg, #0d7c5f 0%, #064e3b 100%) !important; } /* الثانوية الخاصة */
+    .sec-color-2 { background: linear-gradient(180deg, #047857 0%, #064e3b 100%) !important; } /* الثانوية الخاصة */
     .sec-color-3 { background: linear-gradient(180deg, #b45309 0%, #78350f 100%) !important; } /* الثانوية العامة */
     .sec-color-4 { background: linear-gradient(180deg, #6d28d9 0%, #4c1d95 100%) !important; } /* التجويد */
-    .sec-color-5 { background: linear-gradient(180deg, #991b1b 0%, #7f1d1d 100%) !important; } /* تخصص في الإفتاء */
-    .sec-color-6 { background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%) !important; } /* المعهد */
+    .sec-color-5 { background: linear-gradient(180deg, #b91c1c 0%, #7f1d1d 100%) !important; } /* تخصص في الإفتاء */
+    .sec-color-6 { background: linear-gradient(180deg, #0369a1 0%, #075985 100%) !important; } /* المعهد */
 
     /* کلاس کالم (الصف / المرحلة) */
     table.ds-main-table td.cls-col {
         background-color: #f8fafc !important;
-        font-weight: 800 !important;
-        font-size: 10px !important;
-        color: #1e3a5f !important;
-        width: 90px !important;
+        font-weight: 900 !important;
+        font-size: 11px !important;
+        color: #0f2744 !important;
+        width: 95px !important;
         text-align: center !important;
-        line-height: 1.2 !important;
-        padding: 3px 2px !important;
-        border-right: 1.5px solid #cbd5e1 !important;
+        line-height: 1.25 !important;
+        padding: 4px 2px !important;
+        border-right: 2px solid #475569 !important;
     }
 
-    /* کتاب و پرچہ کے خانے */
+    /* کتاب و پرچہ کے خانے (واضح، موٹی اور صاف لکھائی) */
     table.ds-main-table td.paper-col {
         background-color: #ffffff !important;
-        font-size: 9.8px !important;
-        font-weight: 600 !important;
-        color: #1e293b !important;
-        line-height: 1.22 !important;
-        padding: 3.5px 2px !important;
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        color: #000000 !important;
+        line-height: 1.3 !important;
+        padding: 4px 2px !important;
         text-align: center !important;
     }
     table.ds-main-table tr:hover td.paper-col {
@@ -257,16 +262,16 @@
     /* جوابی کاپی کے بیجز */
     .badge-num-1 {
         display: inline-block;
-        color: #0284c7;
+        color: #0369a1;
         font-weight: 900;
-        font-size: 11.5px;
+        font-size: 12.5px;
         margin-right: 2px;
     }
     .badge-num-2 {
         display: inline-block;
-        color: #d97706;
+        color: #b45309;
         font-weight: 900;
-        font-size: 11.5px;
+        font-size: 12.5px;
         margin-right: 2px;
     }
 
@@ -275,14 +280,14 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-top: 6px;
-        font-size: 10.5px;
-        font-weight: 700;
-        color: #334155 !important;
-        padding: 4px 10px;
+        margin-top: 8px;
+        font-size: 11px;
+        font-weight: 800;
+        color: #0f172a !important;
+        padding: 5px 12px;
         background: #f8fafc;
         border-radius: 6px;
-        border: 1px solid #e2e8f0;
+        border: 1.5px solid #cbd5e1;
     }
 
     /* واٹس ایپ ماڈل */
@@ -311,7 +316,7 @@
         text-align: right;
     }
 
-    /* پرنٹ سیٹنگز - 1 ہی صفحے پر 100% پرفیکٹ فٹ */
+    /* پرنٹ سیٹنگز - بالکل صاف و کرکرا 1 صفحہ */
     @media print {
         html, body {
             margin: 0 !important;
@@ -340,9 +345,9 @@
             zoom: 1 !important;
             width: 100% !important;
             max-width: 100% !important;
-            border: none !important;
+            border: 2px solid #0f2744 !important;
             box-shadow: none !important;
-            padding: 0 !important;
+            padding: 2px !important;
             margin: 0 auto !important;
             transform: none !important;
             page-break-after: avoid !important;
@@ -350,57 +355,58 @@
         }
         .ds-top-header {
             margin-bottom: 4px !important;
-            padding: 0 40px 3px 40px !important;
-            border-bottom: 1.5px solid #1e3a5f !important;
+            padding: 0 45px 3px 45px !important;
+            border-bottom: 2px solid #0f2744 !important;
         }
         .ds-logo-top {
-            width: 48px !important;
-            height: 48px !important;
+            width: 50px !important;
+            height: 50px !important;
         }
         .ds-main-heading {
-            font-size: 24px !important;
+            font-size: 26px !important;
             margin-bottom: 2px !important;
             line-height: 1.2 !important;
         }
         .ds-sub-heading {
-            font-size: 11px !important;
-            padding: 1px 12px !important;
+            font-size: 11.5px !important;
+            padding: 1px 14px !important;
         }
         table.ds-main-table th, table.ds-main-table td {
-            padding: 2.5px 1.5px !important;
-            font-size: 8.8px !important;
-            line-height: 1.15 !important;
+            padding: 2.8px 1.5px !important;
+            font-size: 9.2px !important;
+            line-height: 1.2 !important;
+            border: 1.2px solid #334155 !important;
         }
         .th-sec-head, table.ds-main-table td.sec-col {
-            font-size: 9.5px !important;
-            width: 25px !important;
+            font-size: 10px !important;
+            width: 26px !important;
             padding: 3px 1px !important;
         }
         .th-cls-head, table.ds-main-table td.cls-col {
-            font-size: 9px !important;
-            width: 76px !important;
+            font-size: 9.5px !important;
+            width: 80px !important;
         }
         .th-day-head {
-            height: 20px !important;
-            font-size: 10px !important;
-            background: #1e3a5f !important;
+            height: 22px !important;
+            font-size: 10.5px !important;
+            background: #0f2744 !important;
             color: #ffffff !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
         .th-time-row {
-            height: 16px !important;
-            font-size: 8.2px !important;
-            background: #fffbeb !important;
-            color: #92400e !important;
+            height: 17px !important;
+            font-size: 8.5px !important;
+            background: #fef3c7 !important;
+            color: #78350f !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
         .th-date-row {
-            height: 24px !important;
-            font-size: 8.2px !important;
-            background: #f0fdfa !important;
-            color: #0f766e !important;
+            height: 25px !important;
+            font-size: 8.5px !important;
+            background: #ecfdf5 !important;
+            color: #065f46 !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
@@ -414,10 +420,10 @@
         }
         .ds-footer {
             margin-top: 4px !important;
-            font-size: 8.5px !important;
-            padding: 2px 6px !important;
+            font-size: 9px !important;
+            padding: 3px 6px !important;
             background: #f8fafc !important;
-            border: 1px solid #e2e8f0 !important;
+            border: 1px solid #cbd5e1 !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
@@ -444,9 +450,9 @@
                 <button type="button" class="btn-zoom" onclick="resetZoom()" title="اصل 100% سائز">🔄 ری سیٹ</button>
             </div>
 
-            <!-- پی ڈی ایف ڈاؤنلوڈ بٹن (1 صفحہ) -->
+            <!-- پی ڈی ایف ڈاؤنلوڈ بٹن -->
             <button type="button" id="btnDownloadPDF" onclick="downloadAsPDF()" class="btn btn-danger" style="background: #dc2626; color: #fff; font-weight: 800; padding: 8px 18px; font-size: 13px; border: none; border-radius: 6px; box-shadow: 0 4px 14px rgba(220,38,38,0.35); display: flex; align-items: center; gap: 6px; cursor: pointer;">
-                <span>📥</span> <span>PDF ڈاؤنلوڈ (1 صفحہ)</span>
+                <span>📥</span> <span>PDF ڈاؤنلوڈ (HD)</span>
             </button>
 
             <!-- واٹس ایپ 1-کلک بٹن -->
@@ -463,7 +469,7 @@
         </div>
     </div>
 
-    <!-- باضابطہ رنگین ڈیٹ شیٹ -->
+    <!-- باضابطہ رنگین ڈیٹ شیٹ (الٹرا ایچ ڈی کوالٹی) -->
     <div id="datesheetPrintable" class="printable-datesheet">
         
         <!-- ہیڈر -->
@@ -634,28 +640,27 @@ function downloadAsPDF() {
     const element = document.getElementById('datesheetPrintable');
     
     btn.disabled = true;
-    btn.innerHTML = '⏳ پی ڈی ایف تیار ہو رہی ہے...';
+    btn.innerHTML = '⏳ ہائی ڈیفینیشن PDF تیار ہو رہی ہے...';
 
-    // وقتی طور پر زوم 100% پر
     const oldZoom = element.style.zoom;
     element.style.zoom = '1';
 
     const opt = {
         margin: [5, 5, 5, 5],
         filename: 'Jamia_Ashrafia_DateSheet_1448H.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2.2, useCORS: true, letterRendering: true, scrollY: 0 },
+        image: { type: 'jpeg', quality: 1.0 },
+        html2canvas: { scale: 3.0, useCORS: true, letterRendering: true, scrollY: 0 },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
     html2pdf().set(opt).from(element).save().then(() => {
         element.style.zoom = oldZoom;
         btn.disabled = false;
-        btn.innerHTML = '<span>📥</span> <span>PDF ڈاؤنلوڈ (1 صفحہ)</span>';
+        btn.innerHTML = '<span>📥</span> <span>PDF ڈاؤنلوڈ (HD)</span>';
     }).catch(err => {
         element.style.zoom = oldZoom;
         btn.disabled = false;
-        btn.innerHTML = '<span>📥</span> <span>PDF ڈاؤنلوڈ (1 صفحہ)</span>';
+        btn.innerHTML = '<span>📥</span> <span>PDF ڈاؤنلوڈ (HD)</span>';
         window.print();
     });
 }
